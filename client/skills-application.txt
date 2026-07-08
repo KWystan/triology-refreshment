@@ -1,0 +1,117 @@
+=== Skills Application Log ===
+Project: Triology Refreshment
+Date:    2026-07-06 (updated 2026-07-07)
+
+--- emil-design-eng (emilkowalski/skill) ---
+
+Source:   https://github.com/emilkowalski/skill
+Skill:    emil-design-eng (Emil Kowalski's design engineering philosophy)
+Applied:  2026-07-06
+
+Files modified:
+  src/components/ui/Button.jsx
+  src/styles/global.css
+
+Changes applied (per Emil's review checklist):
+
+  1. Press feedback on :active
+     - Added .btn-interact:active { transform: scale(0.97) }
+     - Every pressable element must feel responsive; scale confirms
+       the UI heard the user.
+     - Gate: @media (hover: hover) and (pointer: fine) wraps hover
+       to prevent false positives on touch devices.
+
+  2. Tightened transition duration
+     - Before: 300ms (var(--transition-hover))
+     - After:  160ms cubic-bezier(0.23, 1, 0.32, 1)
+     - Emil's rule: button press feedback = 100-160ms.
+       300ms on a button feels sluggish.
+
+  3. Strong custom easing curve
+     - cubic-bezier(0.23, 1, 0.32, 1) — Emil's recommended
+       "strong ease-out". Built-in CSS easings are too weak
+       for punchy UI feedback.
+
+  4. Only transform and opacity animate
+     - Transition scoped to transform and opacity only —
+       avoids layout/paint work, runs on GPU.
+     - Emil's rule: never use transition: all.
+
+  5. Elements not modified:
+     - Menu.jsx (.rice-card-btn, .menu-cta-btn) — unchanged
+       (user rejected previous animated stripe approach)
+
+
+--- superpowers:brainstorming (installed via Claude plugins) ---
+   Used earlier in the project for design exploration sessions
+   (page layouts, component architecture decisions).
+   No active rules currently in effect.
+
+
+=== Skills installed but not yet applied ===
+
+  - animation-vocabulary (emilkowalski/skill)
+    Reverse-lookup glossary for animation terms.
+    Available if needed for naming effects.
+
+  - review-animations (emilkowalski/skill)
+    Reviews animation/motion code against Emil's craft bar.
+    Available for animation code review passes.
+
+--- Universal btn-interact Press Feedback (batch 2) ---
+Applied:  2026-07-07
+
+Extended Emil Kowalski's press feedback to every pressable element
+across all pages and components (follow-up to global CSS + Button.jsx
+from batch 1).
+
+Files updated (added className="btn-interact" + removed redundant
+inline transition/onMouseEnter/onMouseLeave handlers):
+  src/pages/Home.jsx              — 6 <a> links
+  src/pages/PartyPacks.jsx        — 5 buttons (incl. 2 arrow-nav buttons)
+  src/pages/EventsContact.jsx     — 2 buttons
+  src/pages/Menu.jsx              — tab buttons, .rice-card-btn, .menu-cta-btn
+  src/components/layout/FAB.jsx   — floating action button
+  src/components/layout/Navbar.jsx — mobile toggle
+  src/components/layout/MobileNav.jsx — close button
+  src/components/layout/Footer.jsx — Menu, Party Packs, Facebook links
+  src/components/ui/MenuFilterTabs.jsx — filter tab buttons
+
+Components already using <Button> (get btn-interact automatically):
+  NotFound.jsx, Navbar.jsx (Order Now desktop), InquiryForm.jsx, MenuCard.jsx
+
+What changed per element:
+  - Added btn-interact class
+  - Removed inline style={{ transition: ... }} where present
+  - Removed onMouseEnter/onMouseLeave handlers (JS → CSS)
+  - All :active → scale(0.97), :hover → opacity(0.85) via global CSS
+
+
+--- Scroll-Active Nav Highlighting ---
+Applied:  2026-07-07
+
+Added IntersectionObserver-based section tracking so the navbar highlights
+the "Events" or "Contact" link depending on which section is in the viewport
+while scrolling the EventsContact page.
+
+New files:
+  src/context/ActiveSectionContext.jsx — shared context (activeSection,
+    setActiveSection, clearActiveSection) consumed by Navbar + MobileNav
+
+Modified files:
+  src/App.jsx                              — wrapped app in ActiveSectionProvider
+  src/pages/EventsContact.jsx              — IntersectionObserver on both
+    sections, updates context on scroll
+  src/components/layout/Navbar.jsx          — overrides :active state for Events
+    and Contact links based on activeSection when on /events
+  src/components/layout/MobileNav.jsx       — same scroll-based override in
+    the mobile drawer
+
+How it works:
+  - EventsContact.jsx observes #events-room-section and #events-contact-section
+    with IntersectionObserver (thresholds: 0.1/0.3/0.5/0.7/0.9)
+  - The section with the highest intersection ratio (>10%) wins
+  - On unmount, clearActiveSection() resets state so other pages use normal
+    route-based :active
+
+=== End of Log ===

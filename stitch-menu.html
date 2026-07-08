@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Menu | Triology Refreshment</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-container": "#2d6a4f",
+                    "surface-variant": "#e1e3e4",
+                    "primary": "#0f5238",
+                    "tertiary-fixed-dim": "#fbbc00",
+                    "on-error-container": "#93000a",
+                    "outline-variant": "#bfc9c1",
+                    "on-surface-variant": "#404943",
+                    "on-tertiary-fixed": "#261a00",
+                    "surface-bright": "#f8f9fa",
+                    "tertiary-container": "#7a5a00",
+                    "tertiary-fixed": "#ffdfa0",
+                    "on-tertiary-container": "#ffd47b",
+                    "error": "#ba1a1a",
+                    "surface-dim": "#d9dadb",
+                    "on-background": "#191c1d",
+                    "secondary-fixed": "#ffdcbc",
+                    "on-surface": "#191c1d",
+                    "secondary-fixed-dim": "#ffb86b",
+                    "on-primary-container": "#a8e7c5",
+                    "secondary-container": "#fd9d1a",
+                    "inverse-primary": "#95d4b3",
+                    "on-error": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "surface-container": "#edeeef",
+                    "surface-container-high": "#e7e8e9",
+                    "inverse-surface": "#2e3132",
+                    "primary-fixed-dim": "#95d4b3",
+                    "tertiary": "#5d4300",
+                    "on-secondary-container": "#663b00",
+                    "primary-fixed": "#b1f0ce",
+                    "on-secondary-fixed": "#2c1700",
+                    "secondary": "#895100",
+                    "on-primary-fixed": "#002114",
+                    "background": "#f8f9fa",
+                    "surface-tint": "#2c694e",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-secondary": "#ffffff",
+                    "outline": "#707973",
+                    "error-container": "#ffdad6",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed-variant": "#683d00",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed-variant": "#0e5138",
+                    "surface": "#f8f9fa",
+                    "on-tertiary-fixed-variant": "#5c4300",
+                    "surface-container-low": "#f3f4f5",
+                    "inverse-on-surface": "#f0f1f2"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "8px",
+                    "max-width": "1280px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "64px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "label-lg": ["Inter"],
+                    "headline-xl": ["Plus Jakarta Sans"],
+                    "body-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "label-lg": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .nav-active { border-bottom: 2px solid #895100; color: #895100; font-weight: 700; padding-bottom: 4px; }
+        .menu-card:hover { transform: translateY(-4px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .glass-header { backdrop-filter: blur(8px); background: rgba(255, 255, 255, 0.9); }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md">
+<!-- Top Navigation Bar -->
+<header class="bg-surface-container-lowest dark:bg-inverse-surface shadow-md sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-margin-desktop py-4 max-w-max-width mx-auto">
+<div class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">
+                Triology Refreshment
+            </div>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-lg text-label-lg" href="#">Home</a>
+<a class="text-secondary font-bold border-b-2 border-secondary pb-1 font-label-lg text-label-lg" href="#">Menu</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-lg text-label-lg" href="#">Party Packs</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-lg text-label-lg" href="#">Events</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-lg text-label-lg" href="#">Contact</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="bg-secondary-container text-on-secondary-container px-6 py-2 rounded-lg font-label-lg text-label-lg hover:opacity-90 transition-all scale-95 active:scale-90">Order Now</button>
+</div>
+</div>
+</header>
+<!-- Delivery Banner -->
+<div class="bg-primary-container text-on-primary-container py-3">
+<div class="max-w-max-width mx-auto px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined">delivery_dining</span>
+<span class="font-label-lg text-label-lg">Delivery via partner riders! Reach us at 0947 709 7622</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-label-sm text-label-sm uppercase tracking-wider opacity-80">Serving Trapiche, Oton, Iloilo</span>
+</div>
+</div>
+</div>
+<main class="max-w-max-width mx-auto px-margin-desktop py-12">
+<!-- Hero Title -->
+<section class="mb-16 text-center md:text-left">
+<h1 class="font-headline-xl text-headline-xl text-primary mb-4">Our Fresh Local Menu</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">A daily comfort food escape, bringing you the authentic warmth of Iloilo's delicacies and modern refreshments.</p>
+</section>
+<!-- Menu Navigation (Tabs) -->
+<div class="flex flex-wrap gap-4 mb-12 border-b border-outline-variant pb-4 overflow-x-auto whitespace-nowrap">
+<button class="bg-primary text-on-primary px-6 py-2 rounded-full font-label-lg text-label-lg">All Items</button>
+<button class="bg-surface-container text-on-surface-variant hover:bg-primary-fixed-dim px-6 py-2 rounded-full font-label-lg text-label-lg transition-colors">Rice Meals</button>
+<button class="bg-surface-container text-on-surface-variant hover:bg-primary-fixed-dim px-6 py-2 rounded-full font-label-lg text-label-lg transition-colors">Snacks & Delicacies</button>
+<button class="bg-surface-container text-on-surface-variant hover:bg-primary-fixed-dim px-6 py-2 rounded-full font-label-lg text-label-lg transition-colors">Refreshments</button>
+</div>
+<!-- Section: Rice Meals -->
+<section class="mb-20">
+<div class="flex items-center gap-4 mb-8">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Rice Meals</h2>
+<div class="h-[2px] flex-grow bg-outline-variant"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Item 1 -->
+<div class="menu-card bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-outline-variant/30 flex flex-col h-full">
+<div class="relative h-64 w-full">
+<img class="object-cover w-full h-full" data-alt="A professional food photograph of a crispy golden fried chicken thigh served with a side of savory stir-fried noodles and traditional white puto rice cakes on a vibrant green plate. The lighting is warm and sunny, emphasizing the crispy texture of the chicken skin. The background is a clean, modern kitchen setting with a hint of local Iloilo charm." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiLW3GtvkyNtRlg0tQ1W2KXOKodnll3ueMaRoqaiTsoD-QTywYSLc7CsxHyqInZ9FPi0p0u04w4shfAl_VT1tL1D4kgk57zu-67uSj06oE8r9XqgyTK_JveKDD_TYosJS84H3wAVBgs0cpEvAgUqJZ371-GOMPCzO9KpHfwvdR4IvDFyO0KhMZkeFRKvn1p6ZvDhCUFGM1FqgKcTsrtPuimFUlXtG2VrwC9BbABAhOIhcQQntQdVO7ZUBZsx5SFNO7boFDgbUD2cu9"/>
+<div class="absolute top-4 right-4 bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-lg font-bold shadow-md">₱120</div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<h3 class="font-headline-md text-headline-md mb-2">Crispy Fried Chicken</h3>
+<p class="text-on-surface-variant font-body-md mb-4 flex-grow">A perfect local combo featuring our signature crispy chicken served with stir-fried noodles and soft puto.</p>
+<button class="w-full bg-secondary text-on-secondary py-3 rounded-lg font-label-lg text-label-lg hover:opacity-90 active:scale-95 transition-all">Order Now</button>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="menu-card bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-outline-variant/30 flex flex-col h-full">
+<div class="relative h-64 w-full">
+<img class="object-cover w-full h-full" data-alt="Succulent glazed chicken pieces with a rich, dark amber sauce, garnished with fresh spring onions. The dish is presented on a clean white ceramic plate with a side of steaming jasmine rice. High-quality food photography with soft shadows and a professional, trustworthy corporate food brand aesthetic. Warm, appetizing lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXYXV9Qff2rtBOa9gVIfS85pbmlUk2mR95qIPV1ECMjUSf-1BogigbOQs36wN6bIQiA-KbFUFH59ERaUKdB5gfs4ux2jUSfed_CVX8_lSl9S58WKcd1VIgKMu53IiO290AT8OnBhBuu_SbBWW2yTHIYANbwrLm10dZr4hGnrwz6qj4qLLC7A6fuP39l1rKFac66uz1JKq8mnAZgz2Ei8fKE4qsfBL6xmJyQ3CTS2kddjT5HI5ZgkYu5frF4A7MZDFroHsw1-EMcVnk"/>
+<div class="absolute top-4 right-4 bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-lg font-bold shadow-md">₱120</div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<h3 class="font-headline-md text-headline-md mb-2">Savory Glazed Chicken</h3>
+<p class="text-on-surface-variant font-body-md mb-4 flex-grow">Tender chicken pieces coated in our secret sweet and savory glaze, served with fluffy white rice.</p>
+<button class="w-full bg-secondary text-on-secondary py-3 rounded-lg font-label-lg text-label-lg hover:opacity-90 active:scale-95 transition-all">Order Now</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Snacks & Delicacies -->
+<section class="mb-20">
+<div class="flex items-center gap-4 mb-8">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Snacks & Delicacies</h2>
+<div class="h-[2px] flex-grow bg-outline-variant"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Item 3 -->
+<div class="menu-card bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-outline-variant/30">
+<div class="relative h-64 w-full">
+<img class="object-cover w-full h-full" data-alt="A tray of traditional Filipino Puto and Pito rice cakes in various soft pastel colors, served on a woven bamboo mat. The lighting is bright and airy, reflecting a morning breakfast mood. The shot is captured in high resolution, showcasing the spongy texture and delicate nature of these local Iloilo snacks." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNYB6ReQRl_fGtoASDLQP8hoJj4TS6u_eMM4zzYcjehecBNlsiuJXf2vh9JfBmiRojC5dre4EpqUqrmYH7DwSGfJdM8jYi7F-V-xISWtwMwywDwOUxYI-8nhQnpUT2Kg6uwN4PBjZDK-pZUZLRKBwDX1hF2fesZUsILZLyQ7wL1XYkmlpJgYoYMP1te8BiGSRm4HmEtdYVQedHXAL-bUES3bujrSilyuQb68E7shYxA1wa4ehE4mzWB53OoXUL0TkYycYvcdw8nWYa"/>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-md text-headline-md">Puto / Pito</h3>
+<span class="text-primary font-bold">From ₱45</span>
+</div>
+<p class="text-on-surface-variant font-body-md mb-4">Our famous soft and fluffy rice cakes, steamed fresh every morning for the perfect merienda.</p>
+<button class="w-full border-2 border-primary text-primary py-2 rounded-lg font-label-lg text-label-lg hover:bg-primary-fixed-dim transition-colors">Select Options</button>
+</div>
+</div>
+<!-- Item 4 -->
+<div class="menu-card bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-outline-variant/30">
+<div class="relative h-64 w-full">
+<img class="object-cover w-full h-full" data-alt="A steaming plate of Pancit Palabok with its signature thick orange shrimp sauce, topped with crushed chicharon, hard-boiled eggs, fried garlic, and calamansi on the side. The food is styled professionally to look appetizing and fresh, set against a neutral, light-colored background that makes the vibrant orange colors pop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5OVN284AeITwQSFaxjZJ62Be0aqYZAL5Ft5hvbYZSV_yoaom4Gx6IfeFodcXJ8JcVgn0EBd-xoNy-V2w3o8nDSqEF-BVS2etWau7ycACcJirvNTiUFwOai37ZnAnZ44HBpf4-mjW6T1ynrycMZiXNVuHkxjRHZsJ228hCIIpGix-U7aM90806Ol0yYZ6-TIdjsEvqOBn7RMWT-EkaqCRp7UXh_QQ4ko029XEzQvv9J1SavHfIj0RKgansAC8AVU-ZRPW6JwLP2ZxI"/>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-md text-headline-md">Pancit Palabok</h3>
+<span class="text-primary font-bold">₱85</span>
+</div>
+<p class="text-on-surface-variant font-body-md mb-4">Rich, savory noodles topped with our specialty shrimp sauce, eggs, and crispy cracklings.</p>
+<button class="w-full border-2 border-primary text-primary py-2 rounded-lg font-label-lg text-label-lg hover:bg-primary-fixed-dim transition-colors">Add to Cart</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Refreshments -->
+<section class="mb-20">
+<div class="flex items-center gap-4 mb-8">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Refreshments</h2>
+<div class="h-[2px] flex-grow bg-outline-variant"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Item 5 -->
+<div class="menu-card bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-outline-variant/30">
+<div class="relative h-72 w-full">
+<img class="object-cover w-full h-full" data-alt="A premium Filipino Halo-Halo served in a tall glass, layered with sweetened beans, jelly, fruits, and crushed ice, topped with a generous scoop of purple ube ice cream and real fruit slices. The glass is frosted with condensation, indicating extreme coldness. The lighting is sunny and vibrant, creating a refreshing tropical feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-b1R3t73OPFfNwlpULI2jX2QOn0-8UrY9s_resKCzPHPNRBiBR_1H3wYLpvdi1Et72cPbzwZYKNAfA21fDIdbFKRUreg9tX-R5g_lg8AK8oKzhTIanpEqIfpFp74aclkuaBZ2csfM262QpLBpPD59uQktIsF24t1i2PyAhzPxJM3YurbCII0n-GGjSCNJFpB6h3AuSvZGL7MkXQ3KiJbqzkAcyF_zYnebq_lKtnaVK4Khvzs67tRnwN6ET5z4YC2H_gjap84C6eIs"/>
+<div class="absolute bottom-4 left-4 bg-secondary text-on-secondary px-3 py-1 rounded-full text-sm font-bold">Signature</div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-md text-headline-md">Real-Fruit Halo-Halo</h3>
+<span class="text-primary font-bold">₱95</span>
+</div>
+<p class="text-on-surface-variant font-body-md mb-4">Our bestseller made with premium local ingredients and fresh seasonal fruits for ultimate cooling.</p>
+<button class="w-full bg-secondary text-on-secondary py-3 rounded-lg font-label-lg text-label-lg hover:opacity-90 transition-all">Order Now</button>
+</div>
+</div>
+<!-- Item 6 -->
+<div class="menu-card bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-outline-variant/30">
+<div class="relative h-72 w-full">
+<img class="object-cover w-full h-full" data-alt="Assorted local fruit juices in clear glasses, including calamansi, mango, and watermelon. The juices are bright and colorful, filled with ice cubes and garnished with fresh fruit slices. The composition is clean and systematic, reflecting a professional and reliable refreshment service. Soft ambient lighting on a white surface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBI0POTBDjHcEAHLTeatv96_ODMlfiUXKKPQz1P6c6y1yGmNKmK8ZtXlLUD335rHOEax6gULfwDQs-aqq9oahS2x6lduiIwJhWKVfGMKrvqneJDTmLm-0rGT4ZCIc7ZLL1JBgPWLJfwDUNSTojK6_XVyVcfppwLe5We5ear9tqkRZVfHX-OmCtYy8iTM63iiqyJy3NcHrnNdTuSQChzzfy0IgJweomBb6-CdByXHDWsxyIr-du9Z0AGUwSVW-SAG5mdHzitJ7RNvNDm"/>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-md text-headline-md">Local Fresh Juices</h3>
+<span class="text-primary font-bold">₱45</span>
+</div>
+<p class="text-on-surface-variant font-body-md mb-4">Naturally squeezed local fruits including Calamansi, Mango, and seasonal favorites.</p>
+<button class="w-full bg-secondary text-on-secondary py-3 rounded-lg font-label-lg text-label-lg hover:opacity-90 transition-all">Order Now</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Style Promo/CTA -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-gutter mt-24">
+<div class="md:col-span-2 bg-primary-container text-on-primary-container p-12 rounded-3xl relative overflow-hidden flex flex-col justify-center">
+<div class="relative z-10">
+<h2 class="font-headline-lg text-headline-lg mb-4">Hosting an Event?</h2>
+<p class="font-body-lg text-body-lg mb-8 opacity-90">Our Party Packs are designed to bring Triology's warmth to your office, family gatherings, or celebrations in Iloilo.</p>
+<button class="bg-surface-container-lowest text-primary px-8 py-3 rounded-full font-bold hover:scale-105 transition-transform">Inquire for Catering</button>
+</div>
+<div class="absolute -right-16 -bottom-16 w-64 h-64 bg-primary rounded-full opacity-30"></div>
+</div>
+<div class="bg-secondary-container text-on-secondary-container p-8 rounded-3xl flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-5xl mb-4" style="font-variation-settings: 'FILL' 1;">call</span>
+<h3 class="font-headline-md text-headline-md mb-2">Delivery Direct</h3>
+<p class="font-label-lg text-label-lg mb-4">0947 709 7622</p>
+<p class="text-sm opacity-80">Call us for quick orders within Oton area.</p>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-primary-container dark:bg-primary-fixed-variant text-on-primary-container mt-24">
+<div class="flex flex-col md:flex-row justify-between items-start gap-gutter w-full px-margin-desktop py-12 max-w-max-width mx-auto">
+<div class="max-w-sm">
+<div class="font-headline-md text-headline-md text-on-primary-container font-bold mb-4">
+                    Triology Refreshment
+                </div>
+<p class="font-body-md text-body-md opacity-80">Serving high-quality local refreshments and meals since 2024. Your reliable partner for daily comfort food.</p>
+</div>
+<div class="flex flex-col gap-4">
+<span class="font-label-lg text-label-lg font-bold">Contact Us</span>
+<a class="font-label-sm text-label-sm text-on-primary-container opacity-80 hover:opacity-100 transition-opacity" href="tel:09477097622">0947 709 7622</a>
+<a class="font-label-sm text-label-sm text-on-primary-container opacity-80 hover:opacity-100 transition-opacity" href="mailto:winday_021@yahoo.com">winday_021@yahoo.com</a>
+<a class="font-label-sm text-label-sm text-on-primary-container opacity-80 hover:opacity-100 transition-opacity" href="#">Facebook</a>
+</div>
+<div class="flex flex-col gap-4">
+<span class="font-label-lg text-label-lg font-bold">Location</span>
+<p class="font-label-sm text-label-sm opacity-80">Trapiche, Oton, Iloilo, Philippines</p>
+</div>
+</div>
+<div class="max-w-max-width mx-auto px-margin-desktop py-6 border-t border-white/10">
+<p class="font-label-sm text-label-sm opacity-60">© 2024 Triology Refreshment. All rights reserved.</p>
+</div>
+</footer>
+<!-- Mobile Navigation (Bottom) -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-lowest shadow-2xl py-3 px-6 flex justify-around items-center z-50 border-t border-outline-variant/30">
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-bold">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">restaurant_menu</span>
+<span class="text-[10px] font-bold">Menu</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="text-[10px] font-bold">Orders</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-bold">Profile</span>
+</button>
+</div>
+<script>
+        // Micro-interaction for buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.classList.add('scale-95');
+            });
+            button.addEventListener('mouseup', () => {
+                button.classList.remove('scale-95');
+            });
+        });
+    </script>
+</body></html>

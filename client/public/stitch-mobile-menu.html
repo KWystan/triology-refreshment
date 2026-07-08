@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Triology Refreshments - Menu</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@800&amp;family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#40493b",
+                        "on-primary-fixed": "#002200",
+                        "primary-fixed-dim": "#84db70",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#9ff889",
+                        "on-background": "#191c1d",
+                        "on-primary": "#ffffff",
+                        "secondary": "#785a00",
+                        "primary": "#014a00",
+                        "outline-variant": "#bfcab7",
+                        "on-secondary-fixed-variant": "#5a4300",
+                        "secondary-fixed": "#ffdf9a",
+                        "inverse-surface": "#2e3132",
+                        "on-primary-container": "#88df74",
+                        "secondary-container": "#ffc30b",
+                        "on-tertiary-container": "#ffb9b6",
+                        "on-surface": "#191c1d",
+                        "inverse-primary": "#84db70",
+                        "surface-bright": "#f8f9fa",
+                        "tertiary-fixed": "#ffdad8",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface": "#f8f9fa",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#166e0e",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-secondary-container": "#6d5200",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#056402",
+                        "surface-dim": "#d9dadb",
+                        "on-secondary-fixed": "#251a00",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface-container": "#edeeef",
+                        "on-primary-fixed-variant": "#015300",
+                        "tertiary-fixed-dim": "#ffb3b0",
+                        "outline": "#707a6a",
+                        "tertiary": "#800918",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#f8be00",
+                        "surface-container-high": "#e7e8e9",
+                        "on-tertiary-fixed": "#410006",
+                        "background": "#f8f9fa",
+                        "surface-container-low": "#f3f4f5",
+                        "on-tertiary-fixed-variant": "#8c1520",
+                        "surface-variant": "#e1e3e4",
+                        "tertiary-container": "#a1262c",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "20px",
+                        "stack-md": "16px",
+                        "stack-sm": "8px",
+                        "base": "4px",
+                        "gutter-mobile": "16px",
+                        "stack-lg": "24px"
+                    },
+                    "fontFamily": {
+                        "display-brand": ["Epilogue"],
+                        "label-lg": ["Inter"],
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .floating-item {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .floating-item:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen flex flex-col pt-16 pb-20">
+<!-- TopAppBar (From JSON) -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-on-background/80 backdrop-blur-md shadow-sm">
+<div class="flex items-center justify-between px-margin-mobile h-16 w-full">
+<button class="text-on-surface-variant dark:text-outline-variant hover:opacity-80 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-display-brand text-[24px] font-extrabold leading-[32px] tracking-[-0.02em] text-primary dark:text-primary-fixed">Triology</h1>
+<button class="text-on-surface-variant dark:text-outline-variant hover:opacity-80 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+</header>
+<!-- Sticky Delivery Banner -->
+<div class="bg-secondary-container text-on-secondary-container py-2 px-margin-mobile text-center font-label-sm text-[12px] font-medium leading-[16px] shadow-sm sticky top-16 z-40">
+        Delivery via partner riders! Reach us at <a class="font-bold underline" href="tel:09477097622">0947 709 7622</a>
+</div>
+<!-- Main Content -->
+<main class="flex-grow flex flex-col">
+<!-- Categories (Horizontal Scroll) -->
+<div class="w-full overflow-x-auto no-scrollbar py-stack-md px-margin-mobile sticky top-[96px] z-30 bg-background/90 backdrop-blur-sm border-b border-surface-variant">
+<div class="flex gap-stack-sm min-w-max">
+<button class="bg-primary-container text-on-primary rounded-full px-4 py-2 font-label-sm text-[12px] font-medium leading-[16px] transition-colors whitespace-nowrap">Halo-Halo</button>
+<button class="bg-surface-container-high text-on-surface hover:bg-surface-variant rounded-full px-4 py-2 font-label-sm text-[12px] font-medium leading-[16px] transition-colors whitespace-nowrap">Rice Meals</button>
+<button class="bg-surface-container-high text-on-surface hover:bg-surface-variant rounded-full px-4 py-2 font-label-sm text-[12px] font-medium leading-[16px] transition-colors whitespace-nowrap">Breakfast</button>
+<button class="bg-surface-container-high text-on-surface hover:bg-surface-variant rounded-full px-4 py-2 font-label-sm text-[12px] font-medium leading-[16px] transition-colors whitespace-nowrap">Snacks</button>
+<button class="bg-surface-container-high text-on-surface hover:bg-surface-variant rounded-full px-4 py-2 font-label-sm text-[12px] font-medium leading-[16px] transition-colors whitespace-nowrap">Drinks</button>
+</div>
+</div>
+<!-- Menu List (Minimalist Display - No Containers) -->
+<div class="px-margin-mobile py-stack-lg flex flex-col gap-stack-lg">
+<!-- Category Title -->
+<h2 class="font-headline-sm text-[18px] font-semibold leading-[24px] text-primary mb-stack-sm">Halo-Halo Special</h2>
+<!-- Product Item 1 -->
+<div class="flex items-center gap-gutter-mobile floating-item group">
+<div class="w-24 h-24 rounded-2xl overflow-hidden shrink-0 shadow-sm relative bg-surface-container-low flex items-center justify-center p-2">
+<img alt="Food Icon" class="w-full h-full object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida/AP1WRLu4JyxfGrn055vs4ck5Qbe468yGqfuRk4U71yhWmE7jNboI6llFXVos3Gs1E2xBe7pBBPbUK9L1jv98HY5ubTvTGCbhnTzeLSNzygxQ9jKfRAjqQ9PMrqamblOTL0ul0NwuQMXlhj6jP1S2Y7Tet2f43wz46acEg-QI4bHdsAjJ4wtWhAs_6FYyzd5iiN46RcMQ0G3Y5zfeD-qC7sXv1Dl2QwcizAhHUqR2j2IWkUfkJWtfNRU-ZM-zsaAG"/>
+</div>
+<div class="flex-grow flex flex-col justify-center">
+<h3 class="font-label-lg text-[14px] font-semibold leading-[20px] text-on-surface">Ube Overload Halo-Halo</h3>
+<p class="font-body-sm text-[12px] text-on-surface-variant mt-1 line-clamp-2">Extra ube jam, leche flan, sago, and creamy milk.</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="font-label-sm text-[12px] font-bold text-primary">₱89 Reg</span>
+<span class="text-outline-variant text-[10px]">|</span>
+<span class="font-label-sm text-[12px] font-bold text-secondary">₱109 Big</span>
+</div>
+</div>
+<button class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center shrink-0 shadow-sm active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+<!-- Product Item 2 -->
+<div class="flex items-center gap-gutter-mobile floating-item group">
+<div class="w-24 h-24 rounded-2xl overflow-hidden shrink-0 shadow-sm relative bg-surface-container-low flex items-center justify-center p-2">
+<img alt="Food Icon" class="w-full h-full object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBB5JOF0ePvY2jj0qp_LcoHxo-LpICOAWvANicfbJMY1tCdsiqqavcxGJSC2MSyaToWfl_klok1lqIkDgPH9YxtK84AQtx2oYJa1kluxDj7emdFj7KnLvEu8Qomme-ErY7r8WQ56jtI2BrQSovv3Hiaa1SVsF4uHzDmm7Utv_kxN4QZS9QG9Bp7Hshp9_qc_p9HMU_zAjVmz5-wN2t7a0qxEziEUdELlQihwV6wdhA6Zob1XEgn9KNBYylHl3Ly4y6LCsuWpLQQ2iT2"/>
+</div>
+<div class="flex-grow flex flex-col justify-center">
+<h3 class="font-label-lg text-[14px] font-semibold leading-[20px] text-on-surface">Classic Fruit Halo-Halo</h3>
+<p class="font-body-sm text-[12px] text-on-surface-variant mt-1 line-clamp-2">Traditional mix of sweetened bananas, jackfruit, and beans.</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="font-label-sm text-[12px] font-bold text-primary">₱79 Reg</span>
+<span class="text-outline-variant text-[10px]">|</span>
+<span class="font-label-sm text-[12px] font-bold text-secondary">₱99 Big</span>
+</div>
+</div>
+<button class="w-10 h-10 rounded-full bg-surface-container-high text-primary flex items-center justify-center shrink-0 shadow-sm active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+<div class="w-full h-px bg-surface-variant my-stack-sm"></div>
+<!-- Category Title -->
+<h2 class="font-headline-sm text-[18px] font-semibold leading-[24px] text-primary mb-stack-sm mt-stack-md">Rice Meals</h2>
+<!-- Product Item 3 -->
+<div class="flex items-center gap-gutter-mobile floating-item group">
+<div class="w-24 h-24 rounded-2xl overflow-hidden shrink-0 shadow-sm relative bg-surface-container-low flex items-center justify-center p-2">
+<img alt="Food Icon" class="w-full h-full object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida/AP1WRLu4JyxfGrn055vs4ck5Qbe468yGqfuRk4U71yhWmE7jNboI6llFXVos3Gs1E2xBe7pBBPbUK9L1jv98HY5ubTvTGCbhnTzeLSNzygxQ9jKfRAjqQ9PMrqamblOTL0ul0NwuQMXlhj6jP1S2Y7Tet2f43wz46acEg-QI4bHdsAjJ4wtWhAs_6FYyzd5iiN46RcMQ0G3Y5zfeD-qC7sXv1Dl2QwcizAhHUqR2j2IWkUfkJWtfNRU-ZM-zsaAG" style="object-position: top right; transform: scale(1.5) translate(-10%, 10%);"/>
+</div>
+<div class="flex-grow flex flex-col justify-center">
+<h3 class="font-label-lg text-[14px] font-semibold leading-[20px] text-on-surface">Crispy Fried Chicken</h3>
+<p class="font-body-sm text-[12px] text-on-surface-variant mt-1 line-clamp-2">Served with pancit canton and garlic rice.</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="font-label-sm text-[12px] font-bold text-primary">₱120</span>
+</div>
+</div>
+<button class="w-10 h-10 rounded-full bg-surface-container-high text-primary flex items-center justify-center shrink-0 shadow-sm active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+<!-- Product Item 4 -->
+<div class="flex items-center gap-gutter-mobile floating-item group">
+<div class="w-24 h-24 rounded-2xl overflow-hidden shrink-0 shadow-sm relative bg-surface-container-low flex items-center justify-center p-2">
+<img alt="Food Icon" class="w-full h-full object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida/AP1WRLu4JyxfGrn055vs4ck5Qbe468yGqfuRk4U71yhWmE7jNboI6llFXVos3Gs1E2xBe7pBBPbUK9L1jv98HY5ubTvTGCbhnTzeLSNzygxQ9jKfRAjqQ9PMrqamblOTL0ul0NwuQMXlhj6jP1S2Y7Tet2f43wz46acEg-QI4bHdsAjJ4wtWhAs_6FYyzd5iiN46RcMQ0G3Y5zfeD-qC7sXv1Dl2QwcizAhHUqR2j2IWkUfkJWtfNRU-ZM-zsaAG" style="object-position: bottom left; transform: scale(1.5) translate(10%, -10%);"/>
+</div>
+<div class="flex-grow flex flex-col justify-center">
+<h3 class="font-label-lg text-[14px] font-semibold leading-[20px] text-on-surface">Savory Palabok</h3>
+<p class="font-body-sm text-[12px] text-on-surface-variant mt-1 line-clamp-2">Thick rice noodles in shrimp sauce topped with egg.</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="font-label-sm text-[12px] font-bold text-primary">₱95</span>
+</div>
+</div>
+<button class="w-10 h-10 rounded-full bg-surface-container-high text-primary flex items-center justify-center shrink-0 shadow-sm active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (From JSON) -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface/90 dark:bg-on-background/90 backdrop-blur-lg shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] md:hidden">
+<div class="flex justify-around items-center h-20 px-4 pb-safe">
+<!-- Home (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="font-label-sm text-[12px] font-medium leading-[16px]">Home</span>
+</a>
+<!-- Menu (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-full px-4 py-1 hover:text-primary dark:hover:text-primary-fixed active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined mb-1">restaurant_menu</span>
+<span class="font-label-sm text-[12px] font-medium leading-[16px]">Menu</span>
+</a>
+<!-- Orders (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined mb-1">receipt_long</span>
+<span class="font-label-sm text-[12px] font-medium leading-[16px]">Orders</span>
+</a>
+<!-- Profile (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined mb-1">person</span>
+<span class="font-label-sm text-[12px] font-medium leading-[16px]">Profile</span>
+</a>
+</div>
+</nav>
+<script>
+        // Simple script to handle category selection pill activation
+        document.addEventListener('DOMContentLoaded', () => {
+            const categoryButtons = document.querySelectorAll('.overflow-x-auto button');
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Reset all
+                    categoryButtons.forEach(btn => {
+                        btn.className = 'bg-surface-container-high text-on-surface hover:bg-surface-variant rounded-full px-4 py-2 font-label-sm text-[12px] font-medium leading-[16px] transition-colors whitespace-nowrap';
+                    });
+                    // Set active
+                    button.className = 'bg-primary-container text-on-primary rounded-full px-4 py-2 font-label-sm text-[12px] font-medium leading-[16px] transition-colors whitespace-nowrap';
+                });
+            });
+        });
+    </script>
+</body></html>

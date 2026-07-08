@@ -1,0 +1,846 @@
+================================================================================
+  TRIOLOGY REFRESHMENT — FULL WEBSITE STRUCTURE DOCUMENTATION
+  For Stitch AI Mobile UI Design Context
+  Repository: D:\Project\Triology
+================================================================================
+
+TABLE OF CONTENTS
+  1. Project Overview
+  2. Tech Stack & Architecture
+  3. Routes & Navigation Map
+  4. Page: Home (/)
+  5. Page: Menu (/menu)
+  6. Page: Party Packs (/party-packs)
+  7. Page: Events & Contact (/events)
+  8. Page: 404 Not Found (*)
+  9. Shared Components (UI Primitives)
+  10. Shared Components (Layout)
+  11. Data Layer
+  12. Design System Reference
+  13. Interactive Elements & Behaviors Summary
+  14. Stitch HTML Design References
+
+================================================================================
+1. PROJECT OVERVIEW
+================================================================================
+
+  Triology Refreshment is a full-stack restaurant/food business website for a
+  Filipino refreshment shop in Trapiche, Oton, Iloilo, Philippines. The brand
+  sells Halo-Halo, rice meals, breakfast silog meals, pasta, party platters,
+  short orders, and snacks. They also offer event space rentals and party pack
+  bundles for gatherings.
+
+  Brand Identity:
+  - Tagline: "Your Daily Comfort Food Escape"
+  - Colors: Deep green (#056402 / #0f5238) primary, Golden yellow (#fbc002) secondary
+  - Typefaces: Plus Jakarta Sans (headlines), Inter (body), Okinawa (brush cursive for brand headings)
+  - Icons: Google Material Symbols Outlined (variable font)
+
+================================================================================
+2. TECH STACK & ARCHITECTURE
+================================================================================
+
+  Monorepo (npm workspaces):
+    Root: D:\Project\Triology\package.json (workspaces: ["client", "server"])
+
+  Frontend (client/):
+  - React 19 + Vite
+  - React Router 7 (BrowserRouter)
+  - CSS via inline styles + scoped <style> blocks (no CSS-in-JS library)
+  - Design tokens via CSS custom properties in global.css :root
+  - Google Material Symbols Outlined for icons (variable font)
+  - Google Fonts: Plus Jakarta Sans, Inter
+  - Self-hosted: Okinawa brush cursive font (public/fonts/okinawa.ttf)
+  - Build output: client/dist
+  - Dev proxy: Vite proxies /api/* -> localhost:4000
+
+  Backend (server/):
+  - Express 5 (ESM, "type": "module")
+  - Supabase (two clients: admin with service_role key, anon for RLS)
+  - Helmet, CORS, Morgan logging
+  - Health check at GET /api/health
+  - Scaffolded but not fully wired — most content is static JS data
+
+================================================================================
+3. ROUTES & NAVIGATION MAP
+================================================================================
+
+  Defined in client/src/main.jsx:
+    BrowserRouter wraps <App />
+
+  Defined in client/src/App.jsx:
+    <Routes>
+      /           -> <Home />        (Home.jsx)
+      /menu       -> <Menu />        (Menu.jsx)
+      /party-packs -> <PartyPacks /> (PartyPacks.jsx)
+      /events     -> <EventsContact />(EventsContact.jsx)
+      *           -> <NotFound />    (NotFound.jsx)
+    </Routes>
+
+  Permanent Layout (wraps all routes):
+    <ActiveSectionProvider>
+      <Navbar />                    (sticky top, visible all screens)
+      <main class="main-content">   (Routes here)
+      <Footer />                    (bottom, visible all screens)
+      <FAB />                       (mobile-only floating action button)
+      <BottomMobileNav />           (mobile-only bottom navigation bar)
+    </ActiveSectionProvider>
+
+  Nav Links (from business.navLinks):
+    Home (/) | Menu (/menu) | Party Packs (/party-packs) | Events (/events) | Contact (/events)
+
+  Mobile Bottom Nav (BottomMobileNav):
+    Home (/) | Menu (/menu) | Orders (/orders) | Profile (/profile)
+    Note: Orders and Profile routes currently have no page — they link to nowhere
+
+================================================================================
+4. PAGE: HOME (/)
+================================================================================
+
+  File:      client/src/pages/Home.jsx
+  Sections:  4 (Hero, Services Bento Grid, About/Vibe, Social Proof)
+
+  --- SECTION 1: HERO ---
+    Sub-components used:
+    - FloatingPartyElements (internal component): animated SVG leaves, sparkle, dot cluster
+    - HeroCollage (internal component): asymmetric 3-image collage
+      Props: images = { large: string, small1: string, small2: string }
+    - Button from '../components' (only used in CTA)
+
+    Elements (in order):
+    a) Background gradient div
+       - linear-gradient(135deg, rgba(15, 82, 56, 0.05), rgba(137, 81, 0, 0.05))
+    b) Soft green radial glow behind text (absolutely positioned)
+       - radial-gradient(ellipse, rgba(15, 82, 56, 0.10), transparent 65%)
+    c) Location badge (inline span)
+       - Background image: location-background.png (imported asset)
+       - Text: "TRAPICHE, OTON, ILOILO" (uppercase)
+       - Styled with padding, letter-spacing
+    d) Hero heading <h1>
+       - Font: 'Okinawa', cursive, 1.25rem, weight 400
+       - Text: "Your Daily" <span gold>"Comfort Food"</span> "Escape in Iloilo"
+    e) Hero description <p>
+       - Text: "From refreshing Halo-Halo to all-day rice meals and event packages..."
+    f) CTA buttons row
+       - Button: "View Our Menu" -> /menu (primary variant)
+       - Button: "Book an Event" -> /events (outline variant)
+    g) HeroCollage component (right side on desktop)
+       - 3 images with rounded corners and shadow
+       - Left stack: 2 images stacked vertically
+       - Right: 1 large image
+    h) Glass card overlay on the image collage
+       - Positioned over the hero image
+       - Background: rgba(255, 255, 255, 0.8), backdrop-filter: blur
+       - Text: "Fresh Daily, Local Flavors"
+       - Subtitle: "Trapiche, Oton"
+
+  --- SECTION 2: SERVICES BENTO GRID ---
+    Section heading: "Our Specialties" (Okinawa font, 2rem-2.75rem clamped)
+    Subtitle: "From refreshing halo-halo to filling rice meals — explore our daily comfort food favorites."
+    Tagline: "What We Offer"
+
+    Bento Grid (12-column responsive):
+    a) Large card: Refreshments (image background)
+       - Image: BENTO_REFRESHMENTS (Google aida-public URL)
+       - Overlay with "Refreshments" title and "Halo-Halo, Shakes & More" description
+       - CTA: "Explore Menu" button -> /menu
+    b) Small card: All-Day Rice Meals (image background)
+       - Image: BENTO_MEALS
+       - Title overlay "Rice Meals"
+    c) Large card: Party Packs (image background)
+       - Image: BENTO_PARTY
+       - Overlay with "Party Packs" title and "Bilao sets for every gathering" description
+       - CTA: "View Packs" button -> /party-packs
+    d) Small card: Merienda & Snacks
+       - Material Symbol icon (no image)
+       - Title + description text block
+
+  --- SECTION 3: ABOUT/VIBE ---
+    Layout: side-by-side (image collage left, text right) on desktop, stacked on mobile
+    a) Image collage (left):
+       - ABOUT_IMG_1 (large) on top
+       - ABOUT_IMG_2 (small) below
+    b) Text content (right, centered):
+       - Heading <h2>: "The Daily Comfort Food Escape" (Okinawa font, 1.5rem)
+       - Description paragraph about the business mission
+       - Phone display: "📞 0947 709 7622"
+       - Stats row (3 columns): "5k+ Orders Served", "100% Fresh Daily", "500+ Local Reviews"
+         Uses StatDisplay component instances directly inline
+    c) Divider line
+
+  --- SECTION 4: SOCIAL PROOF ---
+    Heading: "Join Our Growing Community"
+    Description: "Be part of our 1.2K+ followers on Facebook..."
+    CTA: button linking to Facebook page
+    Brand element: decorative green circle + restaurant icon
+
+  Interactive elements on this page:
+  - All CTA buttons navigate to other pages (/menu, /party-packs, /events)
+  - Floating SVG elements have CSS animations (keyframes: spin, drift, twinkle, shift)
+  - Button hover/focus effects via btn-interact class
+  - Responsive grid: bends to mobile at 767px
+
+================================================================================
+5. PAGE: MENU (/menu)
+================================================================================
+
+  File:      client/src/pages/Menu.jsx
+  Sections:  3 (Delivery Banner, Hero Title, Product Grid, CTA Cards)
+  Imported data: menuCategories from '../data/menuItems'
+  Imported components: Icon, MenuProductGrid
+
+  --- SECTION 1: DELIVERY BANNER ---
+    Fixed bar at top of menu page
+    Elements:
+    - delivery_dining icon
+    - Text: "Delivery via partner riders! Reach us at {business.phone}"
+    - Location: "Serving Trapiche, Oton, Iloilo"
+    CSS class: .menu-delivery-banner (uses color-primary-fixed background)
+
+  --- SECTION 2: HERO TITLE ---
+    Full-width section with green blur circle decoration
+    Heading <h1>: "Our Fresh Local Menu"
+    Description <p>: tagline text about Iloilo delicacies
+
+  --- SECTION 3: PRODUCT GRID (MenuProductGrid) ---
+    This is a complex component at client/src/components/ui/MenuProductGrid.jsx
+
+    State:
+    - activeCategory ('all' | category.id) — filter state
+    - selectedItem (item object | null) — opens ProductDetailModal
+    - favorites (Array of item IDs) — persisted to localStorage
+
+    Children rendered:
+    a) Filter Tab Bar (.mpg-tabs):
+       - Pill-shaped buttons: "All" + each category label
+       - Active tab: green background (--color-primary), white text
+       - Inactive tab: transparent, border, gray text
+       - Horizontally scrollable on mobile (no visible scrollbar)
+
+    b) Category Sections:
+       Each visible category renders:
+       - CategoryHeader: title + horizontal line separator + optional priceNote/note
+       - Product grid (.mpg-grid): 4-col desktop, 3-col tablet, 2-col mobile
+
+    c) ProductCard (per item):
+       Elements in order:
+       - Image container (square aspect-ratio with light gray bg)
+         - Item badge ("Best Seller", "Popular", etc.) top-left overlay
+         - Gradient overlay at bottom of image
+         - Image fallback on error (gray background)
+       - Star rating (if item.rating exists)
+       - Item name (centered, semibold)
+       - Price display (centered, muted) — supports variants and range prices
+       - "Add to Cart" button (outline style, full width)
+         - Changes to "Added ✓" with green bg for 2 seconds on click
+
+    d) Empty state (if no items match filter):
+       - search_off icon (48px, gray)
+       - "No items found in this category." text
+
+    e) ProductDetailModal (overlay, see Shared Components section)
+
+    Interactive behaviors:
+    - Clicking filter tab -> setActiveCategory (smooth)
+    - Clicking product card -> open ProductDetailModal
+    - Clicking "Add to Cart" -> triggers onAddToCart(item), shows "Added ✓" state
+    - Favorites persisted to localStorage via useEffect
+    - Hover on card: translateY(-2px) + shadow-md
+
+  --- SECTION 4: EVENT CTA + DELIVERY DIRECT CARDS ---
+    Two cards side-by-side on desktop:
+    a) "Hosting an Event?" card:
+       - Floating decorative SVG elements (2 leaves, sparkle, dots) with CSS animations
+       - heading: "Hosting an Event?"
+       - text: "Our Party Packs are designed..."
+       - CTA link: "Inquire for Catering" -> /party-packs
+       - Decorative circle (blob effect)
+
+    b) "Delivery Direct" card:
+       - shopping_cart icon
+       - heading: "Delivery Direct"
+       - text: "Reach us at {business.phone}"
+       - WhatsApp icon decorator
+
+================================================================================
+6. PAGE: PARTY PACKS (/party-packs)
+================================================================================
+
+  File:      client/src/pages/PartyPacks.jsx
+  Sections:  4 (Hero, Bento Gallery, Pricing & Features, Trust Bar)
+  Imported data: bundles, bundleFeatures from '../data/bundles'
+
+  --- SECTION 1: HERO ---
+    a) Dot pattern overlay (CSS mask/repeating pattern)
+    b) Left text column:
+       - Badge: "Best for Large Gatherings"
+       - Heading: "Celebrate with our" <span gold>"Handaan Bundles"</span>
+       - Description paragraph about Ilonggo party bilao packs
+       - CTA buttons:
+         - "Explore Bundles" (#gallery, primary yellow btn)
+         - "Contact for Custom Quote" (#contact, outline btn)
+    c) Right visual column:
+       - Hero image (HERO_IMG — large Google aida-public URL)
+       - Green glow effect behind image
+       - Floating price card (absolutely positioned):
+         - "₱1,200" (large price)
+         - "Starting price per bilao" (label)
+
+  --- SECTION 2: BENTO GALLERY ---
+    Section header: "Signature Handaan Gallery" + subtitle
+    Arrow buttons (left/right) for gallery navigation (visual only, no JS scrolling yet)
+
+    Bento grid (4-col layout):
+    a) Large card (2x2) — "The Classic Triple Feast"
+       - Bundle image as background
+       - Gradient overlay
+       - "Most Popular" badge
+       - Title + description + serves info
+    b) Small card — Appetizer bilao (image only, overlay on hover)
+    c) Small card — Office catering (image only, overlay on hover)
+    d) Wide card (2x1) — "Grand Family Reunion Bundle"
+       - Same structure as large card but 2 col wide
+       - Text: Customizable for up to 50 pax
+
+  --- SECTION 3: PRICING & FEATURES ---
+    Two columns side-by-side:
+    a) Features list (left):
+       - 3 feature cards with icons:
+         - auto_awesome — "Custom Bundles"
+         - delivery_dining — "Punctual Delivery"
+         - receipt_long — "Transparent Pricing"
+       - "Book via Messenger" CTA button (secondary green)
+
+    b) Quick Quote Form (right):
+       - Title: "Request a Quick Quote"
+       - Subtitle: "We'll get back to you within 30 mins"
+       - Form fields (handled by InquiryForm component):
+         - Your Name (text, required)
+         - Email Address (email, required)
+         - Phone Number (tel)
+         - Message (textarea, required)
+       - Submit button: "Send Request"
+       - States: idle / sending / done / error
+       - On submit: shows "Sending..." then "Message Sent!" with auto-reset after 2s
+
+  --- SECTION 4: TRUST BAR ---
+    Heading: "Trusted by Families & Companies in Iloilo"
+    Description: "From intimate family gatherings to company events..."
+    Word badges (inline):
+    - Array of trust words (e.g., "Fresh", "Local", "Reliable", "Affordable", etc.)
+    - Each badge: grayscale by default, full color on hover
+    - Rounded pill shape
+
+  Interactive behaviors:
+  - BentoCard: hover lift effect (translateY(-3px) + shadow-xl)
+  - Trust bar badges: grayscale -> full color on hover
+  - Arrow gallery buttons: hover style on btn-interact
+  - Form: simulated async submit with 1s delay, auto-reset after 2s
+
+================================================================================
+7. PAGE: EVENTS & CONTACT (/events)
+================================================================================
+
+  File:      client/src/pages/EventsContact.jsx
+  Sections:  3 (Hero, Event Room Rentals, Contact)
+  Note: Both Events and Contact are on the same page, using scroll-based navigation.
+        Navbar "Events" and "Contact" links scroll to respective sections.
+
+  State:
+  - formStatus: 'idle' | 'sending' | 'sent'
+  - btnText: 'Submit Request' | 'Sending...' | 'Message Sent!'
+  - Uses ActiveSectionContext for scroll-based navbar highlighting
+
+  --- SECTION 1: HERO (full-bleed) ---
+    a) Dark overlay on hero image
+    b) Background image: IMG_HERO (event space photo)
+    c) Text overlay centered:
+       - Heading: "Elevate Your Celebrations"
+       - Subtitle: "Professional event spaces in the heart of Trapiche, Oton..."
+    CSS class: .events-hero (full-bleed with overlay)
+
+  --- SECTION 2: EVENT ROOM RENTALS ---
+    Section ID: events-room-section (for scroll nav)
+    Layout: two columns (text left, gallery right)
+
+    Left column:
+    a) Tag label: "Our Space"
+    b) Heading: "Designed for Community & Comfort"
+    c) Description paragraph about the event space
+    d) Feature grid (2x2) with Material Symbol icons:
+       - groups — "Capacity: Up to 50 guests"
+       - ac_unit — "Fully AC: Temperature control"
+       - wifi — "High-Speed WiFi: Free for guests"
+       - restaurant — "Catering Ready: In-house service"
+    e) "Check Availability" button
+
+    Right column (image gallery):
+    a) Large image: IMG_TABLE (table setup)
+    b) Small image: IMG_INTERIOR (interior)
+    c) Small image: IMG_BUFFET (buffet)
+    d) Small image: IMG_GROUP (group)
+
+  --- SECTION 3: CONTACT ---
+    Section ID: events-contact-section (for scroll nav)
+    Layout: glass card sidebar + form + map
+
+    a) Get in Touch glass card:
+       - Background: rgba(255, 255, 255, 0.8), backdrop-filter: blur
+       - Contact methods using ContactCard components:
+         - Phone: icon phone -> tel:09477097622
+         - Email: icon mail -> mailto:winday_021@yahoo.com
+         - Address: icon location_on -> "Trapiche, Oton, Iloilo"
+         - Hours: icon schedule -> "Mon - Sun: 8AM - 8PM"
+       - Facebook CTA link
+
+    b) Inquiry Form:
+       - Title: "Send us a message"
+       - Subtitle: "We'd love to hear from you!"
+       - Fields: Name, Email, Phone, Message
+       - Submit button: "Submit Request"
+       - States/transitions:
+         - idle -> clicking Submit -> "Sending..." (disabled)
+         - after 1s -> "Message Sent!" (success state)
+         - after 2s more -> resets to "Submit Request" + clears form
+
+    c) Map embed:
+       - OpenStreetMap iframe embed
+       - Address: Trapiche, Oton, Iloilo
+       - Map is inside a container with gradient overlay on bottom portion
+       - Overlay text: "Find us in Trapiche, Oton" (positioned at bottom of map)
+       - Overlay: gradient from transparent to white to hide OSM attribution
+
+  Interactive behaviors:
+  - Scroll-based section detection via IntersectionObserver pattern (rAF-throttled)
+  - Nav links on desktop highlight "Events" or "Contact" based on scroll
+  - Clicking "Events" or "Contact" in nav scrolls to respective section (on the events page)
+  - Form submit: simulated async with setTimeout, auto-reset
+  - ContactCard: hover lift effect
+  - Feature cards: hover lift effect
+  - Map: responsive, no interactive controls (static embed)
+
+================================================================================
+8. PAGE: 404 NOT FOUND (*)
+================================================================================
+
+  File:      client/src/pages/NotFound.jsx
+  Sections:  1 (centered content)
+
+  Elements:
+  - Large "404" heading (--color-primary-container, 4rem-6rem clamped)
+  - Message: "The page you're looking for doesn't exist or has been moved."
+  - Button: "Back to Home" (primary variant, renders as <Link> to="/")
+  - Centered layout with min-height 60vh
+
+================================================================================
+9. SHARED COMPONENTS — UI PRIMITIVES
+================================================================================
+
+  --- Icon ---
+    File:   client/src/components/ui/Icon.jsx
+    Props:  name, size (24), fill (0), weight (400), grade (0), className, ariaLabel
+    Renders: <span class="material-symbols-outlined"> with fontVariationSettings
+    Note:   This is the standard icon wrapper for the whole app
+
+  --- Button ---
+    File:   client/src/components/ui/Button.jsx
+    Props:  variant ('primary'|'secondary'|'outline'), size ('sm'|'md'|'lg'),
+            icon, children, onClick, as ('button'|'a'), href, className, style
+    Variants:
+      primary:   yellow bg (#fbc002), dark text
+      secondary: green bg (#056402), white text
+      outline:   transparent bg, green border+text
+    Always: btn-interact class for hover/active transforms
+
+  --- Badge ---
+    File:   client/src/components/ui/Badge.jsx
+    Props:  variant ('primary'|'secondary'|'outline'), size ('sm'|'md'), children, className
+    Variants:
+      primary:   yellow bg (--color-secondary-container)
+      secondary: green bg (--color-primary-fixed)
+      outline:   transparent with border
+    Uses:   rounded-full pill shape
+
+  --- SectionHeading ---
+    File:   client/src/components/ui/SectionHeading.jsx
+    Props:  title, subtitle, align ('left'|'center'), tagline, className
+    Renders: optional tagline (uppercase, gold), h2 title, optional p subtitle
+    Max width: 640px
+
+  --- StatDisplay ---
+    File:   client/src/components/ui/StatDisplay.jsx
+    Props:  value (string/number), label, icon (optional Material Symbol), className
+    Renders: icon (optional), large value number, label text below
+    Used:   on Home page About section (5k+, 100%, 500+)
+
+  --- ServiceCard ---
+    File:   client/src/components/ui/ServiceCard.jsx
+    Props:  icon, title, description, size ('sm'|'md'|'lg'), className
+    Renders: card with icon, title, description, hover lift effect
+    Used:   for bento-style service cards
+
+  --- MenuCard ---
+    File:   client/src/components/ui/MenuCard.jsx
+    Props:  item ({ id, name, description, price, priceLabel, image, badge, action, actionVariant }), className
+    Renders: image (4:3), badge overlay, title, description, price + "Order Now" button
+    Note:   This is the OLD card — currently MenuProductGrid has its own inline ProductCard
+
+  --- MenuProductGrid ---
+    File:   client/src/components/ui/MenuProductGrid.jsx
+    Props:  categories (menuCategories array), onAddToCart callback
+    State:  activeCategory, selectedItem (-> ProductDetailModal), favorites (localStorage persisted)
+    Renders: filter tabs, category sections, product cards, empty state, ProductDetailModal
+    This is the MAIN menu component used on the Menu page.
+
+  --- ProductDetailModal ---
+    File:   client/src/components/ui/ProductDetailModal.jsx
+    Props:  item, categoryLabel, categoryPriceNote, onClose, onAddToCart, isFavorited, onToggleFavorite
+    State:  imgIndex (carousel), added (boolean)
+    Features:
+    - Full-screen overlay with backdrop click + Escape to close
+    - Image carousel with prev/next arrows and dot indicators
+    - Star rating renderer (full/half/outline stars)
+    - Badge display
+    - Item name, description, price
+    - Tags (hashtag chips)
+    - Serving info + prep time
+    - Favorite button (heart icon, toggleable)
+    - "Add to Cart" button with "Added ✓" state (2s)
+    - Keyboard navigation: ArrowLeft/ArrowRight for carousel, Escape to close
+    - Body scroll lock when open (overflow: hidden)
+    - Responsive: landscape on desktop, portrait on mobile
+
+  --- SearchBar ---
+    File:   client/src/components/ui/SearchBar.jsx
+    State:  query, open (dropdown), imgErrors (object)
+    Behavior:
+    - Searches across all menu items by name (case-insensitive)
+    - Dropdown shows up to 10 results with product thumbnail + name + category
+    - Image fallback on error: restaurant_menu icon
+    - Click outside closes dropdown
+    - Escape closes dropdown
+    - Clear button (X) appears when typing
+    - Clicking a result navigates to /menu
+    - Result count summary header in dropdown
+
+  --- ContactCard ---
+    File:   client/src/components/ui/ContactCard.jsx
+    Props:  icon, title, value, href (optional), subtitle, className
+    Renders: card with Material Symbol icon, title label, value, optional subtitle
+    If href provided, wraps in <a> tag (for tel:/mailto: links)
+    Hover lift effect
+
+  --- InquiryForm ---
+    File:   client/src/components/ui/InquiryForm.jsx
+    Props:  title, subtitle, fields (array override), buttonText, onSubmit, className
+    Default fields: name (text, required), email (email, required), phone (tel), message (textarea, required)
+    State:  formData (object), status ('idle'|'sending'|'done'|'error')
+    Behavior: controlled form with submit handler, status display
+
+  --- MenuFilterTabs ---
+    File:   client/src/components/ui/MenuFilterTabs.jsx
+    Props:  tabs ({ id, label }[]), active (tab id), onChange (callback), className
+    Renders: horizontal scrollable pill button row
+    Active tab: green bg, white text
+    Inactive: transparent with border
+    Note:   Currently NOT used — MenuProductGrid has its own inline tab rendering
+
+  --- BentoCard ---
+    File:   client/src/components/ui/BentoCard.jsx
+    Props:  bundle ({ id, name, description, serves, startingPrice, badge, image, size }), className
+    Renders: image (16:10), gradient overlay, badge, serves-chip, name, description, price + "View Bundle" button
+    Note:   Currently NOT used — PartyPacks has its own inline bento card rendering
+
+================================================================================
+10. SHARED COMPONENTS — LAYOUT
+================================================================================
+
+  --- Navbar ---
+    File:   client/src/components/layout/Navbar.jsx
+    State:  mobileOpen (boolean)
+    Imports: useActiveSection from context
+    Structure:
+    - Sticky top (position: sticky, top: 0, z-index: 50)
+    - Logo with green SVG glow effect (filter: blur, rotated)
+    - Desktop nav links (hidden on mobile): uses NavLink from react-router-dom
+      - Home, Menu, Party Packs, Events, Contact
+      - Active link: green color (#056402), yellow bottom border
+      - Events/Contact on the events page: scroll-based active via ActiveSectionContext
+    - Desktop action buttons (hidden on mobile):
+      - User/person icon (aria-label: "Login or Sign Up") — no function yet
+      - SearchBar component
+      - Favorite/heart icon (aria-label: "Favorites") — no function yet
+      - Cart button (green pill bg, shopping_cart icon + "Cart" text)
+        - Hover: dim bg, scale(1.05), deeper shadow
+    - Mobile hamburger button (visible only on mobile): toggles MobileNav drawer
+
+  --- MobileNav ---
+    File:   client/src/components/layout/MobileNav.jsx
+    Props:  open (boolean), links (navLinks array), onClose (callback)
+    Behavior:
+    - Slide-in drawer from right (width: min(320px, 100vw))
+    - Backdrop overlay (dark, click to close)
+    - Body scroll lock when open (overflow: hidden)
+    - Header: restaurant icon + "Triology Refreshment" + close button
+    - Nav links with bottom-border active style (same logic as Navbar)
+    - Footer: phone number + address
+    - Animated: transform translateX(0/100%) + opacity transition
+
+  --- Footer ---
+    File:   client/src/components/layout/Footer.jsx
+    Props:  className
+    Background: --color-primary-container (dark green)
+    Text color: --color-on-primary-container (light green)
+    Structure:
+    - Brand column: restaurant icon + "Triology Refreshment" + description
+    - Quick Links: Menu (/menu), Party Packs (/party-packs), Order Tracking (disabled)
+    - Contact: phone + email with icons
+    - Follow Us: Facebook link
+    - Copyright bar: "© {year} Triology Refreshment. Trapiche, Oton, Iloilo. All rights reserved."
+    Responsive: 3-column grid on desktop -> 1 column on mobile (639px)
+
+  --- BottomMobileNav ---
+    File:   client/src/components/layout/BottomMobileNav.jsx
+    Visibility: hidden on desktop, visible on mobile (max-width: 767px)
+    Items: Home, Menu, Orders, Profile (with filled icons)
+    Active: golden yellow (#fbc002) when on that route
+    Fixed at bottom, with shadow and thin top border
+
+  --- FAB (Floating Action Button) ---
+    File:   client/src/components/layout/FAB.jsx
+    Props:  icon ('shopping_basket'), style, className
+    Visibility: hidden on desktop, shown on mobile
+    Position: fixed bottom-right (1.5rem), 56x56px circle
+    Background: --color-secondary-container (yellow), 2xl shadow
+    Icon: filled shopping basket (--color-on-secondary-container)
+    No onClick handler yet — just dipslay
+
+  --- Section ---
+    File:   client/src/components/layout/Section.jsx
+    Props:  background, id, className, children, nested (boolean)
+    Behavior: if nested, no container wrapper (for full-bleed sections)
+    Otherwise wraps children in <div class="container section-padding">
+
+  --- DeliveryBanner ---
+    File:   client/src/components/layout/DeliveryBanner.jsx
+    Props:  message, icon, className
+    Renders: full-width banner with green-tinted bg, icon + message text
+    Used:   on the Menu page (though Menu.jsx has its own inline banner)
+
+================================================================================
+11. DATA LAYER
+================================================================================
+
+  All content is STATIC JS modules (no database reads for content yet):
+
+  --- business.js ---
+    File:     client/src/data/business.js
+    Export:   business (object)
+    Fields:
+      name               "Triology Refreshment"
+      tagline            "Your Daily Comfort Food Escape"
+      taglineShort       "Daily Comfort Food Escape"
+      description        Full brand description paragraph
+      about              Short about text
+      aboutExtended      Extended about text
+      phone              "0947 709 7622"
+      email              "winday_021@yahoo.com"
+      address            { street, city, province, country, zip, full }
+      hours              "Mon - Sun: 8AM - 8PM"
+      locationLabel      "Trapiche, Oton, Iloilo"
+      facebook           "#" (placeholder)
+      facebookFollowers  "1.2K"
+      facebookUrl        "https://m.me/triology"
+      ordersServed       "5k+"
+      freshDaily         "100%"
+      localReviews       "500+"
+      year               2024
+      navLinks           [ { label, path } ] — 5 items: Home, Menu, Party Packs, Events, Contact
+
+  --- menuItems.js ---
+    File:     client/src/data/menuItems.js
+    Export:   menuCategories (array of 7 categories)
+
+    Category structure:
+    {
+      id: string,
+      label: string,
+      categoryImage: URL (imported asset fallback),
+      layout: 'compact-square' | 'rice-card' | 'circular' | 'compact-card' | 'platter-grid' | 'horizontal-list' | 'horizontal-card',
+      priceNote: string (optional),
+      note: string (optional),
+      items: [ Item objects ]
+    }
+
+    Item fields:
+    - id, name, tags (string[]), images (URL[]), rating (number)
+    - badge (string, optional) — "Best Seller", "Popular", "Must Try", etc.
+    - description (string), serves (string), prepTime (string)
+    - price (number, optional) — some items use variants instead
+    - variants (array of { label, price, highlight? }, optional) — for items with options
+    - note (string, optional) — additional item note
+
+    7 Categories (41 items total):
+    a) Halo-Halo Overloads (8 items) — compact-square layout
+    b) All Day Rice Meals (4 items) — rice-card layout
+    c) Breakfast Meals (7 items) — circular layout
+    d) Pasta Meals (5 items) — compact-card layout
+    e) Party Platters (6 items) — platter-grid layout
+    f) Short Orders (5 items) — horizontal-list layout
+    g) Snacks & Sides (6 items) — horizontal-card layout
+
+  --- bundles.js ---
+    File:     client/src/data/bundles.js
+    Exports:  bundles, bundleFeatures, menuFilterTabs
+
+    bundles[]:
+    - id, name, description, serves, startingPrice (number)
+    - badge (string|null), image (URL), size ('large'|'wide')
+
+    bundleFeatures[] (3 items):
+    - icon (Material Symbol name), title, description
+
+    menuFilterTabs[] (4 items):
+    - "All Items", "Rice Meals", "Snacks & Delicacies", "Refreshments"
+    (Note: these are for future use — not currently wired)
+
+================================================================================
+12. DESIGN SYSTEM REFERENCE
+================================================================================
+
+  --- Colors ---
+    Primary colors:
+      --color-primary:             #056402 (deep green)
+      --color-primary-container:   #056402
+      --color-primary-fixed:       #b1f0ce
+      --color-primary-fixed-dim:   #95d4b3
+      --color-on-primary:          #ffffff
+      --color-on-primary-container:#a8e7c5
+
+    Secondary (golden yellow):
+      --color-secondary:           #fbc002
+      --color-secondary-container: #ffe883
+      --color-secondary-fixed:     #fef4c4
+      --color-on-secondary:        #3b3000
+
+    Surface (Material 3 hierarchy):
+      8 levels: --color-surface-dim (-container-lowest to -highest)
+      --color-background:          #f8f9fa
+      --color-on-surface:          #191c1d
+      --color-on-surface-variant:  #404943
+
+    Outline:
+      --color-outline:             #707973
+      --color-outline-variant:     #bfc9c1
+
+    Error:
+      --color-error:               #ba1a1a
+
+    Semantic aliases:
+      --color-btn-primary-bg:      #fbc002 (secondary, not primary!)
+      --color-btn-primary-text:    #3b3000
+      --color-nav-active:          #056402
+      --color-nav-inactive:        #404943
+
+  --- Typography ---
+    Headlines: 'Plus Jakarta Sans', sans-serif
+    Body:      Inter, sans-serif
+    Display:   'Okinawa', cursive (brush script, self-hosted)
+
+    Type scale:
+      headline-xl: 48px/56px, 700, -0.02em tracking
+      headline-lg: 32px/40px, 700, -0.01em tracking
+      headline-md: 24px/32px, 600
+      body-lg:     18px/28px, 400
+      body-md:     16px/24px, 400
+      label-lg:    14px/20px, 600
+      label-sm:    12px/16px, 500
+
+  --- Border Radius ---
+    sm:   0.25rem  (4px)
+    md:   0.5rem   (8px)
+    lg:   0.75rem  (12px)
+    xl:   1rem     (16px)
+    2xl:  1.5rem   (24px)
+    full: 9999px   (pill/circle)
+
+  --- Shadows ---
+    sm:   0 1px 2px rgba(0,0,0,0.05)
+    md:   0 4px 6px -1px rgba(0,0,0,0.1)
+    lg:   0 10px 15px -3px rgba(0,0,0,0.1)
+    xl:   0 20px 25px -5px rgba(0,0,0,0.1)
+    2xl:  0 25px 50px -12px rgba(0,0,0,0.25)
+
+  --- Spacing ---
+    unit:            8px
+    max-width:       1280px (container)
+    margin-mobile:   16px
+    margin-desktop:  64px
+    gutter:          24px
+
+  --- Breakpoints ---
+    sm: 640px
+    md: 768px
+    lg: 1024px
+    xl: 1280px
+
+  --- Transitions ---
+    default: 0.2s ease
+    hover:   0.3s cubic-bezier(0.4, 0, 0.2, 1)
+    spring:  0.3s cubic-bezier(0.34, 1.56, 0.64, 1)
+
+================================================================================
+13. INTERACTIVE ELEMENTS & BEHAVIORS SUMMARY
+================================================================================
+
+  --- Global Interactions ---
+  - btn-interact class: hover reduces opacity (0.85), active scales down (0.97)
+  - All NavLinks: active state shows green text + yellow bottom border
+  - All images: lazy loading (loading="lazy")
+  - Smooth scroll: scroll-behavior: smooth on html
+
+  --- Navigation ---
+  - Navbar sticky at top (z-index: 50)
+  - BottomMobileNav fixed at bottom (z-index: 50, mobile only)
+  - MobileNav drawer slides from right (z-index: 201, mobile only)
+  - FAB fixed bottom-right (z-index: 50, mobile only)
+  - Events page: scroll-based nav highlighting via IntersectionObserver + rAF throttle
+
+  --- Menu Page ---
+  - Filter tabs: click to filter products by category
+  - Product cards: click opens ProductDetailModal
+  - Add to Cart: shows "Added ✓" feedback for 2 seconds
+  - SearchBar: live search across all menu items (case-insensitive match on name)
+  - ProductDetailModal: image carousel with arrows + keyboard nav (arrow keys)
+  - Favorites: heart toggle, persisted to localStorage
+
+  --- Forms ---
+  - InquiryForm: controlled form with validation, simulated submit
+  - Quick Quote (Party Packs): same form pattern
+  - Events contact form: submit states idle -> sending (1s) -> sent -> auto-reset (2s)
+
+  --- Hover Effects ---
+  - Cards: translateY lift (-2px to -3px) + shadow increase
+  - Menu images: scale(1.04-1.05) on hover
+  - Trust bar badges: grayscale to full color
+  - Cart button (Navbar): bg dim, scale(1.05), shadow increase
+
+================================================================================
+14. STITCH HTML DESIGN REFERENCES
+================================================================================
+
+  The following HTML files in the root are exported from Stitch design tool.
+  These are design spec references — NOT part of the React app.
+
+  File: stitch-home.html       — Home page design
+  File: stitch-menu.html       — Menu page design
+  File: stitch-party.html      — Party Packs page design
+  File: stitch-event.html      — Events & Contact page design
+
+  These files contain the original Stitch-generated designs that the React
+  code was built from. They include design tokens, layout specs, and visual
+  references for each page.
+
+================================================================================
+END OF DOCUMENTATION
+================================================================================

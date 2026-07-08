@@ -1,0 +1,228 @@
+/* ═══════════════════════════════════════════════════════════════
+   Triology Refreshment — Global Styles (Token-driven)
+   Everything maps to the design-system/tokens.js values.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Okinawa brush script font (self-hosted) ──────────────── */
+@font-face {
+  font-family: 'Okinawa';
+  src: url('/fonts/okinawa.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ─── Custom Properties (Design Tokens) ───────────────────── */
+
+:root {
+  /* Colors */
+  --color-primary: #056402;
+  --color-primary-container: #056402;
+  --color-primary-fixed: #b1f0ce;
+  --color-primary-fixed-dim: #95d4b3;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #a8e7c5;
+  --color-on-primary-fixed: #002114;
+  --color-on-primary-fixed-variant: #0e5138;
+
+  --color-secondary: #fbc002;
+  --color-secondary-container: #ffe883;
+  --color-secondary-fixed: #fef4c4;
+  --color-secondary-fixed-dim: #fde87a;
+  --color-on-secondary: #3b3000;
+  --color-on-secondary-container: #5c4d00;
+  --color-on-secondary-fixed: #201900;
+  --color-on-secondary-fixed-variant: #7a6600;
+
+  --color-tertiary: #5d4300;
+  --color-tertiary-container: #7a5a00;
+  --color-tertiary-fixed: #ffdfa0;
+  --color-tertiary-fixed-dim: #fbbc00;
+  --color-on-tertiary: #ffffff;
+  --color-on-tertiary-container: #ffd47b;
+
+  --color-background: #f8f9fa;
+  --color-surface: #f8f9fa;
+  --color-surface-dim: #d9dadb;
+  --color-surface-bright: #f8f9fa;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f3f4f5;
+  --color-surface-container: #edeeef;
+  --color-surface-container-high: #e7e8e9;
+  --color-surface-container-highest: #e1e3e4;
+  --color-surface-variant: #e1e3e4;
+  --color-on-surface: #191c1d;
+  --color-on-surface-variant: #404943;
+  --color-inverse-surface: #2e3132;
+  --color-inverse-on-surface: #f0f1f2;
+
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #93000a;
+
+  --color-outline: #707973;
+  --color-outline-variant: #bfc9c1;
+  --color-inverse-primary: #95d4b3;
+
+  /* Semantic aliases */
+  --color-btn-primary-bg: #fbc002;
+  --color-btn-primary-text: #3b3000;
+  --color-nav-active: #056402;
+  --color-nav-inactive: #404943;
+  --hero-gradient-start: rgba(15, 82, 56, 0.05);
+  --hero-gradient-end: rgba(251, 192, 2, 0.05);
+  --glass-bg: rgba(255, 255, 255, 0.8);
+
+  /* Typography */
+  --font-headline: 'Plus Jakarta Sans', sans-serif;
+  --font-body: Inter, sans-serif;
+  --font-brand: 'Epilogue', sans-serif;
+  --font-script: 'Caveat', cursive;
+
+  /* Spacing */
+  --spacing-unit: 8px;
+  --max-width: 1280px;
+  --margin-mobile: 16px;
+
+  /* Border radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+  /* Transitions */
+  --transition-default: 0.2s ease;
+  --transition-hover: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ─── Reset ─────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-body);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  color: var(--color-on-surface);
+  background-color: var(--color-background);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+/* ─── Container ──────────────────────────────────────────── */
+
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding-left: var(--margin-mobile);
+  padding-right: var(--margin-mobile);
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-left: 64px;
+    padding-right: 64px;
+  }
+}
+
+/* ─── Section Spacing ────────────────────────────────────── */
+
+.section-padding {
+  padding: 4rem 0;
+}
+
+@media (min-width: 768px) {
+  .section-padding {
+    padding: 6rem 0;
+  }
+}
+
+/* ─── Utility: visually hidden ────────────────────────────── */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ─── Scrollbar (subtle) ──────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: var(--radius-full);
+}
+
+/* ─── Button interaction (Emil Kowalski design philosophy) ──── */
+.btn-interact:active {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-interact:hover {
+    opacity: 0.85;
+  }
+}

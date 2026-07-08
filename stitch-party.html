@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Party Packs | Triology Refreshment</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#2d6a4f",
+                        "surface-variant": "#e1e3e4",
+                        "primary": "#0f5238",
+                        "tertiary-fixed-dim": "#fbbc00",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#bfc9c1",
+                        "on-surface-variant": "#404943",
+                        "on-tertiary-fixed": "#261a00",
+                        "surface-bright": "#f8f9fa",
+                        "tertiary-container": "#7a5a00",
+                        "tertiary-fixed": "#ffdfa0",
+                        "on-tertiary-container": "#ffd47b",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d9dadb",
+                        "on-background": "#191c1d",
+                        "secondary-fixed": "#ffdcbc",
+                        "on-surface": "#191c1d",
+                        "secondary-fixed-dim": "#ffb86b",
+                        "on-primary-container": "#a8e7c5",
+                        "secondary-container": "#fd9d1a",
+                        "inverse-primary": "#95d4b3",
+                        "on-error": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#edeeef",
+                        "surface-container-high": "#e7e8e9",
+                        "inverse-surface": "#2e3132",
+                        "primary-fixed-dim": "#95d4b3",
+                        "tertiary": "#5d4300",
+                        "on-secondary-container": "#663b00",
+                        "primary-fixed": "#b1f0ce",
+                        "on-secondary-fixed": "#2c1700",
+                        "secondary": "#895100",
+                        "on-primary-fixed": "#002114",
+                        "background": "#f8f9fa",
+                        "surface-tint": "#2c694e",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-secondary": "#ffffff",
+                        "outline": "#707973",
+                        "error-container": "#ffdad6",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#683d00",
+                        "surface-container-low": "#f3f4f5",
+                        "inverse-on-surface": "#f0f1f2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "max-width": "1280px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "64px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "label-lg": ["Inter"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-lg": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 250px);
+            gap: 24px;
+        }
+        @media (max-width: 768px) {
+            .bento-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md">
+<!-- TopAppBar -->
+<header class="bg-surface-container-lowest dark:bg-inverse-surface sticky top-0 z-50 shadow-md">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-max-width mx-auto">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary tracking-tight">Triology Refreshment</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-lg text-label-lg" href="#">Home</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-lg text-label-lg" href="#">Menu</a>
+<a class="text-secondary font-bold border-b-2 border-secondary pb-1 font-label-lg text-label-lg" href="#">Party Packs</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-lg text-label-lg" href="#">Events</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-lg text-label-lg" href="#">Contact</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="hidden md:flex items-center gap-2 px-6 py-2 bg-secondary-container text-on-secondary-container font-label-lg text-label-lg rounded-full hover:scale-95 active:scale-90 transition-transform">
+                    Order Now
+                </button>
+<button class="md:hidden text-primary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</div>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="relative bg-primary-container overflow-hidden py-16 md:py-24">
+<div class="absolute inset-0 opacity-10">
+<div class="absolute inset-0" style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 40px 40px;"></div>
+</div>
+<div class="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop relative z-10 flex flex-col md:flex-row items-center gap-12">
+<div class="flex-1 text-center md:text-left">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed px-4 py-1 rounded-full font-label-lg text-label-lg mb-4 inline-block">Best for Large Gatherings</span>
+<h1 class="font-headline-xl text-headline-xl text-on-primary-container mb-6">Celebrate with our <span class="text-secondary-fixed">Handaan Bundles</span></h1>
+<p class="text-on-primary-container opacity-90 font-body-lg text-body-lg mb-8 max-w-xl">Whether it's a birthday, office reunion, or family feast, our authentic Ilonggo party bilao packs bring warmth and flavor to your celebration.</p>
+<div class="flex flex-wrap gap-4 justify-center md:justify-start">
+<button class="px-8 py-3 bg-secondary-container text-on-secondary-container font-bold rounded-xl shadow-lg hover:shadow-xl transition-shadow scale-100 hover:scale-[1.02] active:scale-95">Explore Bundles</button>
+<button class="px-8 py-3 border-2 border-on-primary-container text-on-primary-container font-bold rounded-xl hover:bg-on-primary-container hover:text-primary-container transition-colors">Contact for Custom Quote</button>
+</div>
+</div>
+<div class="flex-1 w-full max-w-lg">
+<div class="relative group">
+<div class="absolute -inset-4 bg-secondary-fixed-dim rounded-2xl blur-2xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
+<img class="relative rounded-2xl shadow-2xl w-full aspect-[4/3] object-cover border-4 border-surface-container-lowest" data-alt="A top-down, high-resolution food photograph of a traditional Filipino party bilao. The large circular bamboo tray is overflowing with savory pancit guisado, colorful lumpiang shanghai, and golden-brown fried chicken. The lighting is warm and natural, emphasizing the rich textures and vibrant colors of the festive spread. The background is a clean, neutral surface that makes the feast pop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOoSxq4CoSOZYqbdLMfakPV7rsuGJEC8bihguAAvP6LK_K_8g41Pz_EgTy5NjAcDEw9-X8RatSFKUJMoJ48_Qxl31Xjd6b0StNkGwlJOcghTqrEQjRnr3mBfbZNsmJNsZ5YmNo_64w09DBtE1_2esEzjqFrKm4jCKoMlJ6eIrQaHGXKFGpjzdMaUu6bcuI4MZArPUtn5CITl-0GDOqe5nQljVGozrHXtIRAvW7fqt02x32HmHGMuW0FeREGbGSqUdlAn0xNC9Bb9cj"/>
+<div class="absolute -bottom-6 -left-6 bg-tertiary-fixed text-on-tertiary-fixed p-6 rounded-2xl shadow-xl hidden md:block">
+<span class="block font-bold text-2xl">₱1,200</span>
+<span class="text-sm opacity-80">Starting price per bilao</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Gallery Section -->
+<section class="py-20 bg-surface">
+<div class="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-2">Signature Handaan Gallery</h2>
+<p class="text-on-surface-variant max-w-lg">Hand-picked, freshly prepared, and beautifully arranged. See why Triology is Iloilo's favorite celebration partner.</p>
+</div>
+<div class="flex gap-2">
+<button class="p-3 rounded-full border border-outline hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<button class="p-3 rounded-full bg-primary text-on-primary hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+<div class="bento-grid">
+<div class="md:col-span-2 md:row-span-2 relative overflow-hidden rounded-3xl group">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Close-up artistic food shot of a 'Classic Bilao Pack'. The image captures the steam rising from freshly cooked pancit bihon topped with calamansi and hard-boiled eggs. Beside it, perfectly crispy spring rolls are stacked neatly. The lighting is bright and appetizing, highlighting the oily sheen of the noodles and the crisp texture of the rolls. Professional corporate food photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmDM_UUHj0h4bY-IUl3hKMKOI-G8iiX8Ebi4PNLPBBYAyejJ28aWsF9WWjN10TmurAVqA96ZXDBDjJpi_KwktCc8bWZEw60Cr2F-m3eh6QM5p-PZ-A-JaswTDh2rSO1TKBow3CBymsGak8rEyijWKeO_ipxN5YH8z1Z1eqW79uPEBivjVOm0jQ5tCiOZ93KdnO1cwQoXU-P-jt8hHuE7amjOtNi8RXSS1gCIDRyLDiEtJVOX-bX36CTEOZice_nf_xGvoBNxua0K7b"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
+<span class="text-tertiary-fixed font-bold mb-1">Most Popular</span>
+<h3 class="text-white font-bold text-2xl">The Classic Triple Feast</h3>
+<p class="text-white/80 text-sm">Pancit, Shanghai, & Chicken (Serves 15-20)</p>
+</div>
+</div>
+<div class="relative overflow-hidden rounded-3xl group">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A beautifully arranged appetizer bilao featuring Filipino street food favorites: kwek-kwek, fishballs, and squid balls with various dipping sauces in small ceramic bowls. The lighting is sunny and warm, suggesting a casual outdoor party atmosphere. The composition is balanced and elegant despite the street food subject." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVCgBsRwbiPd7t0ukPnMwD8__vx7PpolhtOYn83YCoXuo52OlqLscvyfyCy9obLWvy98C9-WDMsnXQS3l22lYaki5-y_VN8DNO_lybELTIZALQtZk-QdD0dWJT1x6NCFKl6Xx9dyR5Kslcjq5kRgJ3Sc17mWmor-DYo3-ES0M2S7FpUTt4Ux5XEYRrw-F-wHkzHMyl_vX7WkiCHFIOuZIsIYyx_IC1JQ7fGvJCteP5jD0TMEFMs0XRHNObmayQOxUkbfkqUm87qQGO"/>
+<div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors"></div>
+</div>
+<div class="relative overflow-hidden rounded-3xl group">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A modern office catering setup with Triology Refreshment branded boxes and bottles of fresh fruit juices. The setting is a clean, bright conference room with professional individuals in the background. The focus is on the neatly packaged snacks and drinks, conveying a sense of reliability and corporate professionalism." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQhFKcauHFKFTZsN9J8S-7hXpajpdBWkCUqoyxlKEqA7Bd81bLlcFPaAbh4393hNFdCLTJtYCwx4PSVzQ7-rnZrh1LkZD38sWeSeuY3W1s8FTg440kWMdCWvnUPk_-kO1OlzXAhD0VE5wD1VWsrRLQI1Ut61d490pBegaEfyNgcdK55XMZ71tjfQYtY6oMQ6nF2C1RL3l4g9EI7KWYeqtjk2u1DFL9Je97bnDqZimKO5vbyrbYD8UeOUC1XMCrtQJ7L8TZR73LcqN2"/>
+<div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors"></div>
+</div>
+<div class="md:col-span-2 relative overflow-hidden rounded-3xl group">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A wide-angle shot of a family reunion banquet table in Iloilo. Several large bilaos are the centerpiece, surrounded by smiling family members. The mood is heartwarming and festive. Soft natural light spills in from a nearby window, creating a joyful, communal dining scene with a tactile and organic feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyFDJ0VhZdaLacS-_acHURU_qig84PM_xVKQgYpbWcF6KC6wwOdPaoz0nL8175jL6fHWo9IKkw4_s_AeuSYOAlb5lETu-MvAtE61ntSIBatfDRjSKWhLgHo82b3RlPXn1gZAO9vTBKtBmhyzyx3dHuqfNbvm7v0L4RFeOdKHOxCc-tmQZfnLzUW2xNvMCxtCWRXoLeLOk03N1GtQEQQb3IKRj_g4qHsq3sLaNYZrJ0eJx-OSViDW62EtahkEWYTH3Ucs3qppO-YEbq"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
+<h3 class="text-white font-bold text-xl">Grand Family Reunion Bundle</h3>
+<p class="text-white/80 text-sm">Customizable for up to 50 pax</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Pricing & Contact Section -->
+<section class="py-20 bg-surface-container-low">
+<div class="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="grid md:grid-cols-2 gap-16 items-center">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-6">Built for your unique celebration</h2>
+<p class="text-on-surface-variant mb-8 text-lg">We understand every party is different. From intimate family gatherings to large-scale corporate events, we offer flexible bundles tailored to your guest count and budget.</p>
+<div class="space-y-6 mb-8">
+<div class="flex items-start gap-4">
+<div class="bg-primary text-on-primary p-2 rounded-lg">
+<span class="material-symbols-outlined">auto_awesome</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Custom Bundles</h4>
+<p class="text-on-surface-variant text-sm">Mix and match your favorite snacks, mains, and drinks.</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="bg-primary text-on-primary p-2 rounded-lg">
+<span class="material-symbols-outlined">delivery_dining</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Punctual Delivery</h4>
+<p class="text-on-surface-variant text-sm">Freshly prepared and delivered right to your doorstep across Iloilo.</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="bg-primary text-on-primary p-2 rounded-lg">
+<span class="material-symbols-outlined">receipt_long</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Transparent Pricing</h4>
+<p class="text-on-surface-variant text-sm">No hidden fees. Professional invoices for corporate bookings.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-8 md:p-12 rounded-3xl shadow-xl border border-outline-variant">
+<div class="text-center mb-8">
+<h3 class="font-headline-md text-headline-md text-secondary mb-2">Ready to Book?</h3>
+<p class="text-on-surface-variant">Get a free quote within 30 minutes via Messenger</p>
+</div>
+<div class="space-y-4">
+<a class="flex items-center justify-center gap-3 w-full py-4 bg-[#0084FF] text-white rounded-2xl font-bold hover:brightness-110 transition-all shadow-md" href="#">
+<svg class="w-6 h-6 fill-current" viewbox="0 0 24 24"><path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.91 1.455 5.503 3.734 7.202.195.145.313.376.313.626l-.004 2.215c-.004.57.587.973 1.11.75l2.47-1.054a1.001 1.001 0 01.764-.02c.516.16 1.06.245 1.613.245 5.523 0 10-4.145 10-9.258S17.523 2 12 2zm.8 11.6l-1.9-2.02-3.7 2.02 4.07-4.32 1.9 2.02 3.7-2.02-4.07 4.32z"></path></svg>
+                                Chat on Messenger
+                            </a>
+<div class="flex items-center gap-4 py-4">
+<div class="h-px bg-outline-variant flex-1"></div>
+<span class="text-outline text-xs uppercase font-bold">OR</span>
+<div class="h-px bg-outline-variant flex-1"></div>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<div class="flex flex-col gap-1">
+<label class="text-xs font-bold text-on-surface-variant uppercase ml-2">Your Name</label>
+<input class="bg-surface border-none rounded-xl p-4 focus:ring-2 focus:ring-primary shadow-inner" placeholder="Juan Dela Cruz" type="text"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-xs font-bold text-on-surface-variant uppercase ml-2">Event Date</label>
+<input class="bg-surface border-none rounded-xl p-4 focus:ring-2 focus:ring-primary shadow-inner" type="date"/>
+</div>
+<button class="w-full py-4 bg-primary text-on-primary rounded-2xl font-bold hover:bg-primary-container transition-all shadow-lg mt-4">
+                                    Request a Quote
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust Section -->
+<section class="py-12 border-y border-outline-variant">
+<div class="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop flex flex-wrap justify-between items-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all">
+<span class="font-headline-md font-bold italic text-on-surface">LOCAL BIZ</span>
+<span class="font-headline-md font-bold text-on-surface">ILOILO PRIDE</span>
+<span class="font-headline-md font-bold tracking-widest text-on-surface">FESTIVE</span>
+<span class="font-headline-md font-bold text-on-surface underline decoration-secondary">RELIABLE</span>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-primary-container dark:bg-primary-fixed-variant">
+<div class="flex flex-col md:flex-row justify-between items-start gap-gutter w-full px-margin-mobile md:px-margin-desktop py-12 max-w-max-width mx-auto">
+<div class="flex flex-col gap-4 max-w-xs">
+<span class="font-headline-md text-headline-md text-on-primary-container font-bold">Triology Refreshment</span>
+<p class="text-on-primary-container opacity-80 font-body-md text-body-md">Bringing the true taste of Iloilo celebrations to your doorstep. Quality, Freshness, and Filipino warmth in every bilao.</p>
+</div>
+<div class="flex flex-col md:flex-row gap-12 md:gap-24">
+<div class="flex flex-col gap-4">
+<span class="text-secondary-fixed font-bold uppercase tracking-wider text-xs">Quick Links</span>
+<a class="text-on-primary-container opacity-80 hover:opacity-100 transition-opacity font-label-sm text-label-sm" href="#">Menu</a>
+<a class="text-on-primary-container opacity-80 hover:opacity-100 transition-opacity font-label-sm text-label-sm" href="#">Party Packs</a>
+<a class="text-on-primary-container opacity-80 hover:opacity-100 transition-opacity font-label-sm text-label-sm" href="#">Event Catering</a>
+</div>
+<div class="flex flex-col gap-4">
+<span class="text-secondary-fixed font-bold uppercase tracking-wider text-xs">Contact</span>
+<a class="text-on-primary-container opacity-80 hover:opacity-100 transition-opacity font-label-sm text-label-sm" href="#">0947 709 7622</a>
+<a class="text-on-primary-container opacity-80 hover:opacity-100 transition-opacity font-label-sm text-label-sm" href="#">winday_021@yahoo.com</a>
+<a class="text-on-primary-container opacity-80 hover:opacity-100 transition-opacity font-label-sm text-label-sm" href="#">Facebook Messenger</a>
+</div>
+</div>
+</div>
+<div class="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop py-8 border-t border-on-primary-container/20">
+<p class="text-on-primary-container opacity-60 font-label-sm text-label-sm">© 2024 Triology Refreshment. Trapiche, Oton, Iloilo. All rights reserved.</p>
+</div>
+</footer>
+<!-- FAB for quick contact -->
+<a class="fixed bottom-8 right-8 w-16 h-16 bg-[#0084FF] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all z-50 group" href="https://m.me/triology" target="_blank">
+<svg class="w-8 h-8 fill-current" viewbox="0 0 24 24"><path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.91 1.455 5.503 3.734 7.202.195.145.313.376.313.626l-.004 2.215c-.004.57.587.973 1.11.75l2.47-1.054a1.001 1.001 0 01.764-.02c.516.16 1.06.245 1.613.245 5.523 0 10-4.145 10-9.258S17.523 2 12 2zm.8 11.6l-1.9-2.02-3.7 2.02 4.07-4.32 1.9 2.02 3.7-2.02-4.07 4.32z"></path></svg>
+<span class="absolute right-20 bg-white text-on-surface px-4 py-2 rounded-xl shadow-lg font-bold text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-outline-variant">Book via Messenger</span>
+</a>
+<script>
+        // Simple micro-interaction for hero image
+        const heroImg = document.querySelector('section img');
+        if(heroImg) {
+            window.addEventListener('mousemove', (e) => {
+                const moveX = (e.clientX - window.innerWidth / 2) / 50;
+                const moveY = (e.clientY - window.innerHeight / 2) / 50;
+                heroImg.style.transform = `translate(${moveX}px, ${moveY}px) rotate(${moveX/10}deg)`;
+            });
+        }
+    </script>
+</body></html>

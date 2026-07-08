@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Triology Refreshments - Events &amp; Contact</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@800&amp;family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface-variant": "#40493b",
+                      "on-primary-fixed": "#002200",
+                      "primary-fixed-dim": "#84db70",
+                      "error-container": "#ffdad6",
+                      "primary-fixed": "#9ff889",
+                      "on-background": "#191c1d",
+                      "on-primary": "#ffffff",
+                      "secondary": "#785a00",
+                      "primary": "#014a00",
+                      "outline-variant": "#bfcab7",
+                      "on-secondary-fixed-variant": "#5a4300",
+                      "secondary-fixed": "#ffdf9a",
+                      "inverse-surface": "#2e3132",
+                      "on-primary-container": "#88df74",
+                      "secondary-container": "#ffc30b",
+                      "on-tertiary-container": "#ffb9b6",
+                      "on-surface": "#191c1d",
+                      "inverse-primary": "#84db70",
+                      "surface-bright": "#f8f9fa",
+                      "tertiary-fixed": "#ffdad8",
+                      "on-tertiary": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "surface": "#f8f9fa",
+                      "on-error": "#ffffff",
+                      "surface-tint": "#166e0e",
+                      "inverse-on-surface": "#f0f1f2",
+                      "on-secondary-container": "#6d5200",
+                      "on-secondary": "#ffffff",
+                      "primary-container": "#056402",
+                      "surface-dim": "#d9dadb",
+                      "on-secondary-fixed": "#251a00",
+                      "surface-container-highest": "#e1e3e4",
+                      "surface-container": "#edeeef",
+                      "on-primary-fixed-variant": "#015300",
+                      "tertiary-fixed-dim": "#ffb3b0",
+                      "outline": "#707a6a",
+                      "tertiary": "#800918",
+                      "surface-container-lowest": "#ffffff",
+                      "secondary-fixed-dim": "#f8be00",
+                      "surface-container-high": "#e7e8e9",
+                      "on-tertiary-fixed": "#410006",
+                      "background": "#f8f9fa",
+                      "surface-container-low": "#f3f4f5",
+                      "on-tertiary-fixed-variant": "#8c1520",
+                      "surface-variant": "#e1e3e4",
+                      "tertiary-container": "#a1262c",
+                      "error": "#ba1a1a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "20px",
+                      "stack-md": "16px",
+                      "stack-sm": "8px",
+                      "base": "4px",
+                      "gutter-mobile": "16px",
+                      "stack-lg": "24px"
+              },
+              "fontFamily": {
+                      "display-brand": [
+                              "Epilogue"
+                      ],
+                      "label-lg": [
+                              "Inter"
+                      ],
+                      "headline-sm": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "headline-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "display-brand": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "label-lg": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-sm": [
+                              "18px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-surface antialiased flex flex-col min-h-screen pt-16 pb-20">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-on-background/80 backdrop-blur-md shadow-sm flex items-center justify-between px-margin-mobile h-16 w-full">
+<button class="text-primary dark:text-primary-fixed hover:opacity-80 active:scale-95 transition-transform p-2 -ml-2 rounded-full focus:outline-none focus:ring-2 focus:ring-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<h1 class="font-display-brand text-display-brand text-primary dark:text-primary-fixed leading-none tracking-tight">Triology</h1>
+<button class="text-primary dark:text-primary-fixed hover:opacity-80 active:scale-95 transition-transform p-2 -mr-2 rounded-full focus:outline-none focus:ring-2 focus:ring-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">search</span>
+</button>
+</header>
+<main class="flex-grow flex flex-col gap-stack-lg w-full max-w-md mx-auto md:max-w-2xl md:px-margin-mobile">
+<!-- Hero Section -->
+<section class="relative w-full h-[397px] md:h-[442px] md:rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.05)] md:mt-stack-md flex-shrink-0">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="A bright, modern agricultural style event space with natural light streaming through large windows. Long wooden tables are elegantly set with fresh green centerpieces. The overall aesthetic is fresh, inviting, and community-centric with a palette of crisp whites and vibrant greens." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDUL9NqEffnpWFtCVHb_nGEov5GdiYKgCCi_rv1htyQ8eg4ktiGR0lyKuBaRfGA5mdCIw9ef0t6ifhYqhxKGyawoiskDLLlZYK55KP5i7zb0BiPVFFX01_idLlOje4HWO2E1OBmqnIKyDhNyuBs6b5AdDhNpFcgWog6bMYTIvrB_EvDP0kuLbEOdXNcKxiJtksSCYG4o7YoCtnyz7L-9odzswFIpKpPXCmq0hTy2OhrleczyrRLntIsORb_LfDl_Cm3j1rSlFLIgaf7')">
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/30 to-transparent"></div>
+<div class="absolute bottom-0 left-0 w-full p-margin-mobile text-on-primary">
+<h2 class="font-headline-lg text-headline-lg mb-stack-sm text-on-primary drop-shadow-md">Elevate Your Celebrations</h2>
+<p class="font-body-md text-body-md text-on-primary/90 max-w-[280px]">Host your next gathering in our fresh, nature-inspired spaces.</p>
+</div>
+</section>
+<!-- Room Rentals Grid -->
+<section class="px-margin-mobile md:px-0">
+<h3 class="font-headline-md text-headline-md text-primary mb-stack-md">Room Rentals</h3>
+<div class="grid grid-cols-2 gap-gutter-mobile">
+<div class="bg-surface-container-lowest p-stack-md rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] flex flex-col items-center text-center gap-stack-sm">
+<div class="w-12 h-12 bg-primary-fixed/30 rounded-full flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">ac_unit</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface">Air Conditioned</span>
+</div>
+<div class="bg-surface-container-lowest p-stack-md rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] flex flex-col items-center text-center gap-stack-sm">
+<div class="w-12 h-12 bg-primary-fixed/30 rounded-full flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">wifi</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface">Free WiFi</span>
+</div>
+<div class="bg-surface-container-lowest p-stack-md rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] flex flex-col items-center text-center gap-stack-sm">
+<div class="w-12 h-12 bg-primary-fixed/30 rounded-full flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">restaurant</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface">In-house Catering</span>
+</div>
+<div class="bg-surface-container-lowest p-stack-md rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] flex flex-col items-center text-center gap-stack-sm">
+<div class="w-12 h-12 bg-primary-fixed/30 rounded-full flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">groups</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface">Up to 50 Pax</span>
+</div>
+</div>
+</section>
+<!-- Contact & Map Section -->
+<section class="px-margin-mobile md:px-0 relative mb-stack-lg">
+<div class="w-full h-48 md:h-64 rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.05)] relative z-0">
+<img alt="Map showing Oton location" class="w-full h-full object-cover" data-location="Oton, Iloilo, Philippines" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwdEjB6ErxFKWk-C1KraE5eKcVj9UiKhia_V9TJ4XusxpWvsriogPeJRInenzwtJms8f2k_2gAHcThEsPkpDyV4E146NUjRtkcq6q1O86BVVig1geB5FyaCqhhmFUKoI3rnAdg3hC0aZzoiutW0nQNMU2FAe37WI6d2SOEm3ZUy0cvzybKxzT9QUur_pgQpANcOJFJFF4rHsynxrrlM7ndlUEhIR8FkRQlKRUysvrIXVSd32ZxNQHbu8lpTm35xLOjaXODUK9YANJi"/>
+</div>
+<div class="glass-card rounded-xl p-stack-lg mx-margin-mobile md:mx-auto md:w-3/4 -mt-16 relative z-10">
+<h3 class="font-headline-md text-headline-md text-primary mb-stack-md text-center">Get in Touch</h3>
+<div class="flex flex-col gap-stack-md">
+<div class="flex items-center gap-stack-sm">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<span class="font-body-md text-body-md text-on-surface">JC Zulueta St, Oton, Iloilo</span>
+</div>
+<div class="flex items-center gap-stack-sm">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">call</span>
+<span class="font-body-md text-body-md text-on-surface">+63 912 345 6789</span>
+</div>
+<div class="flex items-center gap-stack-sm">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">mail</span>
+<span class="font-body-md text-body-md text-on-surface">hello@triologyrefreshments.com</span>
+</div>
+<div class="flex items-center gap-stack-sm">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">schedule</span>
+<span class="font-body-md text-body-md text-on-surface">Mon-Sun: 9:00 AM - 9:00 PM</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Inquiry Form -->
+<section class="px-margin-mobile md:px-0 mb-stack-lg">
+<h3 class="font-headline-md text-headline-md text-primary mb-stack-md">Send us a message</h3>
+<form class="flex flex-col gap-stack-md bg-surface-container-lowest p-stack-lg rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)]">
+<div class="flex flex-col gap-base">
+<label class="font-label-sm text-label-sm text-on-surface-variant" for="name">Name</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" id="name" placeholder="Juan Dela Cruz" type="text"/>
+</div>
+<div class="flex flex-col gap-base">
+<label class="font-label-sm text-label-sm text-on-surface-variant" for="email">Email</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" id="email" placeholder="juan@example.com" type="email"/>
+</div>
+<div class="flex flex-col gap-base">
+<label class="font-label-sm text-label-sm text-on-surface-variant" for="message">Message</label>
+<textarea class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors resize-none" id="message" placeholder="I would like to inquire about..." rows="4"></textarea>
+</div>
+<button class="w-full bg-primary text-on-primary py-4 rounded-full font-label-lg text-label-lg active:scale-95 transition-transform mt-stack-sm flex justify-center items-center gap-2" type="button">
+                     Submit Inquiry
+                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0; font-size: 20px;">send</span>
+</button>
+</form>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface/90 dark:bg-on-background/90 backdrop-blur-lg shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] flex justify-around items-center h-20 px-4 pb-safe md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed active:scale-90 transition-all duration-200 w-16" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed active:scale-90 transition-all duration-200 w-16" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">restaurant_menu</span>
+<span class="font-label-sm text-label-sm">Menu</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-full px-4 py-1 active:scale-90 transition-all duration-200 w-20" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+<span class="font-label-sm text-label-sm font-bold">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed active:scale-90 transition-all duration-200 w-16" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+</body></html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Triology Refreshment | Daily Comfort Food Escape</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-container": "#2d6a4f",
+                    "surface-variant": "#e1e3e4",
+                    "primary": "#0f5238",
+                    "tertiary-fixed-dim": "#fbbc00",
+                    "on-error-container": "#93000a",
+                    "outline-variant": "#bfc9c1",
+                    "on-surface-variant": "#404943",
+                    "on-tertiary-fixed": "#261a00",
+                    "surface-bright": "#f8f9fa",
+                    "tertiary-container": "#7a5a00",
+                    "tertiary-fixed": "#ffdfa0",
+                    "on-tertiary-container": "#ffd47b",
+                    "error": "#ba1a1a",
+                    "surface-dim": "#d9dadb",
+                    "on-background": "#191c1d",
+                    "secondary-fixed": "#ffdcbc",
+                    "on-surface": "#191c1d",
+                    "secondary-fixed-dim": "#ffb86b",
+                    "on-primary-container": "#a8e7c5",
+                    "secondary-container": "#fd9d1a",
+                    "inverse-primary": "#95d4b3",
+                    "on-error": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "surface-container": "#edeeef",
+                    "surface-container-high": "#e7e8e9",
+                    "inverse-surface": "#2e3132",
+                    "primary-fixed-dim": "#95d4b3",
+                    "tertiary": "#5d4300",
+                    "on-secondary-container": "#663b00",
+                    "primary-fixed": "#b1f0ce",
+                    "on-secondary-fixed": "#2c1700",
+                    "secondary": "#895100",
+                    "on-primary-fixed": "#002114",
+                    "background": "#f8f9fa",
+                    "surface-tint": "#2c694e",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-secondary": "#ffffff",
+                    "outline": "#707973",
+                    "error-container": "#ffdad6",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed-variant": "#683d00",
+                    "surface-container-low": "#f3f4f5",
+                    "inverse-on-surface": "#f0f1f2"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "8px",
+                    "max-width": "1280px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "64px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "label-lg": ["Inter"],
+                    "headline-xl": ["Plus Jakarta Sans"],
+                    "body-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "label-lg": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Inter', sans-serif;
+            color: #191c1d;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, rgba(15, 82, 56, 0.05) 0%, rgba(137, 81, 0, 0.05) 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Hero ambient glow — yellowgreen blobs behind content */
+        .hero-glow {
+            isolation: isolate;
+        }
+        .hero-glow-blob {
+            position: absolute;
+            pointer-events: none;
+            border-radius: 50%;
+            z-index: 0;
+        }
+        .hero-glow-blob--main {
+            width: min(100vw, 1100px);
+            height: min(100vw, 1100px);
+            bottom: -35%;
+            left: -20%;
+            background: radial-gradient(ellipse at 35% 50%, rgba(154, 205, 50, 0.85) 0%, rgba(154, 205, 50, 0.5) 10%, rgba(173, 255, 47, 0.25) 22%, rgba(173, 255, 47, 0.08) 40%, transparent 60%);
+            filter: blur(50px);
+        }
+        .hero-glow-blob--secondary {
+            width: min(80vw, 800px);
+            height: min(80vw, 800px);
+            top: -30%;
+            right: -15%;
+            background: radial-gradient(ellipse at 60% 35%, rgba(173, 255, 47, 0.75) 0%, rgba(154, 205, 50, 0.4) 10%, rgba(144, 238, 144, 0.2) 25%, transparent 55%);
+            filter: blur(50px);
+        }
+        .hero-glow-blob--center {
+            width: min(60vw, 600px);
+            height: min(60vw, 600px);
+            top: 10%;
+            right: 5%;
+            background: radial-gradient(ellipse at 50% 50%, rgba(154, 205, 50, 0.6) 0%, rgba(154, 205, 50, 0.3) 15%, transparent 50%);
+            filter: blur(60px);
+        }
+        /* Dark mode — tone down glow so it doesn't clash */
+        .dark .hero-glow-blob--main {
+            opacity: 0.2;
+        }
+        .dark .hero-glow-blob--secondary {
+            opacity: 0.15;
+        }
+        .dark .hero-glow-blob--center {
+            opacity: 0.1;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-50 bg-surface-container-lowest dark:bg-inverse-surface shadow-md w-full">
+<nav class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-max-width mx-auto">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="restaurant">restaurant</span>
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">Triology Refreshment</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-secondary font-bold border-b-2 border-secondary pb-1 font-label-lg text-label-lg" href="#">Home</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-lg text-label-lg" href="#">Menu</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-lg text-label-lg" href="#">Party Packs</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-lg text-label-lg" href="#">Events</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-lg text-label-lg" href="#">Contact</a>
+</div>
+<div class="flex items-center gap-3">
+<!-- Favorites (hollow heart) -->
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors text-2xl" data-icon="favorite">favorite</button>
+<!-- Cart (yellow circle, no border) -->
+<button class="w-10 h-10 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center hover:scale-95 active:scale-90 transition-transform shadow-sm">
+<span class="material-symbols-outlined text-xl" data-icon="shopping_cart">shopping_cart</span>
+</button>
+<button class="md:hidden material-symbols-outlined text-on-surface" data-icon="menu">menu</button>
+</div>
+</nav>
+</header>
+<main class="flex-grow">
+<!-- Hero Section -->
+<section class="relative hero-gradient hero-glow pt-16 pb-24 md:pt-24 md:pb-32 px-margin-mobile md:px-margin-desktop">
+<!-- Ambient glow blobs -->
+<div class="hero-glow-blob hero-glow-blob--main"></div>
+<div class="hero-glow-blob hero-glow-blob--secondary"></div>
+<div class="hero-glow-blob hero-glow-blob--center"></div>
+<div class="relative z-10 max-w-max-width mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+<div class="z-10 text-center md:text-left">
+<span class="inline-block px-4 py-1.5 bg-primary-container text-on-primary-container rounded-full font-label-sm text-label-sm mb-6 uppercase tracking-wider">Trapiche, Oton, Iloilo</span>
+<h1 class="font-headline-xl text-[40px] md:text-headline-xl leading-tight text-primary mb-6">
+                        Your Daily <span class="text-secondary">Comfort Food</span> Escape in Iloilo
+                    </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-xl">
+                        From refreshing Halo-Halo to all-day rice meals and event packages, Triology Refreshment brings flavor to your everyday celebrations in Trapiche, Oton.
+                    </p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+<button class="bg-secondary text-on-secondary px-8 py-4 rounded-xl font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-lg hover:opacity-90 transition-opacity">
+                            Order Now <span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+</button>
+<button class="border-2 border-primary text-primary px-8 py-4 rounded-xl font-label-lg text-label-lg flex items-center justify-center gap-2 hover:bg-primary/5 transition-colors">
+                            View Full Menu <span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+</button>
+</div>
+</div>
+<div class="relative">
+<!-- Asymmetric Image Layout -->
+<div class="relative z-10 w-full aspect-square rounded-[40px] overflow-hidden shadow-2xl rotate-2">
+<img class="w-full h-full object-cover" data-alt="A top-down, vibrant high-quality food photograph of a traditional Filipino Halo-Halo served in a modern glass bowl, overflowing with colorful ingredients like purple ube, yellow leche flan, and bright red beans, set against a clean white marble background with natural sunlight streaming in, capturing a fresh and appetizing mood in line with a professional food service brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkmwMj8V2s-9DBqw199ykfsxKYfpu8wGxRQOhUoyJrH9ErWTjSEMQL66Xbg0Gkjc85eXQLCJa9JkQHWjQ3EomZgh2rtvUQ76NSc5Emvl_JsL-bApz1HoQdEjdIAMarPvNoC0tjh84BONLjJRnWIcGGQ9eee2vU-nEXjRzkAwlPNv1kP6bTJPlaR5RRFVzE9H8sl4My5LsdPk7eX47_Z2L0PdNj5_vZufjqEXVhLNoeWn_cOu4STVdU9POR11frVJ90cTn5QP1UMl4O"/>
+</div>
+<div class="absolute -bottom-8 -left-8 z-20 hidden lg:block p-6 glass-card rounded-2xl shadow-xl border border-white/20">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-tertiary-fixed rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<div>
+<p class="font-label-lg text-label-lg text-on-surface">Top Rated in Oton</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">500+ Local Reviews</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Services Bento Grid -->
+<section class="py-24 px-margin-mobile md:px-margin-desktop bg-surface">
+<div class="max-w-max-width mx-auto">
+<div class="flex justify-between items-end mb-12">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-2">Our Specialties</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Quality refreshment for every mood and occasion.</p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Refreshments -->
+<div class="md:col-span-8 group relative overflow-hidden rounded-3xl bg-white border border-outline-variant/30 shadow-sm transition-all hover:shadow-md h-[400px]">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A beautifully styled display of various Filipino refreshments including creamy fruit shakes and Halo-Halo, presented on a rustic wooden table with scattered fresh fruit ingredients like mango and coconut. The lighting is warm and golden, creating a welcoming and refreshing atmosphere that highlights the natural colors of the ingredients." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHJpPOlVjKISCS-fZhM7laMmdC66WTR8cIJhDsTRTuVkZ872BRlTYb5Zg29Q8y0Vt9V-qLkgkVsD7QYVqUKivHve4H4grYns0FGajbb4tLfNunWF97dgYm38w5allAmXjApnSyYTII3jpxio2VLcwIYtD-m4munbIzSTc26Rc-HJcsWC9o3Vu_eUIhzG-7Dq7c92jT4qMD58WSkTKmCnrXFL1eQwcV5-Ix1xhXAZSPnf9FASgzgE_TmKLrIct7foKWxp-YXHTCl4cL"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+</div>
+<div class="absolute bottom-0 left-0 p-8 z-10">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded font-label-sm text-label-sm mb-4 inline-block">Best Seller</span>
+<h3 class="font-headline-md text-headline-md text-white mb-2">Refreshments &amp; Delicacies</h3>
+<p class="text-white/80 font-body-md text-body-md mb-6 max-w-md">Our signature icy treats and traditional Filipino snacks, made fresh daily with premium ingredients.</p>
+<button class="bg-white text-primary px-6 py-2 rounded-lg font-label-lg text-label-lg flex items-center gap-2 group-hover:bg-primary group-hover:text-white transition-all">
+                                Order Refreshments <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- All Day Meals -->
+<div class="md:col-span-4 group relative overflow-hidden rounded-3xl bg-white border border-outline-variant/30 shadow-sm transition-all hover:shadow-md h-[400px]">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A hearty and appetizing All-Day Rice Meal featuring Filipino breakfast favorites like garlic rice, a sunny-side-up egg, and savory tocino, served on a modern white ceramic plate. The food is expertly lit to emphasize textures and steam, conveying a sense of warm comfort and professional kitchen quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0Jq_TzZ_uc3UXd8O575357iTSqk6Bsr_dpOIfR9ymzGQoY31D0Bt6M5FwMjGgcdNye_loFfBpREfWRuvATtA_pn8uIJ2xFawuZsKQzsj07fkftY2PhA6psz5f7aDjAZH-RbQM5OVBopAhAhZYzjJ_CZgln4vvc7u8peixLAkgU2M3so3LBoMiZPzo106xrBzyF5Gb41IJcj7kUBJE-gdH-YgBHKKr0pSD-bddDnfY5un_XLi6nihzNX7jM2jqx5FecJ-U93hvTE7m"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+</div>
+<div class="absolute bottom-0 left-0 p-8 z-10">
+<h3 class="font-headline-md text-headline-md text-white mb-2">All-Day Rice Meals</h3>
+<p class="text-white/80 font-body-md text-body-md mb-6">Hearty, savory meals that feel like home.</p>
+<button class="text-white border border-white/40 px-6 py-2 rounded-lg font-label-lg text-label-lg hover:bg-white hover:text-primary transition-all">Explore Meals</button>
+</div>
+</div>
+<!-- Party Packs -->
+<div class="md:col-span-12 group relative overflow-hidden rounded-3xl bg-primary-container h-[300px]">
+<div class="flex flex-col md:flex-row h-full">
+<div class="flex-1 p-8 md:p-12 flex flex-col justify-center">
+<h3 class="font-headline-md text-headline-md text-white mb-4">Planning an Event?</h3>
+<p class="text-on-primary-container font-body-lg text-body-lg mb-8 max-w-xl">Our Party Packs are designed to take the stress out of hosting. Perfect for office lunches, birthdays, and community gatherings.</p>
+<div>
+<button class="bg-secondary-container text-on-secondary-container px-8 py-3 rounded-xl font-bold font-label-lg text-label-lg shadow-lg hover:opacity-90 transition-opacity">Request a Quote</button>
+</div>
+</div>
+<div class="hidden md:block w-1/3 h-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="An overhead flat-lay of multiple catering party packs from a professional refreshment service, featuring organized trays of sandwiches, pasta, and bottled fruit juices. The presentation is neat and colorful, emphasizing variety and abundance for a corporate or family event, shot in a bright, airy style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAivJIMnnLPjWujfIwXPt3_yGxDcdnGYYJSB8Dl-kH5pIaLMXh8O9XFVUDGy7GcJII7kxO8fXmU-8A1aJs0kV6jkiHyKFr01Y3L3VxKneJRXTUf_fHJbyTazbKezMHCuwBnXrXDil9ywW8mqM46kB_ZYKT4K7QJdICwJuKNV5qA_v9gBB6mUJpwvZtColDklDdNxFV1fVsoKmGI71KNW3NoJJPUidHqp1HRHa610gMtMm-qUTxDq0P3h_FhuU5aFmXDPlnKk6ZJZClP"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- About/Vibe Section -->
+<section class="py-24 px-margin-mobile md:px-margin-desktop bg-surface-container-low">
+<div class="max-w-max-width mx-auto flex flex-col md:flex-row gap-16 items-center">
+<div class="flex-1">
+<div class="grid grid-cols-2 gap-4">
+<div class="aspect-[4/5] rounded-2xl overflow-hidden mt-8">
+<img class="w-full h-full object-cover" data-alt="A candid, heartwarming photo of a local family in Oton enjoying refreshments together at a clean, modern cafe. The lighting is soft and natural, emphasizing a sense of community warmth and professional service." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7hm9ZLC9O2NMpOAwuUR-dpsygHqWIF0G-_lutIPggE-VgJaQ_LCjTlQ72rdS38CA5bmJaV0NvEPTH3zQSyRkel5t1PGC8Belh6dH7VEOToib2ZzNrgz75a-sV1q_AlVEK2f8C5KuU35JIGQFK5BaqJMgGiSdIPCNyECyPBkIKB062k7eoaLuEA_h5v6khQEgbvGwann0_tV8QR3As6cUeJgFZscrDzJCaoSoAxtDt8FslffEWooQRtRQ1iuruxoeYs59l--6lLKim"/>
+</div>
+<div class="aspect-[4/5] rounded-2xl overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close-up detail of fresh ingredients being prepared in a clean, professional kitchen—sliced mangoes, crushed ice, and vibrant fruits—highlighting the freshness and tactile quality of the food at Triology Refreshment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuABZg_dCZjNXiComIAx_X0IW3sudfkUaL9e5x1IBEkLEUBofbcNj8bFP1H7_a1dE-jmGQFglzuBo7u4R8aE1AwjDtY81w-puhBRftd9lmyuXd9JwLy9VAjNA5QzCNDG8aP4ZMBeli6BjNpa_8Pg6KCRX6h7tst2zeBo-kSOw_WC9s6c-hyB86uR3B0bFIWGYrcuVmxysJsutFWMVz3taReUBxvhIajxHy-I391CNoSCx-4bTU5-4flj0DZO0fWJ9z0LMooqAplikz2P"/>
+</div>
+</div>
+</div>
+<div class="flex-1 text-center md:text-left">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-6">The Daily Comfort Food Escape</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-6">
+                        At Triology Refreshment, we believe that every day deserves a moment of comfort. We started with a simple mission: to bring high-quality, reliable, and delicious refreshments to our neighbors in Trapiche, Oton.
+                    </p>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8 opacity-80">
+                        Whether it's a quick lunch break or a large family milestone, our focus remains the same—fresh ingredients, professional service, and that unmistakable taste of home. We're more than just a menu; we're your local partner in celebration.
+                    </p>
+<div class="flex items-center gap-6 justify-center md:justify-start">
+<div class="text-center">
+<p class="font-headline-md text-headline-md text-primary">5k+</p>
+<p class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Orders Served</p>
+</div>
+<div class="w-px h-12 bg-outline-variant"></div>
+<div class="text-center">
+<p class="font-headline-md text-headline-md text-primary">100%</p>
+<p class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Fresh Daily</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Social Proof -->
+<section class="py-20 bg-white px-margin-mobile md:px-margin-desktop text-center">
+<div class="max-w-3xl mx-auto">
+<span class="material-symbols-outlined text-4xl text-primary mb-4" data-icon="groups">groups</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-4">Be Part of Our Community</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10">Join 1.2K+ local followers on Facebook and never miss out on our daily specials and local event updates.</p>
+<a class="inline-flex items-center gap-3 bg-[#1877F2] text-white px-8 py-4 rounded-xl font-bold font-label-lg text-label-lg shadow-md hover:scale-105 transition-transform active:scale-95" href="#">
+<svg class="w-6 h-6 fill-current" viewbox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg>
+                    Follow us on Facebook
+                </a>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-primary-container dark:bg-primary-fixed-variant text-on-primary-container">
+<div class="flex flex-col md:flex-row justify-between items-start gap-gutter w-full px-margin-mobile md:px-margin-desktop py-12 max-w-max-width mx-auto">
+<div class="max-w-sm">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-on-primary-container text-3xl" data-icon="restaurant">restaurant</span>
+<span class="font-headline-md text-headline-md text-on-primary-container font-bold">Triology Refreshment</span>
+</div>
+<p class="font-body-md text-body-md opacity-80 mb-6">Serving the heart of Trapiche, Oton with premium refreshment and community warmth since 2021.</p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12 w-full md:w-auto">
+<div>
+<h4 class="font-label-lg text-label-lg mb-4 text-white uppercase tracking-wider">Quick Links</h4>
+<ul class="space-y-3">
+<li><a class="font-label-sm text-label-sm text-on-primary-container opacity-80 hover:opacity-100 transition-opacity" href="#">Menu</a></li>
+<li><a class="font-label-sm text-label-sm text-on-primary-container opacity-80 hover:opacity-100 transition-opacity" href="#">Party Packs</a></li>
+<li><a class="font-label-sm text-label-sm text-on-primary-container opacity-80 hover:opacity-100 transition-opacity" href="#">Order Tracking</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-lg text-label-lg mb-4 text-white uppercase tracking-wider">Contact</h4>
+<ul class="space-y-3">
+<li class="flex items-center gap-2 font-label-sm text-label-sm text-on-primary-container opacity-80">
+<span class="material-symbols-outlined text-sm" data-icon="phone">phone</span> 0947 709 7622
+                        </li>
+<li class="flex items-center gap-2 font-label-sm text-label-sm text-on-primary-container opacity-80">
+<span class="material-symbols-outlined text-sm" data-icon="mail">mail</span> winday_021@yahoo.com
+                        </li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-lg text-label-lg mb-4 text-white uppercase tracking-wider">Follow Us</h4>
+<a class="font-label-sm text-label-sm text-on-primary-container opacity-80 hover:opacity-100 transition-opacity underline decoration-secondary" href="#">Facebook</a>
+</div>
+</div>
+</div>
+<div class="w-full px-margin-mobile md:px-margin-desktop py-6 max-w-max-width mx-auto border-t border-white/10 text-center md:text-left">
+<p class="font-label-sm text-label-sm opacity-60">© 2024 Triology Refreshment. Trapiche, Oton, Iloilo. All rights reserved.</p>
+</div>
+</footer>
+<!-- FAB for Quick Order (Mobile Only) -->
+<div class="fixed bottom-6 right-6 md:hidden z-50">
+<button class="w-14 h-14 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center shadow-2xl active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="shopping_basket">shopping_basket</span>
+</button>
+</div>
+<script>
+        // Simple scroll effect for header
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 20) {
+                header.classList.add('shadow-lg');
+            } else {
+                header.classList.remove('shadow-lg');
+            }
+        });
+
+        // Hover animations for bento cards
+        document.querySelectorAll('.group').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                const img = card.querySelector('img');
+                if(img) img.style.transform = 'scale(1.05)';
+            });
+            card.addEventListener('mouseleave', () => {
+                const img = card.querySelector('img');
+                if(img) img.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

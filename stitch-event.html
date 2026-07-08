@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Events &amp; Contact | Triology Refreshment</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#2d6a4f",
+                        "surface-variant": "#e1e3e4",
+                        "primary": "#0f5238",
+                        "tertiary-fixed-dim": "#fbbc00",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#bfc9c1",
+                        "on-surface-variant": "#404943",
+                        "on-tertiary-fixed": "#261a00",
+                        "surface-bright": "#f8f9fa",
+                        "tertiary-container": "#7a5a00",
+                        "tertiary-fixed": "#ffdfa0",
+                        "on-tertiary-container": "#ffd47b",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d9dadb",
+                        "on-background": "#191c1d",
+                        "secondary-fixed": "#ffdcbc",
+                        "on-surface": "#191c1d",
+                        "secondary-fixed-dim": "#ffb86b",
+                        "on-primary-container": "#a8e7c5",
+                        "secondary-container": "#fd9d1a",
+                        "inverse-primary": "#95d4b3",
+                        "on-error": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#edeeef",
+                        "surface-container-high": "#e7e8e9",
+                        "inverse-surface": "#2e3132",
+                        "primary-fixed-dim": "#95d4b3",
+                        "tertiary": "#5d4300",
+                        "on-secondary-container": "#663b00",
+                        "primary-fixed": "#b1f0ce",
+                        "on-secondary-fixed": "#2c1700",
+                        "secondary": "#895100",
+                        "on-primary-fixed": "#002114",
+                        "background": "#f8f9fa",
+                        "surface-tint": "#2c694e",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-secondary": "#ffffff",
+                        "outline": "#707973",
+                        "error-container": "#ffdad6",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#683d00",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#0e5138",
+                        "surface": "#f8f9fa",
+                        "on-tertiary-fixed-variant": "#5c4300",
+                        "surface-container-low": "#f3f4f5",
+                        "inverse-on-surface": "#f0f1f2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "max-width": "1280px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "64px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "label-lg": ["Inter"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-lg": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest dark:bg-inverse-surface shadow-md sticky top-0 z-50 transition-all duration-300">
+<nav class="flex justify-between items-center w-full px-margin-desktop py-4 max-w-max-width mx-auto">
+<div class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary tracking-tight">
+                Triology Refreshment
+            </div>
+<!-- Desktop Nav -->
+<div class="hidden md:flex items-center gap-8">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-lg text-label-lg" href="#">Home</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-lg text-label-lg" href="#">Menu</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-lg text-label-lg" href="#">Party Packs</a>
+<a class="text-secondary font-bold border-b-2 border-secondary pb-1 font-label-lg text-label-lg" href="#">Events</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-lg text-label-lg" href="#">Contact</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden lg:block px-6 py-2 border-2 border-primary text-primary font-label-lg text-label-lg rounded-full hover:bg-surface-container-low transition-all active:scale-95">
+                    View Menu
+                </button>
+<button class="px-6 py-2 bg-secondary text-on-secondary font-label-lg text-label-lg rounded-full shadow-md hover:bg-secondary-container transition-all active:scale-95">
+                    Order Now
+                </button>
+</div>
+</nav>
+</header>
+<main class="w-full">
+<!-- Hero Section / Header for Events -->
+<section class="relative h-[400px] flex items-center justify-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<div class="absolute inset-0 bg-primary/40 z-10"></div>
+<img class="w-full h-full object-cover" data-alt="A professional, clean, and modern event space in Trapiche, Iloilo. The room features high ceilings, soft warm lighting, minimalist wooden furniture, and floor-to-ceiling windows showing lush greenery outside. The atmosphere is sunny, inviting, and professional, perfectly suited for celebrations and corporate meetings. High-quality architectural photography with a focus on tactile textures and spaciousness." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqxouH-b442VnGCv0OsYBSvxCyQB-VxTfBVcQlO7MCruiG4-dpNbC-OKbbJbi3-Yfg7j51pqNl7oIyPGvmHAadxRZpSB-pkcKYO7UK3VXMdzOk0PbiMXp9JunV7pXsi_LDpSP6_P-y_ey14wdbQE0faTsxCi57YfhrTsqrSkqONcoFNTwtM2zO-Tpt6VN6K30fYTtohblMyDrGMvvrT2RqvD-n9zO8qEUUBC4zq67xobGqg974VlDaON_1UjB3Z3r_QCLAgxa92IXs"/>
+</div>
+<div class="relative z-20 text-center px-margin-mobile">
+<h1 class="font-headline-xl text-headline-xl text-white drop-shadow-lg mb-4">Elevate Your Celebrations</h1>
+<p class="font-body-lg text-body-lg text-white max-w-2xl mx-auto drop-shadow-md">Professional event spaces in the heart of Trapiche, Oton, designed for moments that matter.</p>
+</div>
+</section>
+<!-- Section 1: Event Room Rentals -->
+<section class="py-20 px-margin-desktop max-w-max-width mx-auto">
+<div class="flex flex-col md:flex-row gap-16 items-start">
+<div class="w-full md:w-1/2">
+<span class="text-secondary font-label-lg text-label-lg uppercase tracking-widest mb-4 block">Our Space</span>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-6">Designed for Community &amp; Comfort</h2>
+<p class="text-on-surface-variant mb-8 font-body-lg text-body-lg">Located in the serene area of Trapiche, Oton, our event spaces offer a blend of modern professional amenities and local warmth. Whether you are hosting an intimate family birthday or a corporate seminar, we provide the perfect canvas for your vision.</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+<div class="flex items-center gap-4 p-4 bg-surface-container-low rounded-xl">
+<span class="material-symbols-outlined text-primary text-3xl">groups</span>
+<div>
+<h4 class="font-label-lg text-label-lg">Capacity</h4>
+<p class="text-sm opacity-80">Up to 50 guests</p>
+</div>
+</div>
+<div class="flex items-center gap-4 p-4 bg-surface-container-low rounded-xl">
+<span class="material-symbols-outlined text-primary text-3xl">ac_unit</span>
+<div>
+<h4 class="font-label-lg text-label-lg">Fully AC</h4>
+<p class="text-sm opacity-80">Temperature control</p>
+</div>
+</div>
+<div class="flex items-center gap-4 p-4 bg-surface-container-low rounded-xl">
+<span class="material-symbols-outlined text-primary text-3xl">wifi</span>
+<div>
+<h4 class="font-label-lg text-label-lg">High-Speed WiFi</h4>
+<p class="text-sm opacity-80">Free for guests</p>
+</div>
+</div>
+<div class="flex items-center gap-4 p-4 bg-surface-container-low rounded-xl">
+<span class="material-symbols-outlined text-primary text-3xl">restaurant</span>
+<div>
+<h4 class="font-label-lg text-label-lg">Catering Ready</h4>
+<p class="text-sm opacity-80">In-house service</p>
+</div>
+</div>
+</div>
+<button class="bg-primary text-on-primary px-8 py-3 rounded-xl font-label-lg text-label-lg hover:shadow-lg transition-all active:scale-95">Check Availability</button>
+</div>
+<div class="w-full md:w-1/2 grid grid-cols-2 gap-4">
+<div class="space-y-4">
+<div class="rounded-2xl overflow-hidden shadow-md aspect-[3/4]">
+<img class="w-full h-full object-cover" data-alt="Close-up detail of a beautifully set table for a local celebration at Triology Refreshment. Elegant white linens, fresh green floral centerpieces, and warm glowing candles against a background of soft natural light. The aesthetic is clean, professional, and tactile, conveying premium event service in Iloilo." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHRLDQIqqfP7kX1DkiKo9uY32p399pTkpKiQ-6x3EIqKXMhezfVGuGX3lUuip0e_hOkvtC09lODn0A1oUJvAc9_aNE5Ql1vPIJEpi1EW5q90UMY2ikEoYkoKguJRhOLiDYf4r-jc5zshJnJLuH3_1goLADEGJRRPpj7HyQPP8JJVlBh4LNdfJxCAF3emWOhSR2DAX9gWKoox85Yh-C1vn4JHiM6F1Ip84ce_pnPVv-QTBPjxOnXuv9p1YmpCMfdcWCHCb9j-RJHD5w"/>
+</div>
+<div class="rounded-2xl overflow-hidden shadow-md aspect-square">
+<img class="w-full h-full object-cover" data-alt="A wide-angle shot of the modern event room interior in Trapiche, Oton. The walls are a soft neutral white, accented by emerald green decorative elements. Modern minimalist chairs are arranged for a small seminar. The room feels spacious and airy with soft shadows creating depth." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_3r2HO4Fe6kJEZzJiWXeIOo1n3NzrVzxuiGAgWR6snMvMLDOcDi_8mUco2xL2Y5GtDghcDLxaLzzqOqeRK4dgU6kw3gcUof2rrsb1tWCthp2wEVrvQn5IR-ZaqlaFoixONrtfQmKedV0ClB013W19wcIrNM9kM-RCGKWBzyt2TP1BT-EIi3QDmtxW5iRcv1vlsKVaej77iHAmA6J-1o3L9AVErGyleiq5sZinVW5s77QUH2Ue_HB-7WTuc9oUPeGYVt6x28GfaFd6"/>
+</div>
+</div>
+<div class="pt-12 space-y-4">
+<div class="rounded-2xl overflow-hidden shadow-md aspect-square">
+<img class="w-full h-full object-cover" data-alt="Professional buffet setup at Triology Refreshment event space. High-quality refreshments, juices in clear glass dispensers, and fresh local fruits arranged artistically. The lighting is bright and appetizing, highlighting the freshness of the food and the professional service." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzthJzEmXxEEh-9R9iHJaylNo23C9EqgF-LChRgBC9RDu6yqB7zf-xQsNGINj1H-TMpLXsfGddff-qiQXdxmR9JM4YbzS0gYbQR4EIZOCQmUY33mGtJmJbuQZetR27BWj94Eg4eMAqlpmZ4l-ozbv8VFFAfjyawDa9Tyajc49VEkgzZFU3pWQJdZo088hw2-e1t6Q6WIGDNigp_zf75f1silS0GVJjxpPcYuU3joEdJ4tr3MCD4ljbyjvqMntIX7kksMQiT27Xf2Yg"/>
+</div>
+<div class="rounded-2xl overflow-hidden shadow-md aspect-[3/4]">
+<img class="w-full h-full object-cover" data-alt="A group of local professionals smiling and interacting in a sun-drenched event lounge area. The background shows professional branding and modern décor. The mood is warm, reliable, and community-focused, representing the 'Daily comfort food escape' brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaMojDc3WEHil_rjMGZ_dRzYN5YhvAQVSPzBrjhWRbhOWOCWIHB_Odh480LdRsNZIzfVX4N0lpjAMpIsK5d2NIebVBzvQr9e3nxX-3SvsqUKAIIVTGWbnh3CRRyx1_Cdge6WmfllA5G7HMjsYXoq2AKT58YYI5CSpDaKkjboNzXAdyknZVlluCDZ20yUhjz0JPXJNB1VIYJLHrDUy9OjfT50fVo1zz_E2IsP9g4Bm2B_9TMa8SQXxcSSgefOykXSX8A8m4R8DEL3hI"/>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 2: Contact Information & Section 3: Form/Map -->
+<section class="bg-surface-container-low py-20 px-margin-desktop overflow-hidden">
+<div class="max-w-max-width mx-auto">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-4">Let's Connect</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xl mx-auto">Have questions about our menu or want to book the space for your next big event? Our team is here to help you plan the perfect refreshment experience.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-stretch">
+<!-- Contact Sidebar -->
+<div class="lg:col-span-4 space-y-6">
+<div class="glass-card p-8 rounded-2xl shadow-sm border border-outline-variant/30 h-full flex flex-col justify-center">
+<div class="space-y-8">
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">call</span>
+</div>
+<div>
+<h4 class="font-label-lg text-label-lg mb-1">Phone</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">0947 709 7622</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">mail</span>
+</div>
+<div>
+<h4 class="font-label-lg text-label-lg mb-1">Email</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">winday_021@yahoo.com</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">location_on</span>
+</div>
+<div>
+<h4 class="font-label-lg text-label-lg mb-1">Location</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Trapiche, Oton, Iloilo City,<br/>Philippines 5020</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Inquiry Form -->
+<div class="lg:col-span-5">
+<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-md h-full">
+<h3 class="font-headline-md text-headline-md text-primary mb-6">Send an Inquiry</h3>
+<form class="space-y-4">
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block font-label-sm text-label-sm mb-1 opacity-70">Full Name</label>
+<input class="w-full bg-surface border-none focus:ring-2 focus:ring-primary rounded-lg p-3 text-sm placeholder:opacity-50" placeholder="John Doe" type="text"/>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm mb-1 opacity-70">Email</label>
+<input class="w-full bg-surface border-none focus:ring-2 focus:ring-primary rounded-lg p-3 text-sm placeholder:opacity-50" placeholder="john@example.com" type="email"/>
+</div>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm mb-1 opacity-70">Event Type</label>
+<select class="w-full bg-surface border-none focus:ring-2 focus:ring-primary rounded-lg p-3 text-sm appearance-none">
+<option>Birthday Celebration</option>
+<option>Corporate Meeting</option>
+<option>Wedding Reception</option>
+<option>Other Event</option>
+</select>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm mb-1 opacity-70">Message</label>
+<textarea class="w-full bg-surface border-none focus:ring-2 focus:ring-primary rounded-lg p-3 text-sm placeholder:opacity-50" placeholder="Tell us about your event..." rows="4"></textarea>
+</div>
+<button class="w-full bg-secondary text-on-secondary py-3 rounded-lg font-label-lg text-label-lg hover:shadow-lg transition-all" type="submit">Submit Request</button>
+</form>
+</div>
+</div>
+<!-- Map Placeholder -->
+<div class="lg:col-span-3">
+<div class="rounded-2xl overflow-hidden shadow-md h-full relative min-h-[300px]">
+<div class="absolute inset-0 bg-primary/5 flex items-center justify-center flex-col z-10 pointer-events-none p-6 text-center">
+<span class="material-symbols-outlined text-4xl text-primary mb-2">map</span>
+<p class="font-label-lg text-label-lg text-primary">Find Us in Trapiche</p>
+</div>
+<img class="w-full h-full object-cover grayscale brightness-110" data-location="Oton, Iloilo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3tH6ZAW4oVnIxA8V1zzzLkGuxNTj1SkAMHNoYdZAvAgUBgvWieagxvPf70VrJr2zw3yXmbBVon_-fZ18iRZRLrkq56RH0oyd6aL4rYaG_NyVvTydyx4VVCN4q0JvQyPF_hA7iC1hkEpF-Hgm4m-B2T1mg9PsO3QzfxO-yR-e6ee-DX-2FouCqBs32DWU7KSfCXoDlPn96z95mAnGkXTT1LMt6cmXYMgECFzoaY8mf5wTfLPNnXMu_70xyGZrHJYupmtKdnlaXAEY2"/>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-primary-container dark:bg-primary-fixed-variant text-on-primary-container">
+<div class="flex flex-col md:flex-row justify-between items-start gap-gutter w-full px-margin-desktop py-12 max-w-max-width mx-auto">
+<div class="space-y-4 max-w-sm">
+<div class="font-headline-md text-headline-md text-on-primary-container font-bold">
+                    Triology Refreshment
+                </div>
+<p class="font-body-md text-body-md opacity-80">The best quality products are waiting for you. Join our 1.2K+ community of food lovers in Iloilo.</p>
+<div class="flex items-center gap-4 pt-2">
+<a class="w-10 h-10 bg-on-primary-container/10 rounded-full flex items-center justify-center hover:bg-on-primary-container/20 transition-all" href="#">
+<img alt="Facebook" class="w-5 h-5 invert opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCl569yNH42k96IYushy8IGSkmc2xjvmMHHhGUg1XBbuR8_1zGE94M1CF7Fju1nEmSZZbTkt-k1TCLfE5JysWBFRQwdJf0ODzXjWm4djj5cpIHwlXGQBedsN30pBGiQl00ZchbTiDThffVZtE0MUzqf8S-Y2eM8imuKO8uqBBkpaqU2y9aebLCjM85Y6Ut2hBtxRel-D1jcI3iy7eIQjTQYEAu0mG5vOiYhCeSa9Twg7dNxi3ZlH1AxQUsStN2O8EQAp7jMeCAFt9WP"/>
+</a>
+<span class="font-label-sm text-label-sm opacity-90">Facebook</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-12">
+<div>
+<h4 class="font-label-lg text-label-lg mb-4 text-secondary-fixed">Navigation</h4>
+<ul class="space-y-2">
+<li><a class="text-on-primary-container font-label-sm text-label-sm opacity-80 hover:opacity-100 transition-opacity" href="#">Menu</a></li>
+<li><a class="text-on-primary-container font-label-sm text-label-sm opacity-80 hover:opacity-100 transition-opacity underline" href="#">Events</a></li>
+<li><a class="text-on-primary-container font-label-sm text-label-sm opacity-80 hover:opacity-100 transition-opacity" href="#">About Us</a></li>
+<li><a class="text-on-primary-container font-label-sm text-label-sm opacity-80 hover:opacity-100 transition-opacity" href="#">Gallery</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-lg text-label-lg mb-4 text-secondary-fixed">Quick Contact</h4>
+<ul class="space-y-2">
+<li><a class="text-on-primary-container font-label-sm text-label-sm opacity-80 hover:opacity-100 transition-opacity" href="tel:09477097622">0947 709 7622</a></li>
+<li><a class="text-on-primary-container font-label-sm text-label-sm opacity-80 hover:opacity-100 transition-opacity" href="mailto:winday_021@yahoo.com">winday_021@yahoo.com</a></li>
+<li><p class="text-on-primary-container font-label-sm text-label-sm opacity-80">Mon - Sun: 8AM - 8PM</p></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="border-t border-on-primary-container/10 px-margin-desktop py-6">
+<div class="max-w-max-width mx-auto flex flex-col md:flex-row justify-between items-center gap-4 font-label-sm text-label-sm opacity-60">
+<p>© 2024 Triology Refreshment. Trapiche, Oton, Iloilo. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="hover:underline" href="#">Privacy Policy</a>
+<a class="hover:underline" href="#">Terms of Service</a>
+</div>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interaction for scroll effects on header
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('py-2', 'bg-opacity-95', 'backdrop-blur-md');
+                header.classList.remove('py-4');
+            } else {
+                header.classList.add('py-4');
+                header.classList.remove('py-2', 'bg-opacity-95', 'backdrop-blur-md');
+            }
+        });
+
+        // Form submission animation mock
+        document.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
+            btn.innerText = 'Sending...';
+            btn.disabled = true;
+            setTimeout(() => {
+                btn.innerText = 'Message Sent!';
+                btn.classList.replace('bg-secondary', 'bg-primary');
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.classList.replace('bg-primary', 'bg-secondary');
+                    btn.disabled = false;
+                    e.target.reset();
+                }, 2000);
+            }, 1000);
+        });
+    </script>
+</body></html>
