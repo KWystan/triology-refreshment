@@ -1,9 +1,8 @@
 /**
- * App — root layout with Navbar, routes, Footer, FAB, and bottom mobile nav.
- * FAB + BottomNav: mobile-only — matches Stitch design.
+ * App — root layout with Navbar, routes, Footer, and mobile FAB.
  */
 import { Routes, Route } from 'react-router-dom';
-import { Navbar, Footer, FAB, BottomMobileNav } from './components';
+import { Navbar, Footer, FAB } from './components';
 import { ActiveSectionProvider } from './context/ActiveSectionContext';
 import Home from './pages/Home';
 import Menu from './pages/Menu';
@@ -32,9 +31,6 @@ export default function App() {
 
       {/* Mobile-only Quick Order FAB */}
       <FAB className="mobile-fab" />
-
-      {/* Mobile-only bottom nav */}
-      <BottomMobileNav />
 
       <style>{`
         .mobile-fab {

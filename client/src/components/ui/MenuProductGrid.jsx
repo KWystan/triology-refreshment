@@ -74,14 +74,6 @@ function ProductCard({ item, onAddToCart, onClick, style }) {
         <div className="mpg-card-img-overlay" />
       </div>
 
-      {/* Rating */}
-      {item.rating && (
-        <div className="mpg-card-rating">
-          <span className="mpg-card-star">★</span>
-          <span>{item.rating}</span>
-        </div>
-      )}
-
       {/* Name */}
       <h3 className="mpg-card-name">{item.name}</h3>
 
@@ -471,13 +463,6 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
           color: var(--color-on-surface-variant);
         }
 
-        /* ─── On mobile, compact toolbar ────────────────────── */
-        @media (max-width: 480px) {
-          .mpg-toolbar {
-            flex-direction: column;
-            align-items: stretch;
-          }
-        }
       `}</style>
     </div>
   );

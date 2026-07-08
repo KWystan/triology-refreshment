@@ -773,23 +773,6 @@ export default function EventsContact() {
           color: var(--color-primary);
         }
 
-        /* ─── Mobile overrides ───────────────────────────────── */
-        @media (max-width: 767px) {
-          .events-hero {
-            height: 320px;
-          }
-          .events-form-row {
-            grid-template-columns: 1fr;
-          }
-          .events-gal-col-offset {
-            padding-top: 0;
-          }
-          .events-contact-sidebar,
-          .events-form-wrap,
-          .events-map-wrap {
-            grid-column: 1;
-          }
-        }
       `}</style>
     </main>
   );

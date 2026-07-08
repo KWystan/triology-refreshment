@@ -10,6 +10,7 @@
 import { business } from '../data/business';
 import { SectionHeading, Button, Section } from '../components';
 import locationBg from '../assets/location-background.png';
+import blobSvg from '../assets/blob.svg';
 
 const BENTO_REFRESHMENTS =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuBHJpPOlVjKISCS-fZhM7laMmdC66WTR8cIJhDsTRTuVkZ872BRlTYb5Zg29Q8y0Vt9V-qLkgkVsD7QYVqUKivHve4H4grYns0FGajbb4tLfNunWF97dgYm38w5allAmXjApnSyYTII3jpxio2VLcwIYtD-m4munbIzSTc26Rc-HJcsWC9o3Vu_eUIhzG-7Dq7c92jT4qMD58WSkTKmCnrXFL1eQwcV5-Ix1xhXAZSPnf9FASgzgE_TmKLrIct7foKWxp-YXHTCl4cL';
@@ -138,15 +139,25 @@ export default function Home() {
           style={{
             background: 'linear-gradient(135deg, rgba(15, 82, 56, 0.05) 0%, rgba(137, 81, 0, 0.05) 100%)',
             padding: '4rem 0 6rem',
+            position: 'relative',
+            overflow: 'hidden',
           }}
         >
-          {/* Mobile hero bg overlay (visible only on small screens) */}
-          <div
-            className="mobile-hero-bg"
+          {/* Blob SVG behind the text */}
+          <img
+            src={blobSvg}
+            alt=""
             aria-hidden="true"
             style={{
-              display: 'none',
-              backgroundImage: `url(${BENTO_REFRESHMENTS})`,
+              position: 'absolute',
+              top: '50%',
+              left: '5%',
+              transform: 'translateY(-50%)',
+              width: 'clamp(350px, 50vw, 750px)',
+              height: 'auto',
+              opacity: 0.07,
+              pointerEvents: 'none',
+              zIndex: 0,
             }}
           />
           <div className="container">
@@ -196,11 +207,11 @@ export default function Home() {
                 <h1
                   style={{
                     fontFamily: "'Okinawa', cursive",
-                    fontSize: '1.25rem',
-                    fontWeight: 400,
+                    fontSize: '3rem',
+                    fontWeight: 300,
                     lineHeight: 1.3,
                     color: 'var(--color-primary)',
-                    marginBottom: '1.5rem',
+                    marginBottom: '0.5rem',
                   }}
                 >
                   Your Daily{' '}
@@ -868,62 +879,6 @@ export default function Home() {
           RESPONSIVE STYLES
           ═══════════════════════════════════════════════════════ */}
       <style>{`
-        /* Mobile: stack hero */
-        @media (max-width: 767px) {
-          .hero-grid {
-            grid-template-columns: 1fr !important;
-          }
-          .hero-text {
-            text-align: center;
-          }
-          .hero-description {
-            margin-left: auto;
-            margin-right: auto;
-          }
-          .hero-cta {
-            justify-content: center;
-          }
-          .hero-visual {
-            max-width: 420px;
-            margin: 0 auto;
-          }
-          .hero-collage {
-            aspect-ratio: 4 / 3 !important;
-          }
-          .hero-glass-card {
-            bottom: -1rem !important;
-            left: 0.5rem !important;
-            padding: 1rem 1.25rem !important;
-          }
-          .hero-glass-card > div:first-child {
-            width: 40px !important;
-            height: 40px !important;
-          }
-        }
-
-        /* About section: stack on mobile */
-        @media (max-width: 767px) {
-          .about-layout {
-            flex-direction: column;
-            gap: 2rem;
-          }
-          .about-images {
-            width: 100%;
-          }
-          .about-text {
-            text-align: center;
-          }
-        }
-
-        /* Party pack: stack on mobile */
-        @media (max-width: 767px) {
-          .bento-party-image {
-            display: none;
-          }
-          .bento-party-layout {
-            flex-direction: column;
-          }
-        }
 
         /* ─── Hero Collage ──────────────────────────────────── */
         .hero-collage {
@@ -966,15 +921,6 @@ export default function Home() {
         .hero-collage-stack-top,
         .hero-collage-stack-bottom {
           flex: 1;
-        }
-
-        @media (max-width: 767px) {
-          .hero-collage {
-            aspect-ratio: 4 / 3;
-          }
-          .hero-collage-stacked {
-            flex: 0 0 calc(35% - 7px);
-          }
         }
 
         /* ─── Bento 12-col grid ─── */
@@ -1163,249 +1109,50 @@ export default function Home() {
           100% { transform: translate(6px, -8px) rotate(8deg); }
         }
 
-        /* ═══════════════════════════════════════════════════════════
-           MOBILE: Stitch-inspired theme (max-width: 767px)
-           ═══════════════════════════════════════════════════════════ */
+        /* ─── Mobile Hero ──────────────────────────────────── */
         @media (max-width: 767px) {
-          /* ── Hero ─────────────────────────────────────────────── */
           .hero-gradient {
-            background: var(--color-primary-container) !important;
-            padding: 3rem 0 4rem !important;
-            position: relative !important;
-            overflow: hidden;
+            padding: 2rem 0 3rem !important;
           }
-
-          .mobile-hero-bg {
-            display: block !important;
-            position: absolute;
-            inset: 0;
-            background-size: cover;
-            background-position: center;
-            opacity: 0.2;
-            mix-blend-mode: overlay;
-            z-index: 0;
+          .hero-grid {
+            grid-template-columns: 1fr !important;
+            gap: 2rem !important;
           }
-
-          .hero-gradient > .container {
-            position: relative;
-            z-index: 1;
-          }
-
-          .hero-location-badge {
-            display: inline-flex !important;
-            align-items: center;
-            gap: 0.375rem;
-            background: rgba(255, 255, 255, 0.2) !important;
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 0.25rem 1rem !important;
-            border-radius: 9999px !important;
-            color: var(--color-on-primary) !important;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            font-weight: 600;
-          }
-
-          .hero-text h1 {
-            font-family: var(--font-script) !important;
-            font-size: 2.25rem !important;
-            color: var(--color-on-primary) !important;
-            line-height: 1.15 !important;
-            font-weight: 700 !important;
-            max-width: 320px;
-            margin-left: auto;
-            margin-right: auto;
-            transform: rotate(-2deg);
-          }
-          .hero-text h1 span {
-            color: inherit !important;
-          }
-
-          .hero-description {
-            color: rgba(255, 255, 255, 0.85) !important;
-            font-size: 0.9375rem !important;
-            max-width: 300px !important;
-          }
-
-          .hero-visual {
-            display: none !important;
-          }
-
-          .hero-cta a:first-child {
-            background: var(--color-secondary) !important;
-            color: var(--color-on-secondary) !important;
-            box-shadow: var(--shadow-lg) !important;
-            border-radius: 9999px !important;
-            padding: 1rem 2.5rem !important;
-            border: none !important;
-          }
-          .hero-cta a:last-child {
-            display: none !important;
-          }
-
-          /* ── Services Bento Grid (2-col like Stitch) ──────────── */
-          .bento-12-col {
-            grid-template-columns: repeat(2, 1fr) !important;
-            grid-auto-rows: 140px;
-            gap: 12px;
-          }
-
-          .bento-card-lg {
-            grid-column: span 2;
-          }
-          .bento-card-sm {
-            grid-column: span 1;
-          }
-          .bento-card-full {
-            grid-column: span 2;
-          }
-
-          .bento-card {
-            min-height: 140px !important;
-            border-radius: 1rem !important;
-          }
-          .bento-card-full {
-            min-height: 140px !important;
-          }
-
-          .bento-content {
-            padding: 1rem !important;
-          }
-          .bento-content h3 {
-            font-size: 0.9375rem !important;
-            margin-bottom: 0 !important;
-          }
-          .bento-content > span,
-          .bento-content > p,
-          .bento-content > a {
-            display: none !important;
-          }
-
-          /* Party pack card on mobile: solid bg, no image */
-          .bento-card-party {
-            background: var(--color-primary-container) !important;
-            min-height: 140px !important;
-          }
-          .bento-card-party .bento-party-layout {
-            flex-direction: column !important;
-            height: 100%;
-          }
-          .bento-card-party .bento-party-layout > div:first-child {
-            padding: 1rem !important;
-            justify-content: center;
-            text-align: center;
-          }
-          .bento-card-party .bento-party-layout h3 {
-            display: block !important;
-            font-size: 0.9375rem !important;
-            margin-bottom: 0.25rem !important;
-          }
-          .bento-card-party .bento-party-layout p {
-            display: block !important;
-            font-size: 0.75rem !important;
-            opacity: 0.8;
-            margin-bottom: 0.75rem !important;
-          }
-          .bento-card-party .bento-party-layout a {
-            display: inline-flex !important;
-            font-size: 0.75rem !important;
-            padding: 0.5rem 1rem !important;
-          }
-          .bento-card-party .bento-party-image {
-            display: none !important;
-          }
-          .party-floats {
-            display: none !important;
-          }
-
-          /* Section heading tweaks */
-          .bento-12-col + div h2 {
-            /* style section title smaller on mobile */
-          }
-          .bento-12-col + div + p {
-            display: none;
-          }
-
-          /* ── About: white card + 2-col stats ──────────────────── */
-          .about-layout {
-            flex-direction: column !important;
-            gap: 1.5rem !important;
-          }
-          .about-images {
-            width: 100% !important;
-          }
-          .about-text {
-            background: var(--color-surface-container-lowest);
-            padding: 1.5rem;
-            border-radius: 1.5rem;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--color-outline-variant);
+          .hero-text {
             text-align: center !important;
+          }
+          .hero-text h1 {
+            font-size: 2rem !important;
+          }
+          .hero-description {
+            font-size: 0.9375rem !important;
+            max-width: 100% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+          }
+          .hero-cta {
+            justify-content: center !important;
+          }
+          .hero-location-badge {
+            padding: 0.375rem 2rem !important;
+            font-size: 0.6875rem !important;
+          }
+          .hero-visual {
+            max-width: 480px !important;
+            margin: 0 auto !important;
             width: 100% !important;
           }
-          .about-text h2 {
-            font-size: 1.25rem !important;
+          .hero-glass-card {
+            bottom: -1rem !important;
+            left: 0.75rem !important;
+            padding: 1rem 1.25rem !important;
           }
-          .about-text p {
-            font-size: 0.9375rem !important;
-          }
-          .about-text > div {
-            display: grid !important;
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 1rem !important;
-          }
-          .about-text > div > div {
-            background: var(--color-surface-container-low);
-            padding: 0.75rem;
-            border-radius: 0.75rem;
-            border: 1px solid var(--color-surface-variant);
-          }
-          .about-text > div > div:last-child {
-            /* remove the divider line */
-          }
-          .about-text > div > div p:first-child {
-            font-size: 1.5rem !important;
-          }
-          .about-text > div > div p:last-child {
-            font-size: 0.7rem !important;
-          }
-          .about-text > div > div + div[style] {
-            display: none !important;
-          }
-
-          /* ── Community CTA: green card variant ────────────────── */
-          .container > div[style*="text-align: center"] {
-            background: var(--color-primary-container) !important;
-            padding: 2rem 1.5rem !important;
-            border-radius: 1.5rem !important;
-            box-shadow: var(--shadow-md) !important;
-            position: relative;
-            overflow: hidden;
-          }
-          .container > div[style*="text-align: center"] span.material-symbols-outlined {
-            display: none !important;
-          }
-          .container > div[style*="text-align: center"] h2 {
-            color: var(--color-on-primary-container) !important;
-            font-size: 1.25rem !important;
-          }
-          .container > div[style*="text-align: center"] p {
-            color: rgba(255, 255, 255, 0.85) !important;
-            font-size: 0.9375rem !important;
-            max-width: 280px !important;
-            margin: 0 auto 1.5rem !important;
-          }
-          .container > div[style*="text-align: center"] a {
-            background: var(--color-primary) !important;
-            border-radius: 9999px !important;
-            color: var(--color-on-primary) !important;
-            box-shadow: var(--shadow-lg) !important;
-            padding: 0.75rem 1.5rem !important;
-            font-size: 0.875rem !important;
+          /* Smaller blob on mobile */
+          .hero-gradient img[aria-hidden="true"] {
+            width: 280px !important;
           }
         }
+
       `}</style>
     </main>
   );

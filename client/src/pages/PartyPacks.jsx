@@ -431,12 +431,6 @@ export default function PartyPacks() {
           max-width: 512px;
           width: 100%;
         }
-        @media (max-width: 767px) {
-          .party-hero-visual {
-            max-width: 100%;
-          }
-        }
-
         .party-hero-img-group {
           position: relative;
         }
@@ -453,12 +447,6 @@ export default function PartyPacks() {
         .party-hero-img-group:hover .party-hero-glow {
           opacity: 0.4;
         }
-        @media (max-width: 767px) {
-          .party-hero-glow {
-            display: none;
-          }
-        }
-
         .party-hero-img {
           position: relative;
           width: 100%;
@@ -479,12 +467,6 @@ export default function PartyPacks() {
           border-radius: var(--radius-xl);
           box-shadow: var(--shadow-xl);
         }
-        @media (max-width: 767px) {
-          .party-hero-price {
-            display: none;
-          }
-        }
-
         .party-price-amount {
           display: block;
           font-size: 1.5rem;

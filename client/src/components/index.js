@@ -21,4 +21,3 @@ export { default as Footer } from './layout/Footer';
 export { default as FAB } from './layout/FAB';
 export { default as DeliveryBanner } from './layout/DeliveryBanner';
 export { default as Section } from './layout/Section';
-export { default as BottomMobileNav } from './layout/BottomMobileNav';

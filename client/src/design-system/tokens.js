@@ -89,8 +89,6 @@ export const colorAliases = {
 
 // ─── Typography ────────────────────────────────────────────
 export const fontFamily = {
-  brand: "'Epilogue', sans-serif",
-  script: "'Caveat', cursive",
   'headline-xl': "'Plus Jakarta Sans', sans-serif",
   'headline-lg': "'Plus Jakarta Sans', sans-serif",
   'headline-lg-mobile': "'Plus Jakarta Sans', sans-serif",

@@ -366,12 +366,6 @@ export default function Menu() {
           opacity: 0.8;
         }
 
-        @media (max-width: 767px) {
-          .menu-cta-circle {
-            display: none;
-          }
-        }
-
         /* ─── Floating decorative elements (same style as home page) ─── */
         .menu-cta-floats {
           position: absolute;
