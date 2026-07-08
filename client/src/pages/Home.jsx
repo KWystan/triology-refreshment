@@ -7,10 +7,19 @@
  *   3. About/Vibe — image collage, story text, stats with divider
  *   4. Social Proof — Facebook community CTA with branding
  */
+import { useState } from 'react';
 import { business } from '../data/business';
 import { SectionHeading, Button, Section } from '../components';
+import MobileNav from '../components/layout/MobileNav';
+import BounceCards from '../components/ui/BounceCards';
+import heroImg1 from '../assets/hero/hero-page-image-1.jpg';
+import heroImg2 from '../assets/hero/hero-page-image-2.jpg';
+import heroImg3 from '../assets/hero/hero-page-image-3.jpg';
+import heroImg4 from '../assets/hero/hero-page-image-4.jpg';
 import locationBg from '../assets/location-background.png';
+import locationWhiteBg from '../assets/location-white-background.svg';
 import blobSvg from '../assets/blob.svg';
+import mobileHeroBg from '../assets/mobile-hero-bg.svg';
 
 const BENTO_REFRESHMENTS =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuBHJpPOlVjKISCS-fZhM7laMmdC66WTR8cIJhDsTRTuVkZ872BRlTYb5Zg29Q8y0Vt9V-qLkgkVsD7QYVqUKivHve4H4grYns0FGajbb4tLfNunWF97dgYm38w5allAmXjApnSyYTII3jpxio2VLcwIYtD-m4munbIzSTc26Rc-HJcsWC9o3Vu_eUIhzG-7Dq7c92jT4qMD58WSkTKmCnrXFL1eQwcV5-Ix1xhXAZSPnf9FASgzgE_TmKLrIct7foKWxp-YXHTCl4cL';
@@ -26,31 +35,6 @@ const ABOUT_IMG_1 =
 
 const ABOUT_IMG_2 =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuABZg_dCZjNXiComIAx_X0IW3sudfkUaL9e5x1IBEkLEUBofbcNj8bFP1H7_a1dE-jmGQFglzuBo7u4R8aE1AwjDtY81w-puhBRftd9lmyuXd9JwLy9VAjNA5QzCNDG8aP4ZMBeli6BjNpa_8Pg6KCRX6h7tst2zeBo-kSOw_WC9s6c-hyB86uR3B0bFIWGYrcuVmxysJsutFWMVz3taReUBxvhIajxHy-I391CNoSCx-4bTU5-4flj0DZO0fWJ9z0LMooqAplikz2P';
-
-/* ═══════════════════════════════════════════════════════════════
-   HeroCollage — asymmetric 3-image collage
-   Props: images { large, small1, small2 } — URL strings
-   ═══════════════════════════════════════════════════════════════ */
-function HeroCollage({ images }) {
-  const { large, small1, small2 } = images;
-  return (
-    <div className="hero-collage">
-      {/* Left stacked column */}
-      <div className="hero-collage-stacked">
-        <div className="hero-collage-item hero-collage-stack-top">
-          <img src={small1} alt="All-Day Rice Meals" loading="lazy" />
-        </div>
-        <div className="hero-collage-item hero-collage-stack-bottom">
-          <img src={small2} alt="Party Packs" loading="lazy" />
-        </div>
-      </div>
-      {/* Right large column */}
-      <div className="hero-collage-item hero-collage-large">
-        <img src={large} alt="Refreshments & Delicacies" loading="lazy" />
-      </div>
-    </div>
-  );
-}
 
 /* ═══════════════════════════════════════════════════════════════
    FloatingPartyElements — animated SVG leaves, sparkles & circles
@@ -128,6 +112,8 @@ function FloatingPartyElements() {
 }
 
 export default function Home() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <main>
       {/* ═══════════════════════════════════════════════════════
@@ -156,6 +142,24 @@ export default function Home() {
               width: 'clamp(350px, 50vw, 750px)',
               height: 'auto',
               opacity: 0.07,
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+            className="hero-blob"
+          />
+          {/* Mobile hero background SVG — hidden on desktop */}
+          <img
+            src={mobileHeroBg}
+            alt=""
+            aria-hidden="true"
+            className="hero-mobile-bg"
+            style={{
+              display: 'none',
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
               pointerEvents: 'none',
               zIndex: 0,
             }}
@@ -190,7 +194,8 @@ export default function Home() {
                   style={{
                     display: 'inline-block',
                     padding: '0.375rem 3rem',
-                    background: `url(${locationBg}) center / contain no-repeat`,
+                    background: `var(--loc-bg, url(${locationBg})) center / contain no-repeat`,
+                    '--loc-bg-mobile': `url(${locationWhiteBg})`,
                     color: 'var(--color-on-primary-container)',
                     borderRadius: 0,
                     fontSize: '0.75rem',
@@ -242,14 +247,16 @@ export default function Home() {
                     display: 'flex',
                     gap: '1rem',
                     flexWrap: 'wrap',
+                    justifyContent: 'center',
                   }}
                 >
-                  <a
-                    href="/menu"
+                  <button
+                    onClick={() => setMobileOpen(true)}
                     className="btn-interact"
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
+                      justifyContent: 'center',
                       gap: '0.5rem',
                       padding: '1rem 2rem',
                       background: 'var(--color-secondary)',
@@ -259,17 +266,18 @@ export default function Home() {
                       fontWeight: 600,
                       lineHeight: 1.4,
                       boxShadow: 'var(--shadow-lg)',
-                      textDecoration: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
                     }}
                   >
-                    Order Now
+                    Explore More
                     <span
                       className="material-symbols-outlined"
                       style={{ fontSize: '1.25em' }}
                     >
-                      shopping_cart
+                      explore
                     </span>
-                  </a>
+                  </button>
 
                   <a
                     href="/menu"
@@ -277,6 +285,7 @@ export default function Home() {
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
+                      justifyContent: 'center',
                       gap: '0.5rem',
                       padding: '1rem 2rem',
                       border: '2px solid var(--color-primary)',
@@ -296,86 +305,28 @@ export default function Home() {
                       menu_book
                     </span>
                   </a>
+
                 </div>
               </div>
               </div>  {/* end glow wrapper */}
 
-              {/* Right: hero image collage */}
-              <div style={{ position: 'relative' }} className="hero-visual">
-                <HeroCollage
-                  images={{
-                    large: BENTO_REFRESHMENTS,
-                    small1: BENTO_MEALS,
-                    small2: BENTO_PARTY,
-                  }}
+              {/* Right: bounce cards */}
+              <div style={{ position: 'relative', display: 'flex', justifyContent: 'center' }} className="hero-visual">
+                <BounceCards
+                  images={[heroImg1, heroImg2, heroImg3, heroImg4]}
+                  containerWidth={400}
+                  containerHeight={400}
+                  transformStyles={[
+                    'rotate(12deg) translate(-130px)',
+                    'rotate(4deg) translate(-40px)',
+                    'rotate(-4deg) translate(40px)',
+                    'rotate(-12deg) translate(130px)',
+                  ]}
+                  animationDelay={0.3}
+                  animationStagger={0.08}
+                  enableHover={true}
                 />
 
-                {/* Glass card — Top Rated */}
-                <div
-                  className="hero-glass-card"
-                  style={{
-                    position: 'absolute',
-                    bottom: '-1.5rem',
-                    left: '1rem',
-                    zIndex: 20,
-                    padding: '1.25rem 1.5rem',
-                    background: 'rgba(255, 255, 255, 0.8)',
-                    backdropFilter: 'blur(8px)',
-                    WebkitBackdropFilter: 'blur(8px)',
-                    borderRadius: 'var(--radius-xl)',
-                    boxShadow: 'var(--shadow-xl)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '1rem',
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 48,
-                      height: 48,
-                      background: 'var(--color-tertiary-fixed)',
-                      borderRadius: 'var(--radius-full)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                  position: 'relative',
-                  zIndex: 1,
-                      flexShrink: 0,
-                    }}
-                  >
-                    <span
-                      className="material-symbols-outlined"
-                      style={{
-                        fontSize: 24,
-                        color: 'var(--color-tertiary)',
-                        fontVariationSettings: "'FILL' 1, 'wght' 400",
-                      }}
-                    >
-                      star
-                    </span>
-                  </div>
-                  <div>
-                    <p
-                      style={{
-                        fontSize: '0.875rem',
-                        fontWeight: 600,
-                        color: 'var(--color-on-surface)',
-                      }}
-                    >
-                      Top Rated in Oton
-                    </p>
-                    <p
-                      style={{
-                        fontSize: '0.75rem',
-                        fontWeight: 500,
-                        color: 'var(--color-on-surface-variant)',
-                      }}
-                    >
-                      500+ Local Reviews
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -395,27 +346,55 @@ export default function Home() {
           }}
         >
           <div>
-            <h2
-              style={{
-                fontFamily: "'Okinawa', cursive",
-                fontSize: 'clamp(2rem, 4vw, 2.75rem)',
-                fontWeight: 400,
-                color: 'var(--color-primary)',
-                marginBottom: '0.5rem',
-                lineHeight: 1.2,
-              }}
-            >
-              Our Specialties
-            </h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+              <div style={{ width: 4, height: 28, background: 'var(--color-secondary)', borderRadius: 2 }} />
+              <h2
+                style={{
+                  fontFamily: "'Okinawa', cursive",
+                  fontSize: 'clamp(2rem, 4vw, 2.75rem)',
+                  fontWeight: 400,
+                  color: 'var(--color-primary)',
+                  lineHeight: 1.2,
+                }}
+              >
+                Our Specialties
+              </h2>
+            </div>
             <p
               style={{
                 fontSize: '1rem',
                 color: 'var(--color-on-surface-variant)',
+                marginLeft: '1.25rem',
               }}
             >
               Quality refreshment for every mood and occasion.
             </p>
           </div>
+          <a
+            href="/menu"
+            className="btn-interact bento-view-all"
+            style={{
+              alignItems: 'center',
+              gap: '0.25rem',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              color: 'var(--color-primary)',
+              textDecoration: 'none',
+              padding: '0.5rem 1rem',
+              borderRadius: 'var(--radius-full)',
+              border: '1.5px solid var(--color-outline-variant)',
+              flexShrink: 0,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-primary)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-outline-variant)';
+            }}
+          >
+            View Full Menu
+            <span className="material-symbols-outlined" style={{ fontSize: '1.1em' }}>arrow_forward</span>
+          </a>
         </div>
 
         {/* 12-col bento grid */}
@@ -544,26 +523,26 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Card 3: Party Packs (col-span-12) */}
+          {/* Card 3: Party Packs (col-span-12) — portrait layout */}
           <div className="bento-card bento-card-full bento-card-party">
             <FloatingPartyElements />
             <div
               style={{
                 display: 'flex',
-                flexDirection: 'row',
+                flexDirection: 'column',
                 height: '100%',
               }}
               className="bento-party-layout"
             >
               <div
                 style={{
-                  flex: 1,
                   padding: '2rem 2.5rem',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
                   position: 'relative',
                   zIndex: 1,
+                  flex: 1,
                 }}
               >
                 <h3
@@ -613,7 +592,7 @@ export default function Home() {
               <div
                 className="bento-party-image"
                 style={{
-                  width: '33.333%',
+                  height: '240px',
                   overflow: 'hidden',
                   position: 'relative',
                   zIndex: 1,
@@ -875,53 +854,17 @@ export default function Home() {
         </div>
       </Section>
 
+      <MobileNav
+        open={mobileOpen}
+        links={business.navLinks}
+        onClose={() => setMobileOpen(false)}
+        position="center"
+      />
+
       {/* ═══════════════════════════════════════════════════════
           RESPONSIVE STYLES
           ═══════════════════════════════════════════════════════ */}
       <style>{`
-
-        /* ─── Hero Collage ──────────────────────────────────── */
-        .hero-collage {
-          display: flex;
-          gap: 14px;
-          width: 100%;
-          aspect-ratio: 1 / 1;
-        }
-
-        .hero-collage-stacked {
-          flex: 0 0 calc(40% - 7px);
-          display: flex;
-          flex-direction: column;
-          gap: 14px;
-        }
-
-        .hero-collage-item {
-          border-radius: 18px;
-          overflow: hidden;
-          box-shadow: var(--shadow-lg, 0 10px 30px -8px rgba(0,0,0,0.15));
-          background: var(--color-surface-container);
-        }
-
-        .hero-collage-item img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          display: block;
-          transition: transform 0.5s ease;
-        }
-
-        .hero-collage-item:hover img {
-          transform: scale(1.05);
-        }
-
-        .hero-collage-large {
-          flex: 1;
-        }
-
-        .hero-collage-stack-top,
-        .hero-collage-stack-bottom {
-          flex: 1;
-        }
 
         /* ─── Bento 12-col grid ─── */
         .bento-12-col {
@@ -945,6 +888,15 @@ export default function Home() {
         }
 
         /* ─── Bento card base ─── */
+        .bento-view-all {
+          display: none !important;
+        }
+        @media (min-width: 768px) {
+          .bento-view-all {
+            display: inline-flex !important;
+          }
+        }
+
         .bento-card {
           position: relative;
           overflow: hidden;
@@ -952,14 +904,24 @@ export default function Home() {
           background: #ffffff;
           border: 1px solid rgba(191, 201, 193, 0.3);
           box-shadow: var(--shadow-sm);
-          transition: box-shadow 0.3s ease;
+          transition: box-shadow 0.4s ease, transform 0.4s ease;
           min-height: 400px;
+          animation: bento-fade-up 0.6s ease both;
         }
+        .bento-card:nth-child(1) { animation-delay: 0.1s; }
+        .bento-card:nth-child(2) { animation-delay: 0.2s; }
+        .bento-card:nth-child(3) { animation-delay: 0.3s; }
         .bento-card-full {
           min-height: 300px;
         }
         .bento-card:hover {
-          box-shadow: var(--shadow-md);
+          transform: translateY(-6px);
+          box-shadow: var(--shadow-xl);
+        }
+
+        @keyframes bento-fade-up {
+          from { opacity: 0; transform: translateY(30px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
 
         .bento-image-wrapper {
@@ -974,12 +936,12 @@ export default function Home() {
           transition: transform 0.7s ease;
         }
         .bento-card:hover .bento-img {
-          transform: scale(1.05);
+          transform: scale(1.08);
         }
         .bento-gradient {
           position: absolute;
           inset: 0;
-          background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+          background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.15) 50%, transparent 100%);
         }
         .bento-content {
           position: relative;
@@ -988,6 +950,36 @@ export default function Home() {
           bottom: 0;
           left: 0;
           padding: 2rem;
+        }
+
+        .bento-content h3 {
+          transition: transform 0.3s ease;
+        }
+        .bento-card:hover .bento-content h3 {
+          transform: translateY(-2px);
+        }
+        .bento-content .bento-cta-btn {
+          transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .bento-card:hover .bento-content .bento-cta-btn {
+          box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+          transform: translateY(-1px);
+        }
+
+        /* ─── Shine overlay on hover (not on party card) ─── */
+        .bento-card:not(.bento-card-party)::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+          background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.06) 55%, transparent 60%);
+          background-size: 200% 100%;
+          background-position: 200% 0;
+          transition: background-position 0.6s ease;
+          pointer-events: none;
+        }
+        .bento-card:not(.bento-card-party):hover::after {
+          background-position: -200% 0;
         }
 
         /* Party pack card — solid bg, no image overlay */
@@ -1009,6 +1001,10 @@ export default function Home() {
           background: radial-gradient(circle, rgba(251, 192, 2, 0.08) 0%, transparent 70%);
           pointer-events: none;
           z-index: 0;
+          transition: transform 0.6s ease;
+        }
+        .bento-card-party:hover::before {
+          transform: scale(1.3);
         }
         .bento-card-party::after {
           content: "";
@@ -1021,15 +1017,20 @@ export default function Home() {
           background: radial-gradient(circle, rgba(177, 240, 206, 0.07) 0%, transparent 70%);
           pointer-events: none;
           z-index: 0;
+          transition: transform 0.6s ease;
+        }
+        .bento-card-party:hover::after {
+          transform: scale(1.3);
         }
         .bento-card-party:hover {
-          box-shadow: var(--shadow-md);
+          box-shadow: var(--shadow-xl);
+          transform: translateY(-6px);
         }
         .bento-card-party .bento-img {
           transition: transform 0.7s ease;
         }
         .bento-card-party:hover .bento-img {
-          transform: scale(1.05);
+          transform: scale(1.08);
         }
 
         /* ─── Floating party elements (leaves, sparkle, dots) ─── */
@@ -1111,8 +1112,30 @@ export default function Home() {
 
         /* ─── Mobile Hero ──────────────────────────────────── */
         @media (max-width: 767px) {
+          html, body {
+            overflow-x: hidden;
+          }
           .hero-gradient {
-            padding: 2rem 0 3rem !important;
+            padding: 5rem 0 3rem !important;
+            background: none !important;
+            overflow: visible !important;
+          }
+          /* Transparent navbar on mobile so hero SVG shows through */
+          nav {
+            background: transparent !important;
+            box-shadow: none !important;
+          }
+          .nav-mobile-toggle {
+            color: #ffffff !important;
+          }
+          .hero-blob {
+            display: none !important;
+          }
+          .hero-mobile-bg {
+            display: block !important;
+            top: -120px !important;
+            height: calc(100% + 120px) !important;
+            object-position: center center !important;
           }
           .hero-grid {
             grid-template-columns: 1fr !important;
@@ -1123,33 +1146,36 @@ export default function Home() {
           }
           .hero-text h1 {
             font-size: 2rem !important;
+            color: #ffffff !important;
+          }
+          .hero-text h1 span {
+            color: #fbc002 !important;
           }
           .hero-description {
             font-size: 0.9375rem !important;
             max-width: 100% !important;
             margin-left: auto !important;
             margin-right: auto !important;
+            color: rgba(255,255,255,0.85) !important;
           }
           .hero-cta {
             justify-content: center !important;
           }
+          .hero-cta a:last-child {
+            border-color: rgba(255,255,255,0.6) !important;
+            color: #ffffff !important;
+          }
           .hero-location-badge {
             padding: 0.375rem 2rem !important;
             font-size: 0.6875rem !important;
+            --loc-bg: var(--loc-bg-mobile) !important;
+            color: var(--color-primary) !important;
+            font-weight: 600 !important;
           }
           .hero-visual {
             max-width: 480px !important;
             margin: 0 auto !important;
             width: 100% !important;
-          }
-          .hero-glass-card {
-            bottom: -1rem !important;
-            left: 0.75rem !important;
-            padding: 1rem 1.25rem !important;
-          }
-          /* Smaller blob on mobile */
-          .hero-gradient img[aria-hidden="true"] {
-            width: 280px !important;
           }
         }
 

@@ -3,12 +3,13 @@
  * Bottom-border active links, restaurant icon in header.
  */
 import { useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { business } from '../../data/business';
 import Icon from '../ui/Icon';
+import logo from '../../assets/triology-logo.png';
 import { useActiveSection } from '../../context/ActiveSectionContext';
 
-export default function MobileNav({ open, links, onClose }) {
+export default function MobileNav({ open, links, onClose, position = 'side' }) {
   const location = useLocation();
   const { activeSection } = useActiveSection();
   const isEventsPage = location.pathname === '/events';
@@ -35,21 +36,42 @@ export default function MobileNav({ open, links, onClose }) {
 
       {/* Drawer */}
       <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          width: 'min(320px, 100vw)',
-          zIndex: 201,
-          background: 'var(--color-surface-container-lowest)',
-          boxShadow: 'var(--shadow-xl)',
-          transform: open ? 'translateX(0)' : 'translateX(100%)',
-          transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflowY: 'auto',
-        }}
+        style={
+          position === 'center'
+            ? {
+                position: 'fixed',
+                top: '50%',
+                left: '50%',
+                transform: open ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0.9)',
+                width: 'min(380px, calc(100vw - 2rem))',
+                maxHeight: '80vh',
+                zIndex: 201,
+                background: 'var(--color-surface-container-lowest)',
+                boxShadow: 'var(--shadow-xl)',
+                borderRadius: 'var(--radius-2xl)',
+                opacity: open ? 1 : 0,
+                transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                overflowY: 'auto',
+                pointerEvents: open ? 'auto' : 'none',
+              }
+            : {
+                position: 'fixed',
+                top: 0,
+                right: 0,
+                bottom: 0,
+                width: 'min(320px, 100vw)',
+                zIndex: 201,
+                background: 'var(--color-surface-container-lowest)',
+                boxShadow: 'var(--shadow-xl)',
+                transform: open ? 'translateX(0)' : 'translateX(100%)',
+                transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                display: 'flex',
+                flexDirection: 'column',
+                overflowY: 'auto',
+              }
+        }
       >
         {/* Header with icon */}
         <div
@@ -62,17 +84,13 @@ export default function MobileNav({ open, links, onClose }) {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Icon name="restaurant" size={24} color="var(--color-primary)" />
-            <span
-              style={{
-                fontFamily: 'var(--font-headline)',
-                fontSize: '1.125rem',
-                fontWeight: 700,
-                color: 'var(--color-primary)',
-              }}
-            >
-              {business.name}
-            </span>
+            <Link to="/" onClick={onClose}>
+              <img
+                src={logo}
+                alt={business.name}
+                style={{ height: '2.25rem', width: 'auto', display: 'block' }}
+              />
+            </Link>
           </div>
           <button
             onClick={onClose}

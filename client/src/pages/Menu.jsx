@@ -20,7 +20,7 @@ export default function Menu() {
           DELIVERY BANNER
           ═══════════════════════════════════════════════════════ */}
       <div className="menu-delivery-banner">
-        <div className="container">
+        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           <div className="menu-delivery-inner">
             <div className="menu-delivery-info">
               <Icon name="delivery_dining" size={20} />
@@ -176,6 +176,12 @@ export default function Menu() {
           background: var(--color-primary-container);
           color: var(--color-on-primary-container);
           padding: 0.75rem 0;
+          position: relative;
+        }
+
+        .menu-delivery-banner .container {
+          position: relative;
+          z-index: 1;
         }
 
         .menu-delivery-inner {
@@ -216,6 +222,8 @@ export default function Menu() {
             text-align: left;
           }
         }
+
+        .menu-hero-container {
 
         .menu-hero-container {
           position: relative;
@@ -437,6 +445,20 @@ export default function Menu() {
         @keyframes menu-float-shift {
           0%   { transform: translate(0, 0) rotate(0deg); }
           100% { transform: translate(6px, -8px) rotate(8deg); }
+        }
+
+        /* ─── Mobile: delivery banner ─────────────────────── */
+        @media (max-width: 767px) {
+          html, body {
+            overflow-x: hidden;
+          }
+          .menu-delivery-banner {
+            color: #ffffff !important;
+          }
+          .menu-delivery-text,
+          .menu-delivery-location {
+            color: #ffffff !important;
+          }
         }
       `}</style>
     </main>

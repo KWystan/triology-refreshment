@@ -18,6 +18,7 @@ export default function Navbar({ className = '' }) {
   const location = useLocation();
   const { activeSection } = useActiveSection();
   const isEventsPage = location.pathname === '/events';
+  const isHomePage = location.pathname === '/';
 
   return (
     <>
@@ -205,26 +206,33 @@ export default function Navbar({ className = '' }) {
               </button>
             </div>
 
-            {/* Mobile toggle */}
+            {/* Mobile toggle — animated hamburger */}
+            {!isHomePage && (
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: 40,
-                height: 40,
-                borderRadius: 'var(--radius-md)',
-                background: 'none',
+                width: 28,
+                height: 28,
+                borderRadius: '6px',
+                background: 'var(--color-primary-container)',
                 border: 'none',
                 cursor: 'pointer',
-                color: 'var(--color-on-surface)',
               }}
               className="nav-mobile-toggle btn-interact"
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             >
-              <Icon name={mobileOpen ? 'close' : 'menu'} size={24} />
+              <svg
+                viewBox="0 0 32 32"
+                className={`hamburger-icon${mobileOpen ? ' hamburger-open' : ''}`}
+              >
+                <path className="h-line h-line-tb" d="M28 10 12 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L6 22" />
+                <path className="h-line" d="M4 16 28 16" />
+              </svg>
             </button>
+            )}
           </div>
         </div>
       </nav>
@@ -249,10 +257,47 @@ export default function Navbar({ className = '' }) {
           transform: rotate(-6deg);
         }
 
+        /* ─── Animated hamburger icon ─────────────────────── */
+        .hamburger-icon {
+          height: 1.25em;
+          transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hamburger-icon .h-line {
+          fill: none;
+          stroke: #ffffff;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+          stroke-width: 3;
+          transition: stroke-dasharray 600ms cubic-bezier(0.4, 0, 0.2, 1),
+                      stroke-dashoffset 600ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hamburger-icon .h-line-tb {
+          stroke-dasharray: 12 63;
+        }
+
+        .hamburger-icon.hamburger-open {
+          transform: rotate(-45deg);
+        }
+
+        .hamburger-icon.hamburger-open .h-line-tb {
+          stroke-dasharray: 20 300;
+          stroke-dashoffset: -32.42;
+        }
+
         @media (min-width: 768px) {
           .nav-desktop { display: flex !important; }
           .nav-buttons { display: flex !important; }
           .nav-mobile-toggle { display: none !important; }
+        }
+        @media (max-width: 767px) {
+          .nav-logo-glow {
+            opacity: 0.5;
+          }
+          nav {
+            box-shadow: none !important;
+          }
         }
       `}</style>
     </>

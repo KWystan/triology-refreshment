@@ -12,6 +12,7 @@
  */
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import ProductDetailModal from './ProductDetailModal';
+import { CATEGORY_ICONS } from './CategoryIcons';
 
 /* ─── Price formatting helper ─────────────────────────────── */
 function formatItemPrice(item, categoryPriceNote) {
@@ -173,23 +174,30 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
   return (
     <div>
       {/* ═══════════════════════════════════════════════════════
-          Toolbar — filter tabs
+          Toolbar — filter tabs with scroll gradient hint
           ═══════════════════════════════════════════════════════ */}
       <div className="mpg-toolbar">
-        {/* Pill tabs */}
-        <div className="mpg-tabs">
+        {/* Icon slider tabs */}
+        <div className="mpg-tabs-scroll-wrap">
+          <div className="mpg-tabs">
           {tabs.map((tab) => {
             const isActive = tab.id === activeCategory;
+            const iconData = CATEGORY_ICONS[tab.id];
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveCategory(tab.id)}
                 className={`btn-interact mpg-tab${isActive ? ' mpg-tab-active' : ''}`}
+                title={tab.label}
               >
-                {tab.label}
+                <span className="mpg-tab-icon-wrap">
+                  {iconData?.Icon && <iconData.Icon size={24} />}
+                </span>
+                <span className="mpg-tab-label">{iconData?.shortLabel || tab.label}</span>
               </button>
             );
           })}
+          </div>
         </div>
       </div>
 
@@ -253,7 +261,33 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
           margin-bottom: 2.5rem;
         }
 
-        /* ─── Pill tabs (left) ─────────────────────────────── */
+        /* ─── Scroll wrapper — track + peek affordance ──────── */
+        .mpg-tabs-scroll-wrap {
+          flex: 1;
+          min-width: 0;
+          position: relative;
+          background: var(--color-surface-container);
+          border-radius: var(--radius-2xl);
+          padding: 6px;
+        }
+        /* Right fade gradient to hint there's more to scroll */
+        .mpg-tabs-scroll-wrap::after {
+          content: '';
+          position: absolute;
+          top: 6px;
+          right: 6px;
+          bottom: 6px;
+          width: 32px;
+          background: linear-gradient(
+            to right,
+            transparent,
+            var(--color-surface-container)
+          );
+          pointer-events: none;
+          border-radius: 0 var(--radius-2xl) var(--radius-2xl) 0;
+        }
+
+        /* ─── Icon slider tabs ──────────────────────────────── */
         .mpg-tabs {
           display: flex;
           gap: 0.5rem;
@@ -262,6 +296,8 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
           scrollbar-width: none;
           flex: 1;
           min-width: 0;
+          padding: 0.5rem 0;
+          scroll-snap-type: x mandatory;
         }
         .mpg-tabs::-webkit-scrollbar {
           display: none;
@@ -269,30 +305,122 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
 
         .mpg-tab {
           flex-shrink: 0;
-          padding: 0.5rem 1.25rem;
-          border-radius: var(--radius-full, 9999px);
-          font-size: 0.875rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.25rem;
+          padding: 0.5rem 0.75rem;
+          border-radius: var(--radius-xl);
+          font-size: 0.6875rem;
           font-weight: 600;
-          line-height: 1.4;
+          line-height: 1.2;
           border: none;
           cursor: pointer;
           transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+          min-width: 0;
+          scroll-snap-align: start;
+          background: transparent;
         }
 
-        .mpg-tab-active {
+        .mpg-tab-icon-wrap {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 44px;
+          height: 44px;
+          border-radius: var(--radius-full);
+          transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .mpg-tab-active .mpg-tab-icon-wrap {
           background: var(--color-primary);
           color: var(--color-on-primary);
           box-shadow: var(--shadow-sm);
         }
 
-        .mpg-tab:not(.mpg-tab-active) {
+        .mpg-tab:not(.mpg-tab-active) .mpg-tab-icon-wrap {
           background: transparent;
           color: var(--color-on-surface-variant);
-          border: 1px solid var(--color-outline-variant);
+          border: 1.5px solid var(--color-outline-variant);
         }
-        .mpg-tab:not(.mpg-tab-active):hover {
+        .mpg-tab:not(.mpg-tab-active):hover .mpg-tab-icon-wrap {
           background: var(--color-surface-container-high);
           border-color: var(--color-outline);
+        }
+
+        .mpg-tab-label {
+          white-space: nowrap;
+        }
+
+        .mpg-tab-active .mpg-tab-label {
+          color: var(--color-primary);
+          font-weight: 700;
+        }
+
+        .mpg-tab:not(.mpg-tab-active) .mpg-tab-label {
+          color: var(--color-on-surface-variant);
+          font-weight: 500;
+        }
+
+        /* ─── Desktop: horizontal pill tabs ──────────────────── */
+        @media (min-width: 768px) {
+          .mpg-tabs-scroll-wrap {
+            background: none;
+            padding: 0;
+          }
+          .mpg-tabs-scroll-wrap::after {
+            display: none;
+          }
+
+          .mpg-tab {
+            flex-direction: row;
+            padding: 0.5rem 1.125rem;
+            gap: 0.5rem;
+            border-radius: var(--radius-full);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            scroll-snap-align: unset;
+          }
+
+          .mpg-tab-icon-wrap {
+            width: 26px;
+            height: 26px;
+          }
+
+          /* Active state: entire pill filled */
+          .mpg-tab-active {
+            background: var(--color-primary);
+            color: var(--color-on-primary);
+            box-shadow: var(--shadow-sm);
+          }
+          .mpg-tab-active .mpg-tab-icon-wrap {
+            background: transparent;
+            color: var(--color-on-primary);
+            border: none;
+            box-shadow: none;
+          }
+          .mpg-tab-active .mpg-tab-label {
+            color: var(--color-on-primary);
+          }
+
+          /* Inactive state: outlined pill */
+          .mpg-tab:not(.mpg-tab-active) {
+            background: transparent;
+            color: var(--color-on-surface-variant);
+            border: 1.5px solid var(--color-outline-variant);
+          }
+          .mpg-tab:not(.mpg-tab-active):hover {
+            background: var(--color-surface-container-high);
+            border-color: var(--color-outline);
+          }
+          .mpg-tab:not(.mpg-tab-active) .mpg-tab-icon-wrap {
+            background: transparent;
+            border: none;
+            color: var(--color-primary);
+          }
+          .mpg-tab:not(.mpg-tab-active) .mpg-tab-label {
+            color: inherit;
+          }
         }
 
         /* ─── Category Section ──────────────────────────────── */
