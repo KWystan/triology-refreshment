@@ -510,6 +510,14 @@ export default function EventsContact() {
             width: 50%;
           }
         }
+        @media (max-width: 480px) {
+          .events-room-gallery {
+            grid-template-columns: 1fr;
+          }
+          .events-gal-col-offset {
+            padding-top: 0;
+          }
+        }
 
         .events-gal-col {
           display: flex;
@@ -665,6 +673,11 @@ export default function EventsContact() {
           grid-template-columns: repeat(2, 1fr);
           gap: 1rem;
         }
+        @media (max-width: 480px) {
+          .events-form-row {
+            grid-template-columns: 1fr;
+          }
+        }
 
         .events-form-label {
           display: block;
@@ -773,6 +786,11 @@ export default function EventsContact() {
           color: var(--color-primary);
         }
 
+        @media (max-width: 767px) {
+          html, body {
+            overflow-x: hidden;
+          }
+        }
       `}</style>
     </main>
   );

@@ -15,7 +15,8 @@ triology/          Root: package.json with "workspaces": ["client", "server"]
 │   │   ├── components/     UI primitives + layout components
 │   │   │   ├── layout/     Navbar, Footer, MobileNav, BottomMobileNav, FAB, Section, DeliveryBanner
 │   │   │   └── ui/         Button, Icon, Badge, SectionHeading, MenuProductGrid, ProductDetailModal,
-│   │   │                   SearchBar, CategoryIcons, ContactCard, InquiryForm, StatDisplay, ServiceCard
+│   │   │                   SearchBar, CategoryIcons, ContactCard, InquiryForm, StatDisplay, ServiceCard,
+│   │   │                   MenuCard, MenuFilterTabs, BentoCard, BounceCards
 │   │   ├── pages/          Home, Menu, PartyPacks, EventsContact, NotFound
 │   │   ├── data/           Static data (menuItems.js — 7 categories 41 items, bundles.js, business.js)
 │   │   ├── design-system/  tokens.js (JS design tokens) + index.js barrel
@@ -50,7 +51,7 @@ triology/          Root: package.json with "workspaces": ["client", "server"]
 ### Design System: Dual Token Source
 
 Visual tokens exist in **two places** that must stay in sync:
-1. **`client/src/design-system/tokens.js`** — JS exports (used by component imports)
+1. **`client/src/design-system/tokens.js`** — JS exports (used by component imports). Barrel at `design-system/index.js` re-exports all token groups.
 2. **`client/src/styles/global.css` `:root`** — CSS custom properties (used by all components via `var(--color-*)`)
 
 The CSS variables are the runtime source of truth. Components use `var(--color-*)` / `var(--font-*)` / `var(--radius-*)` / `var(--shadow-*)` — never hardcoded values (except in Stitch-generated page code).
@@ -61,7 +62,13 @@ The CSS variables are the runtime source of truth. Components use `var(--color-*
 
 ### Styling Pattern
 
-All components use **inline `style={{}}` with CSS custom properties** (`var(--color-*)`, `var(--font-*)`, `var(--radius-*)`, `var(--shadow-*)`) plus **scoped `<style>` blocks** for complex responsive layouts. There is no CSS-in-JS library. Page-specific CSS lives in scoped `<style>` tags within page components, not in global.css. The `btn-interact` global class provides hover/active transform behavior (defined in `global.css`).
+All components use **inline `style={{}}` with CSS custom properties** (`var(--color-*)`, `var(--font-*)`, `var(--radius-*)`, `var(--shadow-*)`) plus **scoped `<style>` blocks** for complex responsive layouts. There is no CSS-in-JS library. Page-specific CSS lives in scoped `<style>` tags within page components, not in global.css.
+
+The `btn-interact` global class (defined in `global.css`) provides hover/active transform behavior (`scale(0.97)` on active, `opacity(0.85)` on hover).
+
+### Import Alias
+
+Vite is configured with `@` → `./src`. Import with `import Foo from '@/components/Foo'` or relative paths.
 
 ### Supabase: Two Client Split
 
@@ -81,22 +88,24 @@ The admin client (`supabaseAdmin`) bypasses RLS. Never expose the service-role k
 
 ### Express Backend
 
-- Express 5 with ESM (`"type": "module"`)
-- Centralized error handler at `server/src/middleware/errorHandler.js` — throw `err.status` + `err.message` from handlers
-- Request validation middleware at `server/src/middleware/validate.js` — factory that validates `body` / `query` / `params` against schema functions; passes a 400 with structured errors on failure
-- Helmet, CORS (origin from env), Morgan logging
-- `server/src/config/env.js` validates required env vars at startup with a `required()` helper — MISSING_ENV errors mean the `.env` file is incomplete
-- Health check at `GET /api/health`
-- Service, validator, and utility directories are **scaffolded but empty** (only .gitkeep) — ready for business logic
+- **Express 5** with ESM (`"type": "module`). Express 5 automatically catches rejected promises in async route handlers, so `try/catch` + `next(err)` in controllers is a safety net, not strictly required for async handlers.
+- Centralized error handler at `server/src/middleware/errorHandler.js` — throw `err.status` + `err.message` from handlers. Express 5's error handler catches both sync throws and rejected promises without explicit `next(err)`.
+- Request validation middleware at `server/src/middleware/validate.js` — factory that validates `body` / `query` / `params` against schema functions; passes a 400 with structured errors on failure. Schemas are plain functions returning `{ valid: boolean, errors?: { field, message }[] }`.
+- Helmet, CORS (origin from env), Morgan logging.
+- **Environment validation:** `server/src/config/env.js` uses a `required()` helper that throws with a descriptive message on missing vars. Add new env vars to `env.js` with either `required('VAR_NAME')` or `process.env.VAR_NAME || 'default'`. The file exposes `isDev`/`isProd` getters.
+- Health check at `GET /api/health`.
+- Service, validator, and utility directories are **scaffolded but empty** (only .gitkeep) — ready for business logic.
+- Route pattern: mount everything under `/api` via `routes/index.js`.
 
 ### Frontend
 
-- React 19 with React Router 7 (`BrowserRouter` in main.jsx)
-- Vite proxies `/api/*` → `localhost:4000` (no CORS issues in dev)
-- `@` import alias resolves to `./src`
-- Pages: Home (`/`), Menu (`/menu`), PartyPacks (`/party-packs`), EventsContact (`/events`), NotFound (`*`)
-- `ActiveSectionContext` for scroll-based nav highlighting (used by EventsContact page)
-- `client/src/hooks/` directory exists but is empty — no custom hooks defined yet
+- **React 19** with React Router 7 (`BrowserRouter` in main.jsx).
+- Vite proxies `/api/*` → `localhost:4000` (no CORS issues in dev).
+- `@` import alias resolves to `./src`.
+- Pages: Home (`/`), Menu (`/menu`), PartyPacks (`/party-packs`), EventsContact (`/events`), NotFound (`*`).
+- `ActiveSectionContext` for scroll-based nav highlighting (used by EventsContact page → Navbar / MobileNav).
+- `client/src/hooks/` directory exists but is **empty** — only a barrel file with comments. No custom hooks defined yet.
+- All components are re-exported from `client/src/components/index.js` (barrel file).
 
 ### Menu Data Architecture
 
@@ -126,7 +135,7 @@ Two image sourcing strategies coexist:
 
 - **No global state library** — uses React Context (`ActiveSectionContext`) for nav highlighting
 - **localStorage** used for favorites persistence in `MenuProductGrid`
-- **Form submissions are simulated** — both InquiryForm usages (EventsContact, PartyPacks) use `setTimeout` to simulate async submission, no actual API calls yet
+- **Form submissions are simulated** — both `InquiryForm` usages (EventsContact, PartyPacks) use `setTimeout` to simulate async submission, no actual API calls yet
 - **FAB and Navbar action icons** (user, favorites, cart) are currently **display-only** with no onClick handlers
 
 ### Mobile Navigation Routes
@@ -135,15 +144,45 @@ Two image sourcing strategies coexist:
 
 ### Root Dependencies
 
-GSAP (`^3.15.0`) is in the root `package.json` for animation. It's installed but not yet imported by any component.
+GSAP (`^3.15.0`) is in the root `package.json` for animation. It's installed but **not yet imported by any component**.
 
 ### Icons
 
-All icons use **Google Material Symbols Outlined** (variable font). Render with `<span class="material-symbols-outlined">icon_name</span>` or the `Icon` wrapper component (`client/src/components/ui/Icon.jsx`). The icon library is loaded from Google Fonts — no local icon files.
+All icons use **Google Material Symbols Outlined** (variable font). Render with `<span class="material-symbols-outlined">icon_name</span>` or the `Icon` wrapper component (`client/src/components/ui/Icon.jsx`). The `Icon` component accepts `name`, `size`, `fill`, `weight`, `grade`, `ariaLabel` props. The icon library is loaded from Google Fonts — no local icon files.
 
 ### Stitch Design References
 
 `stitch-*.html` files in the project root (home, menu, party, event) are **design specs exported from Google Stitch**, not part of the React app. They contain the original screen designs the React code was built from. `docs/website-structure-for-stitch.txt` is a detailed page map used as Stitch context — useful reference for page structure.
+
+### Barrel Export Pattern
+
+- `client/src/components/index.js` — all UI and layout components re-exported
+- `client/src/design-system/index.js` — all token groups re-exported
+- `client/src/hooks/index.js` — empty barrel, ready for future hooks
+
+### Page Component Conventions
+
+Every page component follows a **numbered JSDoc section comment** pattern at the top:
+```jsx
+/**
+ * PageName
+ *
+ * Sections:
+ *   1. Hero — description
+ *   2. Features — description
+ *   3. Contact — description
+ */
+```
+Sections are separated by comment blocks like `{/* ═══════ SECTION NAME ═══════ */}`.
+
+## ESLint Configuration
+
+Both packages use **ESLint 9 flat config** (`eslint.config.js`):
+
+- **Client** (`client/eslint.config.js`): extends `eslint:recommended` + `plugin:react/recommended` + `plugin:react/jsx-runtime` + `react-hooks/recommended` + `react-refresh/only-export-components`. JSX enabled. Target: browsers.
+- **Server** (`server/eslint.config.js`): extends `eslint:recommended` only. Target: Node.js.
+
+Zero warnings allowed (`--max-warnings 0`).
 
 ## Data Layer (Static)
 
@@ -164,6 +203,10 @@ Some components are exported from the barrel (`components/index.js`) but their f
 
 These may be legacy components or intended for future reuse. When making changes, prefer modifying the inlined implementations (they're the live code), not the standalone wrappers.
 
+## API Client Pattern
+
+`client/src/lib/api.js` exports an `api` object with `get`, `post`, `put`, `patch`, `delete` methods. All point to `/api/*` (proxied to Express in dev). Throws on non-2xx with parsed error body. Returns `null` on 204.
+
 ## Assets
 
 Images live in `client/src/assets/`:
@@ -171,6 +214,19 @@ Images live in `client/src/assets/`:
 - `halo_halo/` — 8 per-item images for the Halo-Halo category
 - Root-level image imports (`foodsample.jpg`, `triology-logo.png`, various SVGs) are used as fallbacks and decorative elements
 - Most food images in the menu data currently point to `foodsample.jpg` (placeholder)
+
+## Testing
+
+No test framework is configured yet. **Vitest** is the intended test runner (mentioned in README). No test files exist anywhere.
+
+## Environment Setup
+
+Three `.env.example` files exist: root, `client/`, `server/`. Copy these to `.env` and fill in Supabase credentials from Supabase dashboard → Settings → API.
+
+Client env vars: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`
+Server env vars: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `PORT`, `NODE_ENV`, `CLIENT_ORIGIN`, `SESSION_SECRET`
+
+The server's `env.js` will throw a descriptive `MISSING_ENV` error at startup if `required()` vars are missing.
 
 ## Common Commands
 
@@ -185,7 +241,7 @@ npm run dev
 
 # Start individually
 npm run dev:client   # Vite only
-npm run dev:server   # Express with --watch
+npm run dev:server   # Express with --watch (Node 18+ built-in --watch)
 
 # Build for production
 npm run build
@@ -193,7 +249,7 @@ npm run build
 # Start production server
 npm run start
 
-# Lint both packages
+# Lint both packages (ESLint 9, --max-warnings 0)
 npm run lint
 
 # Lint individually
@@ -204,25 +260,15 @@ npm run lint -w server
 npm run clean
 ```
 
-## Environment Setup
-
-```bash
-cp client/.env.example client/.env
-cp server/.env.example server/.env
-# Fill in Supabase credentials from Supabase dashboard → Settings → API
-```
-
-Client env vars: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`
-Server env vars: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `PORT`, `NODE_ENV`, `CLIENT_ORIGIN`, `SESSION_SECRET`
-
 ## Conventions
 
 - **ESM only** — both packages use `"type": "module"`
-- **Prettier** with semi, single quotes, trailing commas, 100 print width
-- **ESLint 9 flat config** (`eslint.config.js` in each package)
-- **No tests yet** — Vitest is the intended test runner (mentioned in README)
+- **Prettier** with semi, single quotes, trailing commas, 100 print width, 2-space indent
+- **ESLint 9 flat config** (`eslint.config.js` in each package), zero warnings
+- **No tests yet** — Vitest is intended
 - **CSS**: Components use inline `style={{}}` with CSS custom properties (`var(--color-*)`) + scoped `<style>` blocks for complex responsive layouts (page components have their own `<style>` tags). The `btn-interact` class provides global hover/active transform behavior.
 - **JSDoc** on all components describing props
-- **`container` class** provides max-width 1280px + responsive padding
+- **`container` class** provides max-width 1280px + responsive padding (16px mobile, 64px desktop)
+- **`section-padding` class** provides vertical padding (4rem mobile, 6rem desktop)
 - **Mobile-first** breakpoints: 640px (sm), 768px (md), 1024px (lg), 1280px (xl)
 - **Every page component** follows a section-based structure with clear JSDoc section comments (numbered) at the top

@@ -859,6 +859,12 @@ export default function PartyPacks() {
           text-decoration: underline;
           text-decoration-color: var(--color-secondary);
         }
+
+        @media (max-width: 767px) {
+          html, body {
+            overflow-x: hidden;
+          }
+        }
       `}</style>
     </main>
   );

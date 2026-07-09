@@ -23,6 +23,7 @@ import venueImage from '../assets/venue.jpg';
 
 // Placeholder — swap with actual large anchor image later
 import heroLargeImage from '../assets/hero/hero-image-big.png';
+import logo from '../assets/triology-logo.png';
 
 const BENTO_REFRESHMENTS = bentoRefreshments;
 
@@ -35,6 +36,16 @@ const ABOUT_IMG_1 =
 
 const ABOUT_IMG_2 =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuABZg_dCZjNXiComIAx_X0IW3sudfkUaL9e5x1IBEkLEUBofbcNj8bFP1H7_a1dE-jmGQFglzuBo7u4R8aE1AwjDtY81w-puhBRftd9lmyuXd9JwLy9VAjNA5QzCNDG8aP4ZMBeli6BjNpa_8Pg6KCRX6h7tst2zeBo-kSOw_WC9s6c-hyB86uR3B0bFIWGYrcuVmxysJsutFWMVz3taReUBxvhIajxHy-I391CNoSCx-4bTU5-4flj0DZO0fWJ9z0LMooqAplikz2P';
+
+// Images 1-3 always visible; img4 at ≥768px; img5 at ≥1280px
+const ABOUT_IMG_3 =
+  'https://lh3.googleusercontent.com/aida-public/AB6AXuA7hm9ZLC9O2NMpOAwuUR-dpsygHqWIF0G-_lutIPggE-VgJaQ_LCjTlQ72rdS38CA5bmJaV0NvEPTH3zQSyRkel5t1PGC8Belh6dH7VEOToib2ZzNrgz75a-sV1q_AlVEK2f8C5KuU35JIGQFK5BaqJMgGiSdIPCNyECyPBkIKB062k7eoaLuEA_h5v6khQEgbvGwann0_tV8QR3As6cUeJgFZscrDzJCaoSoAxtDt8FslffEWooQRtRQ1iuruxoeYs59l--6lLKim';
+
+const ABOUT_IMG_4 =
+  'https://lh3.googleusercontent.com/aida-public/AB6AXuABZg_dCZjNXiComIAx_X0IW3sudfkUaL9e5x1IBEkLEUBofbcNj8bFP1H7_a1dE-jmGQFglzuBo7u4R8aE1AwjDtY81w-puhBRftd9lmyuXd9JwLy9VAjNA5QzCNDG8aP4ZMBeli6BjNpa_8Pg6KCRX6h7tst2zeBo-kSOw_WC9s6c-hyB86uR3B0bFIWGYrcuVmxysJsutFWMVz3taReUBxvhIajxHy-I391CNoSCx-4bTU5-4flj0DZO0fWJ9z0LMooqAplikz2P';
+
+const ABOUT_IMG_5 =
+  'https://lh3.googleusercontent.com/aida-public/AB6AXuA7hm9ZLC9O2NMpOAwuUR-dpsygHqWIF0G-_lutIPggE-VgJaQ_LCjTlQ72rdS38CA5bmJaV0NvEPTH3zQSyRkel5t1PGC8Belh6dH7VEOToib2ZzNrgz75a-sV1q_AlVEK2f8C5KuU35JIGQFK5BaqJMgGiSdIPCNyECyPBkIKB062k7eoaLuEA_h5v6khQEgbvGwann0_tV8QR3As6cUeJgFZscrDzJCaoSoAxtDt8FslffEWooQRtRQ1iuruxoeYs59l--6lLKim';
 
 /* ═══════════════════════════════════════════════════════════════
    FloatingPartyElements — animated SVG leaves, sparkles & circles
@@ -630,7 +641,7 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════════════
           ABOUT / VIBE SECTION
           ═══════════════════════════════════════════════════════ */}
-      <Section background="var(--color-surface-container-low)">
+      <Section background="var(--color-surface-container-low)" className="about-section">
         <div
           style={{
             display: 'flex',
@@ -639,49 +650,22 @@ export default function Home() {
           }}
           className="about-layout"
         >
-          {/* Left: image collage */}
-          <div className="about-images" style={{ flex: 1 }}>
+          {/* Text (above collage on mobile, right side on desktop) */}
+          <div className="about-text" style={{ flex: 1, textAlign: 'center' }}>
+            <img
+              src={logo}
+              alt="Triology Refreshment"
+              style={{ height: 80, width: 'auto', display: 'block', margin: '0 auto 0.75rem' }}
+            />
             <div
               style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '1rem',
+                width: '4.5rem',
+                height: '3px',
+                background: 'var(--color-secondary)',
+                borderRadius: 2,
+                margin: '0 0 1.5rem 1.25rem',
               }}
-            >
-              <div
-                style={{
-                  aspectRatio: '4 / 5',
-                  borderRadius: 'var(--radius-xl)',
-                  overflow: 'hidden',
-                  marginTop: '2rem',
-                }}
-              >
-                <img
-                  src={ABOUT_IMG_1}
-                  alt="Local family enjoying refreshments"
-                  loading="lazy"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              </div>
-              <div
-                style={{
-                  aspectRatio: '4 / 5',
-                  borderRadius: 'var(--radius-xl)',
-                  overflow: 'hidden',
-                }}
-              >
-                <img
-                  src={ABOUT_IMG_2}
-                  alt="Fresh ingredients being prepared"
-                  loading="lazy"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Right: text */}
-          <div className="about-text" style={{ flex: 1, textAlign: 'center' }}>
+            />
             <h2
               style={{
                 fontFamily: "'Okinawa', cursive",
@@ -789,6 +773,30 @@ export default function Home() {
                 </p>
               </div>
             </div>
+
+          </div>
+
+          {/* Image collage (below text on mobile, left side on desktop via order) */}
+          <div className="about-images" style={{ flex: 1 }}>
+
+            <div className="about-collage-desktop">
+              <div className="about-collage-anchor">
+                <img src={ABOUT_IMG_1} alt="Triology Refreshment — our story" loading="lazy" />
+              </div>
+              <div className="about-collage-img2">
+                <img src={ABOUT_IMG_2} alt="Fresh ingredients at Triology" loading="lazy" />
+              </div>
+              <div className="about-collage-img3">
+                <img src={ABOUT_IMG_3} alt="Prepared dishes at Triology" loading="lazy" />
+              </div>
+              <div className="about-collage-img4">
+                <img src={ABOUT_IMG_4} alt="Community dining at Triology" loading="lazy" />
+              </div>
+              <div className="about-collage-img5">
+                <img src={ABOUT_IMG_5} alt="Celebrations at Triology" loading="lazy" />
+              </div>
+            </div>
+
           </div>
         </div>
       </Section>
@@ -884,6 +892,7 @@ export default function Home() {
           display: grid;
           grid-template-columns: 1fr;
           gap: 24px;
+          margin: 0 clamp(0px, 2vw, 1rem);
         }
         @media (min-width: 768px) {
           .bento-12-col {
@@ -1056,8 +1065,9 @@ export default function Home() {
           flex: 1;
         }
         .bento-party-image {
-          flex: 1.6;
-          min-height: 280px;
+          flex: 1;
+          aspect-ratio: 4 / 3;
+          overflow: hidden;
         }
         .bento-party-image img {
           width: 100%;
@@ -1070,10 +1080,13 @@ export default function Home() {
             flex-direction: column;
           }
           .bento-party-layout > div:first-child {
+            flex: none !important;
             padding: 1.5rem !important;
           }
           .bento-party-image {
             min-height: 200px;
+            max-height: 280px;
+            aspect-ratio: auto;
           }
         }
 
@@ -1264,6 +1277,143 @@ export default function Home() {
         @media (min-width: 1200px) {
           .hero-desktop-collage {
             margin-left: 80px;
+          }
+        }
+
+        /* ─── About responsive image collage ──────────────────
+           3 base images always visible; img4 at ≥768px; img5 at ≥1280px
+           All dimensions in % so the stack scales fluidly.
+           Subtle overlap (~8-12% of each smaller image's dimension)
+           with varied rotation for a candid, organic feel.       */
+
+        .about-collage-desktop {
+          position: relative;
+          width: 100%;
+          max-width: 480px;
+          aspect-ratio: 4 / 5;
+          min-height: 300px;
+          margin: 0 auto;
+          overflow: visible;
+        }
+
+        /* Common accent styles */
+        .about-collage-img2,
+        .about-collage-img3,
+        .about-collage-img4,
+        .about-collage-img5 {
+          position: absolute;
+          border-radius: clamp(14px, 2.5vw, 24px);
+          overflow: hidden;
+          border: clamp(2px, 0.4vw, 4px) solid #ffffff;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .about-collage-anchor {
+          position: absolute;
+          border-radius: clamp(14px, 2.5vw, 24px);
+          overflow: hidden;
+          border: none;
+          box-shadow: none;
+        }
+
+        .about-collage-anchor img,
+        .about-collage-img2 img,
+        .about-collage-img3 img,
+        .about-collage-img4 img,
+        .about-collage-img5 img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+
+        /* ── 1 — Anchor / base layer (always visible) ────────── */
+        .about-collage-anchor {
+          top: 2%;
+          left: 2%;
+          width: 66%;
+          height: 80%;
+          z-index: 1;
+          transform: rotate(1.5deg);
+        }
+
+        /* ── 2 — Top-right accent (always visible) ──────────── */
+        .about-collage-img2 {
+          top: 3%;
+          right: -3%;
+          width: 40%;
+          height: 32%;
+          z-index: 2;
+          transform: rotate(4deg);
+        }
+
+        /* ── 3 — Right side, below img2 (always visible) ────── */
+        .about-collage-img3 {
+          top: 32%;
+          right: -3%;
+          width: 40%;
+          height: 28%;
+          z-index: 3;
+          transform: rotate(-3deg);
+        }
+
+        /* ── 4 — Bottom-centre / right (≥768px) ─────────────── */
+        .about-collage-img4 {
+          bottom: 2%;
+          right: 3%;
+          width: 33%;
+          height: 20%;
+          z-index: 4;
+          transform: rotate(7deg);
+          display: none;
+        }
+        @media (min-width: 768px) {
+          .about-collage-img4 { display: block; }
+        }
+
+        /* ── 5 — Bottom-left, extends past edge (≥1280px) ──── */
+        .about-collage-img5 {
+          bottom: 2%;
+          left: -12%;
+          width: 22%;
+          height: 20%;
+          z-index: 5;
+          transform: rotate(-5deg);
+          display: none;
+        }
+        @media (min-width: 1280px) {
+          .about-collage-img5 { display: block; }
+        }
+
+        /* Tighter row gap at medium breakpoints so collage gets more room */
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .about-layout {
+            gap: 1.5rem !important;
+          }
+        }
+
+        /* Stack about-layout on mobile */
+        @media (max-width: 767px) {
+          .about-layout {
+            flex-direction: column !important;
+            gap: 2rem !important;
+          }
+          .about-images {
+            width: 100%;
+          }
+        }
+
+        /* Reduce container padding on mobile for more collage width */
+        @media (max-width: 767px) {
+          .about-section .container {
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+          }
+        }
+
+        /* On desktop row layout, show image on the left via order (text is first in DOM) */
+        @media (min-width: 768px) {
+          .about-images {
+            order: -1;
           }
         }
 

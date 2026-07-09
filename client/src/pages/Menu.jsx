@@ -196,6 +196,7 @@ export default function Menu() {
           display: flex;
           align-items: center;
           gap: 0.5rem;
+          white-space: nowrap;
         }
 
         .menu-delivery-text {
@@ -222,8 +223,6 @@ export default function Menu() {
             text-align: left;
           }
         }
-
-        .menu-hero-container {
 
         .menu-hero-container {
           position: relative;

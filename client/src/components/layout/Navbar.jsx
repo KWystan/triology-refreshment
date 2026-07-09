@@ -213,8 +213,8 @@ export default function Navbar({ className = '' }) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: 28,
-                height: 28,
+                width: 40,
+                height: 40,
                 borderRadius: '6px',
                 border: 'none',
                 cursor: 'pointer',
@@ -256,13 +256,13 @@ export default function Navbar({ className = '' }) {
 
         /* ─── Animated hamburger icon ─────────────────────── */
         .hamburger-icon {
-          height: 1.25em;
+          height: 1.75em;
           transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .hamburger-icon .h-line {
           fill: none;
-          stroke: #ffffff;
+          stroke: var(--color-primary);
           stroke-linecap: round;
           stroke-linejoin: round;
           stroke-width: 3;
