@@ -207,7 +207,6 @@ export default function Navbar({ className = '' }) {
             </div>
 
             {/* Mobile toggle — animated hamburger */}
-            {!isHomePage && (
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               style={{
@@ -217,7 +216,6 @@ export default function Navbar({ className = '' }) {
                 width: 28,
                 height: 28,
                 borderRadius: '6px',
-                background: 'var(--color-primary-container)',
                 border: 'none',
                 cursor: 'pointer',
               }}
@@ -232,7 +230,6 @@ export default function Navbar({ className = '' }) {
                 <path className="h-line" d="M4 16 28 16" />
               </svg>
             </button>
-            )}
           </div>
         </div>
       </nav>
@@ -297,6 +294,10 @@ export default function Navbar({ className = '' }) {
           }
           nav {
             box-shadow: none !important;
+          }
+          .nav-mobile-toggle {
+            background: transparent !important;
+            padding: 0 !important;
           }
         }
       `}</style>

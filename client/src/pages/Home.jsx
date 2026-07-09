@@ -7,28 +7,28 @@
  *   3. About/Vibe — image collage, story text, stats with divider
  *   4. Social Proof — Facebook community CTA with branding
  */
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { business } from '../data/business';
 import { SectionHeading, Button, Section } from '../components';
 import MobileNav from '../components/layout/MobileNav';
-import BounceCards from '../components/ui/BounceCards';
 import heroImg1 from '../assets/hero/hero-page-image-1.jpg';
 import heroImg2 from '../assets/hero/hero-page-image-2.jpg';
 import heroImg3 from '../assets/hero/hero-page-image-3.jpg';
 import heroImg4 from '../assets/hero/hero-page-image-4.jpg';
 import locationBg from '../assets/location-background.png';
-import locationWhiteBg from '../assets/location-white-background.svg';
 import blobSvg from '../assets/blob.svg';
-import mobileHeroBg from '../assets/mobile-hero-bg.svg';
+import bentoRefreshments from '../assets/refreshments.jpg';
+import bentoRiceMeal from '../assets/rice_meal.jpg';
+import venueImage from '../assets/venue.jpg';
 
-const BENTO_REFRESHMENTS =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuBHJpPOlVjKISCS-fZhM7laMmdC66WTR8cIJhDsTRTuVkZ872BRlTYb5Zg29Q8y0Vt9V-qLkgkVsD7QYVqUKivHve4H4grYns0FGajbb4tLfNunWF97dgYm38w5allAmXjApnSyYTII3jpxio2VLcwIYtD-m4munbIzSTc26Rc-HJcsWC9o3Vu_eUIhzG-7Dq7c92jT4qMD58WSkTKmCnrXFL1eQwcV5-Ix1xhXAZSPnf9FASgzgE_TmKLrIct7foKWxp-YXHTCl4cL';
+// Placeholder — swap with actual large anchor image later
+import heroLargeImage from '../assets/hero/hero-image-big.png';
 
-const BENTO_MEALS =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuD0Jq_TzZ_uc3UXd8O575357iTSqk6Bsr_dpOIfR9ymzGQoY31D0Bt6M5FwMjGgcdNye_loFfBpREfWRuvATtA_pn8uIJ2xFawuZsKQzsj07fkftY2PhA6psz5f7aDjAZH-RbQM5OVBopAhAhZYzjJ_CZgln4vvc7u8peixLAkgU2M3so3LBoMiZPzo106xrBzyF5Gb41IJcj7kUBJE-gdH-YgBHKKr0pSD-bddDnfY5un_XLi6nihzNX7jM2jqx5FecJ-U93hvTE7m';
+const BENTO_REFRESHMENTS = bentoRefreshments;
 
-const BENTO_PARTY =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuAivJIMnnLPjWujfIwXPt3_yGxDcdnGYYJSB8Dl-kH5pIaLMXh8O9XFVUDGy7GcJII7kxO8fXmU-8A1aJs0kV6jkiHyKFr01Y3L3VxKneJRXTUf_fHJbyTazbKezMHCuwBnXrXDil9ywW8mqM46kB_ZYKT4K7QJdICwJuKNV5qA_v9gBB6mUJpwvZtColDklDdNxFV1fVsoKmGI71KNW3NoJJPUidHqp1HRHa610gMtMm-qUTxDq0P3h_FhuU5aFmXDPlnKk6ZJZClP';
+const BENTO_MEALS = bentoRiceMeal;
+
+const BENTO_PARTY = venueImage;
 
 const ABOUT_IMG_1 =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuA7hm9ZLC9O2NMpOAwuUR-dpsygHqWIF0G-_lutIPggE-VgJaQ_LCjTlQ72rdS38CA5bmJaV0NvEPTH3zQSyRkel5t1PGC8Belh6dH7VEOToib2ZzNrgz75a-sV1q_AlVEK2f8C5KuU35JIGQFK5BaqJMgGiSdIPCNyECyPBkIKB062k7eoaLuEA_h5v6khQEgbvGwann0_tV8QR3As6cUeJgFZscrDzJCaoSoAxtDt8FslffEWooQRtRQ1iuruxoeYs59l--6lLKim';
@@ -113,6 +113,19 @@ function FloatingPartyElements() {
 
 export default function Home() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState(null);
+  const collageRef = useRef(null);
+
+  useEffect(() => {
+    if (selectedCard === null) return;
+    const handleClickOutside = (e) => {
+      if (collageRef.current && !collageRef.current.contains(e.target)) {
+        setSelectedCard(null);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [selectedCard]);
 
   return (
     <main>
@@ -129,41 +142,6 @@ export default function Home() {
             overflow: 'hidden',
           }}
         >
-          {/* Blob SVG behind the text */}
-          <img
-            src={blobSvg}
-            alt=""
-            aria-hidden="true"
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '5%',
-              transform: 'translateY(-50%)',
-              width: 'clamp(350px, 50vw, 750px)',
-              height: 'auto',
-              opacity: 0.07,
-              pointerEvents: 'none',
-              zIndex: 0,
-            }}
-            className="hero-blob"
-          />
-          {/* Mobile hero background SVG — hidden on desktop */}
-          <img
-            src={mobileHeroBg}
-            alt=""
-            aria-hidden="true"
-            className="hero-mobile-bg"
-            style={{
-              display: 'none',
-              position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              pointerEvents: 'none',
-              zIndex: 0,
-            }}
-          />
           <div className="container">
             <div
               style={{
@@ -187,15 +165,32 @@ export default function Home() {
                   background: 'radial-gradient(ellipse at center, rgba(15, 82, 56, 0.10) 0%, rgba(15, 82, 56, 0.04) 40%, transparent 65%)',
                   pointerEvents: 'none',
                 }} />
-                <div className="hero-text" style={{ position: 'relative', textAlign: 'left' }}>
+                {/* Blob SVG centered behind text */}
+                <img
+                  src={blobSvg}
+                  alt=""
+                  aria-hidden="true"
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 'clamp(350px, 50vw, 750px)',
+                    height: 'auto',
+                    opacity: 0.07,
+                    pointerEvents: 'none',
+                    zIndex: 0,
+                  }}
+                  className="hero-blob"
+                />
+                <div className="hero-text" style={{ position: 'relative', textAlign: 'center' }}>
                 {/* Location badge */}
                 <span
                   className="hero-location-badge"
                   style={{
                     display: 'inline-block',
                     padding: '0.375rem 3rem',
-                    background: `var(--loc-bg, url(${locationBg})) center / contain no-repeat`,
-                    '--loc-bg-mobile': `url(${locationWhiteBg})`,
+                    background: `url(${locationBg}) center / contain no-repeat`,
                     color: 'var(--color-on-primary-container)',
                     borderRadius: 0,
                     fontSize: '0.75rem',
@@ -233,6 +228,8 @@ export default function Home() {
                     color: 'var(--color-on-surface-variant)',
                     marginBottom: '2.5rem',
                     maxWidth: '560px',
+                    marginLeft: 'auto',
+                    marginRight: 'auto',
                   }}
                   className="hero-description"
                 >
@@ -310,22 +307,44 @@ export default function Home() {
               </div>
               </div>  {/* end glow wrapper */}
 
-              {/* Right: bounce cards */}
+              {/* Right: bounce cards — large card on top, 4 small cards in a row below */}
               <div style={{ position: 'relative', display: 'flex', justifyContent: 'center' }} className="hero-visual">
-                <BounceCards
-                  images={[heroImg1, heroImg2, heroImg3, heroImg4]}
-                  containerWidth={400}
-                  containerHeight={400}
-                  transformStyles={[
-                    'rotate(12deg) translate(-130px)',
-                    'rotate(4deg) translate(-40px)',
-                    'rotate(-4deg) translate(40px)',
-                    'rotate(-12deg) translate(130px)',
-                  ]}
-                  animationDelay={0.3}
-                  animationStagger={0.08}
-                  enableHover={true}
-                />
+                <div className="hero-desktop-collage" ref={collageRef}>
+                  <div
+                    className={`hero-large-card-top${selectedCard === -1 ? ' hero-large-card-top--selected' : ''}`}
+                    onClick={() => setSelectedCard(selectedCard === -1 ? null : -1)}
+                    style={{
+                      transform: selectedCard === -1 ? 'scale(1.06) translateY(-10px)' : 'none',
+                    }}
+                  >
+                    <img src={heroLargeImage} alt="Triology Refreshment featured dish" />
+                  </div>
+                  <div className="hero-small-cards-row">
+                    {[heroImg1, heroImg2, heroImg3, heroImg4].map((src, idx) => {
+                      const rotations = [
+                        'rotate(10deg)',
+                        'rotate(3deg)',
+                        'rotate(-3deg)',
+                        'rotate(-10deg)',
+                      ];
+                      const isSelected = selectedCard === idx;
+                      return (
+                        <div
+                          key={idx}
+                          className={`hero-small-card${isSelected ? ' hero-small-card--selected' : ''}`}
+                          onClick={() => setSelectedCard(isSelected ? null : idx)}
+                          style={{
+                            transform: isSelected
+                              ? `${rotations[idx]} scale(1.14) translateY(-8px)`
+                              : rotations[idx],
+                          }}
+                        >
+                          <img src={src} alt={`Triology refreshment ${idx + 1}`} />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
 
               </div>
             </div>
@@ -343,6 +362,8 @@ export default function Home() {
             justifyContent: 'space-between',
             alignItems: 'flex-end',
             marginBottom: '3rem',
+            marginLeft: 'clamp(0px, 3vw, 2rem)',
+            marginRight: 'clamp(0px, 3vw, 2rem)',
           }}
         >
           <div>
@@ -526,23 +547,15 @@ export default function Home() {
           {/* Card 3: Party Packs (col-span-12) — portrait layout */}
           <div className="bento-card bento-card-full bento-card-party">
             <FloatingPartyElements />
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                height: '100%',
-              }}
-              className="bento-party-layout"
-            >
+            <div className="bento-party-layout">
               <div
                 style={{
-                  padding: '2rem 2.5rem',
+                  padding: '2.5rem 3rem',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
                   position: 'relative',
                   zIndex: 1,
-                  flex: 1,
                 }}
               >
                 <h3
@@ -592,7 +605,6 @@ export default function Home() {
               <div
                 className="bento-party-image"
                 style={{
-                  height: '240px',
                   overflow: 'hidden',
                   position: 'relative',
                   zIndex: 1,
@@ -606,6 +618,7 @@ export default function Home() {
                     width: '100%',
                     height: '100%',
                     objectFit: 'cover',
+                    display: 'block',
                   }}
                 />
               </div>
@@ -715,8 +728,8 @@ export default function Home() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                  position: 'relative',
-                  zIndex: 1,
+                position: 'relative',
+                zIndex: 1,
                 gap: '1.5rem',
               }}
             >
@@ -1033,6 +1046,37 @@ export default function Home() {
           transform: scale(1.08);
         }
 
+        /* ─── Party card layout — text left, image right ──── */
+        .bento-party-layout {
+          display: flex;
+          flex-direction: row;
+          height: 100%;
+        }
+        .bento-party-layout > div:first-child {
+          flex: 1;
+        }
+        .bento-party-image {
+          flex: 1.6;
+          min-height: 280px;
+        }
+        .bento-party-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        @media (max-width: 767px) {
+          .bento-party-layout {
+            flex-direction: column;
+          }
+          .bento-party-layout > div:first-child {
+            padding: 1.5rem !important;
+          }
+          .bento-party-image {
+            min-height: 200px;
+          }
+        }
+
         /* ─── Floating party elements (leaves, sparkle, dots) ─── */
         .party-floats {
           position: absolute;
@@ -1110,72 +1154,116 @@ export default function Home() {
           100% { transform: translate(6px, -8px) rotate(8deg); }
         }
 
-        /* ─── Mobile Hero ──────────────────────────────────── */
-        @media (max-width: 767px) {
+        /* ─── Hero Collage — large card on top, 4 small cards row below ── */
+        .hero-desktop-collage {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0;
+          width: 100%;
+        }
+        .hero-large-card-top {
+          width: 480px;
+          height: 320px;
+          border: 8px solid #ffffff;
+          border-radius: 30px;
+          overflow: hidden;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+          cursor: pointer;
+          position: relative;
+          transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .hero-large-card-top img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        .hero-small-cards-row {
+          display: flex;
+          justify-content: center;
+          gap: 0;
+          margin-top: -28px;
+        }
+        .hero-small-card {
+          width: 150px;
+          height: 150px;
+          border: 6px solid #ffffff;
+          border-radius: 24px;
+          overflow: hidden;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+          flex-shrink: 0;
+          cursor: pointer;
+          position: relative;
+          transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .hero-small-card img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        .hero-small-card--selected,
+        .hero-large-card-top--selected {
+          border-color: #fbc002;
+          box-shadow: 0 0 0 3px #fbc002, 0 8px 24px rgba(251, 192, 2, 0.35);
+          z-index: 5;
+        }
+        /* ─── Responsive hero grid ─────────────────────────── */
+
+        /* Mobile: single column — collage sits below text */
+        @media (max-width: 639px) {
           html, body {
             overflow-x: hidden;
           }
           .hero-gradient {
-            padding: 5rem 0 3rem !important;
-            background: none !important;
-            overflow: visible !important;
-          }
-          /* Transparent navbar on mobile so hero SVG shows through */
-          nav {
-            background: transparent !important;
-            box-shadow: none !important;
-          }
-          .nav-mobile-toggle {
-            color: #ffffff !important;
-          }
-          .hero-blob {
-            display: none !important;
-          }
-          .hero-mobile-bg {
-            display: block !important;
-            top: -120px !important;
-            height: calc(100% + 120px) !important;
-            object-position: center center !important;
+            padding: 1.5rem 0 3rem !important;
           }
           .hero-grid {
             grid-template-columns: 1fr !important;
             gap: 2rem !important;
           }
+          .hero-large-card-top {
+            width: min(85vw, 480px);
+            height: min(56vw, 320px);
+          }
+          .hero-small-card {
+            width: min(22vw, 150px);
+            height: min(22vw, 150px);
+            border-width: 4px;
+          }
+          .hero-small-cards-row {
+            margin-top: -20px;
+          }
+        }
+
+        /* Tablet & medium desktop: single column — text stays stable, collage drops below */
+        @media (min-width: 640px) and (max-width: 1199px) {
+          .hero-grid {
+            grid-template-columns: 1fr !important;
+            gap: 2.5rem !important;
+          }
           .hero-text {
-            text-align: center !important;
+            max-width: 640px;
+            margin: 0 auto;
           }
-          .hero-text h1 {
-            font-size: 2rem !important;
-            color: #ffffff !important;
+          .hero-large-card-top {
+            width: min(50vw, 480px);
+            height: min(33vw, 320px);
           }
-          .hero-text h1 span {
-            color: #fbc002 !important;
+          .hero-small-card {
+            width: min(15vw, 150px);
+            height: min(15vw, 150px);
           }
-          .hero-description {
-            font-size: 0.9375rem !important;
-            max-width: 100% !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
-            color: rgba(255,255,255,0.85) !important;
+          .hero-desktop-collage {
+            margin-left: 0;
           }
-          .hero-cta {
-            justify-content: center !important;
-          }
-          .hero-cta a:last-child {
-            border-color: rgba(255,255,255,0.6) !important;
-            color: #ffffff !important;
-          }
-          .hero-location-badge {
-            padding: 0.375rem 2rem !important;
-            font-size: 0.6875rem !important;
-            --loc-bg: var(--loc-bg-mobile) !important;
-            color: var(--color-primary) !important;
-            font-weight: 600 !important;
-          }
-          .hero-visual {
-            max-width: 480px !important;
-            margin: 0 auto !important;
-            width: 100% !important;
+        }
+
+        /* Wide desktop: side-by-side with proper spacing */
+        @media (min-width: 1200px) {
+          .hero-desktop-collage {
+            margin-left: 80px;
           }
         }
 
