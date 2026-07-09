@@ -13,6 +13,7 @@ export { default as ProductDetailModal } from './ui/ProductDetailModal';
 export { default as SearchBar } from './ui/SearchBar';
 export { default as ContactCard } from './ui/ContactCard';
 export { default as InquiryForm } from './ui/InquiryForm';
+export { default as BestSellerBadge } from './ui/BestSellerBadge';
 
 // ─── Layout ─────────────────────────────────────────────────
 export { default as Navbar } from './layout/Navbar';

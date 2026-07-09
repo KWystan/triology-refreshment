@@ -12,6 +12,7 @@
  */
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import ProductDetailModal from './ProductDetailModal';
+import BestSellerBadge from './BestSellerBadge';
 import { CATEGORY_ICONS } from './CategoryIcons';
 
 /* ─── Price formatting helper ─────────────────────────────── */
@@ -57,9 +58,11 @@ function ProductCard({ item, onAddToCart, onClick, style }) {
 
   return (
     <div className="mpg-card" style={style} onClick={onClick}>
-      {/* Image with badge overlay */}
+      {/* Best Seller badge — positioned relative to the card, overhangs the edge */}
+      {item.isBestSeller && <BestSellerBadge size={60} />}
+
+      {/* Image with FAB */}
       <div className="mpg-card-img-wrap">
-        {item.badge && <span className="mpg-card-badge">{item.badge}</span>}
         {imgError ? (
           <div className="mpg-card-img-fallback" aria-label={item.name} />
         ) : (
@@ -71,25 +74,24 @@ function ProductCard({ item, onAddToCart, onClick, style }) {
             onError={() => setImgError(true)}
           />
         )}
-        {/* Gradient overlay at bottom of image */}
-        <div className="mpg-card-img-overlay" />
+        {/* Floating action button — replaces full-width "Add to Cart" */}
+        <button
+          onClick={handleAdd}
+          className={`mpg-card-fab${added ? ' mpg-card-fab-added' : ''}`}
+          disabled={added}
+          aria-label={`Add ${item.name} to cart`}
+        >
+          <span className="material-symbols-outlined mpg-card-fab-icon">
+            {added ? 'check' : 'add'}
+          </span>
+        </button>
       </div>
 
-      {/* Name */}
-      <h3 className="mpg-card-name">{item.name}</h3>
-
-      {/* Price */}
-      <p className="mpg-card-price">{item.displayPrice}</p>
-
-      {/* Add to Cart */}
-      <button
-        onClick={handleAdd}
-        className={`btn-interact mpg-card-btn${added ? ' mpg-card-btn-added' : ''}`}
-        disabled={added}
-        aria-label={`Add ${item.name} to cart`}
-      >
-        {added ? 'Added ✓' : 'Add to Cart'}
-      </button>
+      {/* Name + Price row */}
+      <div className="mpg-card-footer">
+        <h3 className="mpg-card-name">{item.name}</h3>
+        <p className="mpg-card-price">{item.displayPrice}</p>
+      </div>
     </div>
   );
 }
@@ -470,8 +472,14 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
         /* ─── Product grid ─────────────────────────────────── */
         .mpg-grid {
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 20px;
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+        @media (min-width: 480px) {
+          .mpg-grid {
+            gap: 20px;
+            grid-template-columns: repeat(2, 1fr);
+          }
         }
         @media (min-width: 640px) {
           .mpg-grid {
@@ -489,30 +497,30 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
           display: flex;
           flex-direction: column;
           background: var(--color-surface-container-lowest);
-          border: 1px solid var(--color-outline-variant);
-          border-radius: var(--radius-xl);
-          padding: 1rem;
+          border: 0.5px solid var(--color-outline-variant);
+          border-radius: 20px;
           cursor: pointer;
           transition: transform 0.2s ease, box-shadow 0.2s ease;
+          position: relative;
         }
         .mpg-card:hover {
           transform: translateY(-2px);
           box-shadow: var(--shadow-md);
         }
 
-        /* Image container — square with light gray bg */
+        /* Image container — full-width, square */
         .mpg-card-img-wrap {
+          position: relative;
           aspect-ratio: 1 / 1;
           background: var(--color-surface-container);
-          border-radius: var(--radius-lg);
+          border-radius: 20px 20px 0 0;
           overflow: hidden;
-          margin-bottom: 0.875rem;
         }
 
         .mpg-card-img {
           width: 100%;
           height: 100%;
-          object-fit: contain;
+          object-fit: cover;
           display: block;
           transition: transform 0.3s ease;
         }
@@ -526,57 +534,85 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
           background: var(--color-surface-container-high);
         }
 
-        /* Name — centered, medium weight */
-        .mpg-card-name {
-          font-size: 0.9375rem;
-          font-weight: 600;
-          color: var(--color-on-surface);
-          text-align: center;
-          margin-bottom: 0.25rem;
-          line-height: 1.4;
-        }
-
-        /* Price — centered, muted */
-        .mpg-card-price {
-          font-size: 0.875rem;
-          font-weight: 500;
-          color: var(--color-on-surface-variant);
-          text-align: center;
-          margin-bottom: 1rem;
-          line-height: 1.4;
-        }
-
-        /* Add to Cart button — full width, outline style */
-        .mpg-card-btn {
-          width: 100%;
-          margin-top: auto;
-          padding: 0.625rem 1rem;
-          border-radius: var(--radius-lg);
-          font-size: 0.8125rem;
-          font-weight: 600;
-          line-height: 1.4;
+        /* FAB — floating add-to-cart button, bottom-right of image */
+        .mpg-card-fab {
+          position: absolute;
+          bottom: 10px;
+          right: 10px;
+          z-index: 2;
+          width: 34px;
+          height: 34px;
+          border-radius: 50%;
+          border: none;
+          background: var(--color-primary);
+          color: var(--color-on-primary);
+          display: flex;
+          align-items: center;
+          justify-content: center;
           cursor: pointer;
-          transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-
-          /* Default: white bg, thin border, dark text */
-          background: var(--color-surface-container-lowest);
-          color: var(--color-on-surface);
-          border: 1px solid var(--color-outline);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+          transition: background 0.2s ease, transform 0.15s ease;
+          padding: 0;
         }
-        .mpg-card-btn:hover:not(:disabled) {
-          background: var(--color-surface-container);
-          border-color: var(--color-on-surface-variant);
+        /* 44x44px touch target on mobile — expands hit area without changing visual size */
+        .mpg-card-fab::before {
+          content: '';
+          position: absolute;
+          top: -5px;
+          left: -5px;
+          right: -5px;
+          bottom: -5px;
+          border-radius: 50%;
         }
-
-        /* Added state */
-        .mpg-card-btn-added {
+        .mpg-card-fab:hover:not(:disabled) {
+          background: color-mix(in srgb, var(--color-primary) 80%, #000);
+        }
+        .mpg-card-fab:active:not(:disabled) {
+          transform: scale(0.9);
+        }
+        .mpg-card-fab-added {
           background: var(--color-primary) !important;
-          color: var(--color-on-primary) !important;
-          border-color: var(--color-primary) !important;
           cursor: default;
+          opacity: 0.85;
         }
 
-        /* ─── Empty state ───────────────────────────────────── */
+        .mpg-card-fab-icon {
+          font-size: 18px !important;
+          font-variation-settings: "'FILL' 1, 'wght' 400";
+        }
+
+        /* Footer — name + price row below image */
+        .mpg-card-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: baseline;
+          padding: 0.75rem;
+          gap: 0.5rem;
+        }
+
+        /* Name — left, on-surface color */
+        .mpg-card-name {
+          font-size: clamp(0.8125rem, 2.5vw, 0.9375rem);
+          font-weight: 500;
+          color: var(--color-on-surface);
+          text-align: left;
+          margin: 0;
+          line-height: 1.3;
+          flex: 1;
+          min-width: 0;
+        }
+
+        /* Price — right, secondary brand color */
+        .mpg-card-price {
+          font-size: clamp(0.8125rem, 2.5vw, 0.9375rem);
+          font-weight: 500;
+          color: var(--color-secondary);
+          text-align: right;
+          margin: 0;
+          line-height: 1.3;
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
         .mpg-empty {
           display: flex;
           flex-direction: column;
