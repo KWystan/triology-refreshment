@@ -8,7 +8,7 @@
  *   className — additional classes
  */
 export default function FAB({
-  icon = 'shopping_basket',
+  icon = 'shopping_cart',
   style,
   className = '',
 }) {
@@ -27,8 +27,8 @@ export default function FAB({
         width: 56,
         height: 56,
         borderRadius: 'var(--radius-full)',
-        background: 'var(--color-secondary-container)',
-        color: 'var(--color-on-secondary-container)',
+        background: '#fbc102',
+        color: '#3b3000',
         boxShadow: 'var(--shadow-2xl, 0 25px 50px -12px rgba(0,0,0,0.25))',
         border: 'none',
         cursor: 'pointer',

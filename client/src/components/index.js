@@ -14,6 +14,7 @@ export { default as SearchBar } from './ui/SearchBar';
 export { default as ContactCard } from './ui/ContactCard';
 export { default as InquiryForm } from './ui/InquiryForm';
 export { default as BestSellerBadge } from './ui/BestSellerBadge';
+export { default as AuthPanel } from './ui/AuthPanel';
 
 // ─── Layout ─────────────────────────────────────────────────
 export { default as Navbar } from './layout/Navbar';

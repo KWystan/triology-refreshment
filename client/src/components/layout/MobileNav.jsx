@@ -128,7 +128,7 @@ export default function MobileNav({ open, links, onClose, position = 'side' }) {
 
             return (
               <NavLink
-                key={link.path}
+                key={link.label}
                 to={link.path}
                 onClick={(e) => {
                   if (isEventsPage && isEventsOrContact) {

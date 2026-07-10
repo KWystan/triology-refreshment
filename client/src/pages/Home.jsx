@@ -609,7 +609,7 @@ export default function Home() {
                       boxShadow: 'var(--shadow-lg)',
                     }}
                   >
-                    Request a Quote
+                    Explore Offers
                   </a>
                 </div>
               </div>

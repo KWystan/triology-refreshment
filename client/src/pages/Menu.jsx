@@ -196,7 +196,7 @@ export default function Menu() {
           display: flex;
           align-items: center;
           gap: 0.5rem;
-          white-space: nowrap;
+          min-width: 0;
         }
 
         .menu-delivery-text {
@@ -248,9 +248,9 @@ export default function Menu() {
         }
 
         .menu-hero-title {
-          font-family: var(--font-headline);
+          font-family: 'Okinawa', cursive;
           font-size: clamp(2rem, 4vw, 3rem);
-          font-weight: 700;
+          font-weight: 400;
           color: var(--color-primary);
           margin-bottom: 1rem;
           line-height: 1.1;
@@ -305,7 +305,7 @@ export default function Menu() {
         .menu-cta-heading {
           font-family: var(--font-headline);
           font-size: clamp(1.5rem, 3vw, 2rem);
-          font-weight: 700;
+          font-weight: 600;
           margin-bottom: 1rem;
         }
 
@@ -322,14 +322,10 @@ export default function Menu() {
           padding: 0.75rem 2rem;
           background: var(--color-surface-container-lowest);
           color: var(--color-primary);
-          border-radius: var(--radius-full);
+          border-radius: var(--radius-lg);
           font-size: 0.875rem;
-          font-weight: 700;
+          font-weight: 600;
           text-decoration: none;
-          transition: transform 0.2s ease;
-        }
-        .menu-cta-btn:hover {
-          transform: scale(1.05);
         }
 
         .menu-cta-circle {
@@ -452,11 +448,22 @@ export default function Menu() {
             overflow-x: hidden;
           }
           .menu-delivery-banner {
-            color: #ffffff !important;
+            color: #ffffff;
           }
           .menu-delivery-text,
           .menu-delivery-location {
-            color: #ffffff !important;
+            color: #ffffff;
+          }
+          .menu-delivery-text {
+            font-size: 0.6875rem;
+          }
+          .menu-delivery-inner {
+            flex-direction: column;
+            gap: 0.25rem;
+            align-items: flex-start;
+          }
+          .menu-delivery-location {
+            font-size: 0.5625rem;
           }
         }
       `}</style>

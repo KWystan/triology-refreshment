@@ -346,7 +346,7 @@ export default function EventsContact() {
         .events-hero-overlay {
           position: absolute;
           inset: 0;
-          background: rgba(15, 82, 56, 0.4);
+          background: rgba(5, 100, 2, 0.45);
           z-index: 10;
         }
 
@@ -364,10 +364,10 @@ export default function EventsContact() {
         }
 
         .events-hero-title {
-          font-family: var(--font-headline);
+          font-family: 'Okinawa', cursive;
           font-size: clamp(2.5rem, 5vw, 3rem);
           line-height: 1.15;
-          font-weight: 700;
+          font-weight: 400;
           color: #fff;
           text-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
           margin-bottom: 1rem;
@@ -409,7 +409,6 @@ export default function EventsContact() {
         }
 
         .events-room-tag {
-          font-family: var(--font-label);
           font-size: 0.875rem;
           font-weight: 600;
           line-height: 1.25;
@@ -464,7 +463,6 @@ export default function EventsContact() {
         }
 
         .events-feature-title {
-          font-family: var(--font-label);
           font-size: 0.875rem;
           font-weight: 600;
           line-height: 1.25;
@@ -485,17 +483,9 @@ export default function EventsContact() {
           color: var(--color-on-primary);
           border: none;
           border-radius: var(--radius-lg);
-          font-family: var(--font-label);
           font-size: 0.875rem;
           font-weight: 600;
           cursor: pointer;
-          transition: box-shadow 0.2s ease, transform 0.1s ease;
-        }
-        .events-room-btn:hover {
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        .events-room-btn:active {
-          transform: scale(0.95);
         }
 
         /* ─── Image Gallery ─────────────────────────────────── */
@@ -626,7 +616,7 @@ export default function EventsContact() {
         .events-glass-circle {
           width: 48px;
           height: 48px;
-          background: rgba(15, 82, 56, 0.1);
+          background: color-mix(in srgb, var(--color-primary) 10%, transparent);
           border-radius: var(--radius-full);
           display: flex;
           align-items: center;
@@ -639,7 +629,6 @@ export default function EventsContact() {
         }
 
         .events-glass-label {
-          font-family: var(--font-label);
           font-size: 0.875rem;
           font-weight: 600;
           line-height: 1.25;
@@ -681,21 +670,20 @@ export default function EventsContact() {
 
         .events-form-label {
           display: block;
-          font-size: 0.75rem;
-          font-weight: 500;
+          font-size: 0.8125rem;
+          font-weight: 600;
           line-height: 1rem;
           margin-bottom: 0.25rem;
-          opacity: 0.7;
+          color: var(--color-on-surface-variant);
         }
 
         .events-form-input {
           width: 100%;
           background: var(--color-surface);
           border: none;
-          border-radius: var(--radius-md);
+          border-radius: var(--radius-lg);
           padding: 0.75rem;
           font-size: 0.875rem;
-          font-family: var(--font-body);
           color: var(--color-on-surface);
           outline: none;
           box-sizing: border-box;
@@ -722,16 +710,15 @@ export default function EventsContact() {
           background: var(--color-secondary);
           color: var(--color-on-secondary);
           border: none;
-          border-radius: var(--radius-md);
-          font-family: var(--font-label);
+          border-radius: var(--radius-lg);
           font-size: 0.875rem;
           font-weight: 600;
           cursor: pointer;
-          transition: box-shadow 0.2s ease, background 0.2s ease;
+          transition: background 0.2s ease;
           margin-top: 0.5rem;
         }
         .events-form-btn:hover:not(:disabled) {
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          background: color-mix(in srgb, var(--color-secondary) 85%, #000);
         }
         .events-form-btn:disabled {
           opacity: 0.8;
@@ -780,7 +767,6 @@ export default function EventsContact() {
         }
 
         .events-map-label {
-          font-family: var(--font-label);
           font-size: 0.875rem;
           font-weight: 600;
           color: var(--color-primary);

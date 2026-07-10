@@ -13,6 +13,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import ProductDetailModal from './ProductDetailModal';
 import BestSellerBadge from './BestSellerBadge';
+import SearchBar from './SearchBar';
 import { CATEGORY_ICONS } from './CategoryIcons';
 
 /* ─── Price formatting helper ─────────────────────────────── */
@@ -36,8 +37,6 @@ function CategoryHeader({ category }) {
     <div className="mpg-section-header">
       <h2 className="mpg-section-title">{label}</h2>
       <div className="mpg-section-line" />
-      {priceNote && <span className="mpg-section-note">{priceNote}</span>}
-      {note && <span className="mpg-section-note-italic">{note}</span>}
     </div>
   );
 }
@@ -87,10 +86,10 @@ function ProductCard({ item, onAddToCart, onClick, style }) {
         </button>
       </div>
 
-      {/* Name + Price row */}
+      {/* Price + Name column */}
       <div className="mpg-card-footer">
-        <h3 className="mpg-card-name">{item.name}</h3>
         <p className="mpg-card-price">{item.displayPrice}</p>
+        <h3 className="mpg-card-name">{item.name}</h3>
       </div>
     </div>
   );
@@ -179,6 +178,11 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
           Toolbar — filter tabs with scroll gradient hint
           ═══════════════════════════════════════════════════════ */}
       <div className="mpg-toolbar">
+        {/* Mobile search — appears above the category swiper on small screens */}
+        <div className="mpg-mobile-search">
+          <SearchBar />
+        </div>
+
         {/* Icon slider tabs */}
         <div className="mpg-tabs-scroll-wrap">
           <div className="mpg-tabs">
@@ -255,6 +259,19 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
           ═══════════════════════════════════════════════════════ */}
       <style>{`
         /* ─── Toolbar row ──────────────────────────────────── */
+        /* Mobile search bar (hidden on desktop) */
+        .mpg-mobile-search {
+          width: 100%;
+        }
+        .mpg-mobile-search .search-bar {
+          width: 100%;
+        }
+        @media (min-width: 768px) {
+          .mpg-mobile-search {
+            display: none;
+          }
+        }
+
         .mpg-toolbar {
           display: flex;
           flex-wrap: wrap;
@@ -472,12 +489,12 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
         /* ─── Product grid ─────────────────────────────────── */
         .mpg-grid {
           display: grid;
-          grid-template-columns: 1fr;
-          gap: 16px;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
         }
         @media (min-width: 480px) {
           .mpg-grid {
-            gap: 20px;
+            gap: 16px;
             grid-template-columns: repeat(2, 1fr);
           }
         }
@@ -502,6 +519,8 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
           cursor: pointer;
           transition: transform 0.2s ease, box-shadow 0.2s ease;
           position: relative;
+          min-width: 0;
+          width: 100%;
         }
         .mpg-card:hover {
           transform: translateY(-2px);
@@ -581,37 +600,32 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
           font-variation-settings: "'FILL' 1, 'wght' 400";
         }
 
-        /* Footer — name + price row below image */
+        /* Footer — price on top, name below */
         .mpg-card-footer {
           display: flex;
-          justify-content: space-between;
-          align-items: baseline;
+          flex-direction: column;
           padding: 0.75rem;
-          gap: 0.5rem;
+          gap: 0.125rem;
         }
 
-        /* Name — left, on-surface color */
-        .mpg-card-name {
-          font-size: clamp(0.8125rem, 2.5vw, 0.9375rem);
-          font-weight: 500;
+        /* Price — bold, black */
+        .mpg-card-price {
+          font-size: clamp(0.9375rem, 2.5vw, 1.0625rem);
+          font-weight: 700;
           color: var(--color-on-surface);
           text-align: left;
           margin: 0;
           line-height: 1.3;
-          flex: 1;
-          min-width: 0;
         }
 
-        /* Price — right, secondary brand color */
-        .mpg-card-price {
-          font-size: clamp(0.8125rem, 2.5vw, 0.9375rem);
-          font-weight: 500;
-          color: var(--color-secondary);
-          text-align: right;
+        /* Name — smaller, regular weight */
+        .mpg-card-name {
+          font-size: clamp(0.6875rem, 2vw, 0.8125rem);
+          font-weight: 400;
+          color: var(--color-on-surface-variant);
+          text-align: left;
           margin: 0;
           line-height: 1.3;
-          white-space: nowrap;
-          flex-shrink: 0;
         }
         .mpg-empty {
           display: flex;

@@ -2,8 +2,9 @@
  * App — root layout with Navbar, routes, Footer, and mobile FAB.
  */
 import { Routes, Route } from 'react-router-dom';
-import { Navbar, Footer, FAB } from './components';
+import { Navbar, Footer, FAB, AuthPanel } from './components';
 import { ActiveSectionProvider } from './context/ActiveSectionContext';
+import { AuthProvider } from './context/AuthContext';
 import Home from './pages/Home';
 import Menu from './pages/Menu';
 import PartyPacks from './pages/PartyPacks';
@@ -12,6 +13,7 @@ import NotFound from './pages/NotFound';
 
 export default function App() {
   return (
+    <AuthProvider>
     <ActiveSectionProvider>
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Navbar />
@@ -32,6 +34,9 @@ export default function App() {
       {/* Mobile-only Quick Order FAB */}
       <FAB className="mobile-fab" />
 
+      {/* Auth Panel overlay */}
+      <AuthPanel />
+
       <style>{`
         .mobile-fab {
           display: flex;
@@ -50,5 +55,6 @@ export default function App() {
       `}</style>
     </div>
     </ActiveSectionProvider>
+    </AuthProvider>
   );
 }

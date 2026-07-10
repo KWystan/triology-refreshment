@@ -3,6 +3,7 @@
  * Catches all errors thrown/rejected in route handlers and returns
  * a consistent JSON response.
  */
+// eslint-disable-next-line no-unused-vars -- Express requires 4 params for error handler signature
 export function errorHandler(err, _req, res, _next) {
   // Log the error in development
   if (process.env.NODE_ENV === 'development') {

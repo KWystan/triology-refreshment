@@ -297,7 +297,7 @@ export default function PartyPacks() {
           position: relative;
           background: var(--color-primary-container);
           overflow: hidden;
-          padding: 4rem 0;
+          padding: 2.5rem 0;
         }
         @media (min-width: 768px) {
           .party-hero {
@@ -316,12 +316,13 @@ export default function PartyPacks() {
         .party-hero-grid {
           display: flex;
           flex-direction: column;
-          gap: 3rem;
+          gap: 2rem;
           align-items: center;
         }
         @media (min-width: 768px) {
           .party-hero-grid {
             flex-direction: row;
+            gap: 3rem;
           }
         }
 
@@ -347,9 +348,9 @@ export default function PartyPacks() {
         }
 
         .party-hero-headline {
-          font-family: var(--font-headline);
+          font-family: 'Okinawa', cursive;
           font-size: clamp(2rem, 5vw, 3rem);
-          font-weight: 700;
+          font-weight: 400;
           line-height: 1.1;
           color: var(--color-on-primary-container);
           margin-bottom: 1.5rem;
@@ -378,9 +379,15 @@ export default function PartyPacks() {
 
         .party-hero-cta {
           display: flex;
-          gap: 1rem;
-          flex-wrap: wrap;
+          gap: 0.75rem;
+          flex-direction: column;
           justify-content: center;
+        }
+        @media (min-width: 640px) {
+          .party-hero-cta {
+            flex-direction: row;
+            gap: 1rem;
+          }
         }
         @media (min-width: 768px) {
           .party-hero-cta {
@@ -391,33 +398,27 @@ export default function PartyPacks() {
         .party-btn-primary {
           display: inline-flex;
           align-items: center;
-          padding: 0.75rem 2rem;
+          justify-content: center;
+          padding: 0.875rem 2rem;
           background: var(--color-secondary);
           color: var(--color-on-secondary);
           border-radius: var(--radius-lg);
-          font-size: 0.875rem;
-          font-weight: 700;
+          font-size: 0.9375rem;
+          font-weight: 600;
           text-decoration: none;
           box-shadow: var(--shadow-lg);
-          transition: box-shadow 0.2s ease, transform 0.2s ease;
-        }
-        .party-btn-primary:hover {
-          box-shadow: var(--shadow-xl);
-          transform: scale(1.02);
-        }
-        .party-btn-primary:active {
-          transform: scale(0.95);
         }
 
         .party-btn-outline {
           display: inline-flex;
           align-items: center;
-          padding: 0.75rem 2rem;
+          justify-content: center;
+          padding: 0.875rem 2rem;
           border: 2px solid var(--color-on-primary-container);
           color: var(--color-on-primary-container);
           border-radius: var(--radius-lg);
-          font-size: 0.875rem;
-          font-weight: 700;
+          font-size: 0.9375rem;
+          font-weight: 600;
           text-decoration: none;
           transition: background 0.2s ease, color 0.2s ease;
         }
@@ -459,13 +460,21 @@ export default function PartyPacks() {
 
         .party-hero-price {
           position: absolute;
-          bottom: -1.5rem;
-          left: -1.5rem;
+          bottom: -1rem;
+          left: 1rem;
           background: var(--color-secondary);
           color: var(--color-on-secondary);
-          padding: 1.5rem;
-          border-radius: var(--radius-xl);
+          padding: 1rem 1.25rem;
+          border-radius: var(--radius-lg);
           box-shadow: var(--shadow-xl);
+        }
+        @media (min-width: 640px) {
+          .party-hero-price {
+            bottom: -1.5rem;
+            left: -1.5rem;
+            padding: 1.5rem;
+            border-radius: var(--radius-xl);
+          }
         }
         .party-price-amount {
           display: block;
@@ -484,7 +493,12 @@ export default function PartyPacks() {
         /* ─── Bento Gallery ─────────────────────────────────── */
         .party-gallery {
           background: var(--color-surface);
-          padding: 5rem 0;
+          padding: 3rem 0;
+        }
+        @media (min-width: 768px) {
+          .party-gallery {
+            padding: 5rem 0;
+          }
         }
 
         .party-gallery-header {
@@ -511,8 +525,13 @@ export default function PartyPacks() {
         }
 
         .party-gallery-arrows {
-          display: flex;
+          display: none;
           gap: 0.5rem;
+        }
+        @media (min-width: 640px) {
+          .party-gallery-arrows {
+            display: flex;
+          }
         }
 
         .party-arrow-btn {
@@ -563,8 +582,18 @@ export default function PartyPacks() {
           position: relative;
           overflow: hidden;
           border-radius: var(--radius-2xl);
-          min-height: 200px;
+          min-height: 180px;
           cursor: pointer;
+        }
+        @media (min-width: 640px) {
+          .party-bento-card {
+            min-height: 200px;
+          }
+        }
+        @media (min-width: 900px) {
+          .party-bento-large {
+            min-height: auto;
+          }
         }
         .party-bento-img {
           width: 100%;
@@ -597,8 +626,13 @@ export default function PartyPacks() {
           position: absolute;
           bottom: 0;
           left: 0;
-          padding: 2rem;
+          padding: 1.25rem;
           z-index: 2;
+        }
+        @media (min-width: 640px) {
+          .party-bento-content {
+            padding: 2rem;
+          }
         }
 
         .party-bento-badge {
@@ -612,7 +646,7 @@ export default function PartyPacks() {
         .party-bento-title {
           color: #ffffff;
           font-weight: 700;
-          font-size: 1.5rem;
+          font-size: clamp(1rem, 3vw, 1.5rem);
           font-family: var(--font-headline);
           margin-bottom: 0.25rem;
         }
@@ -625,14 +659,24 @@ export default function PartyPacks() {
         /* ─── Pricing Section ───────────────────────────────── */
         .party-pricing {
           background: var(--color-surface-container-low);
-          padding: 5rem 0;
+          padding: 3rem 0;
+        }
+        @media (min-width: 768px) {
+          .party-pricing {
+            padding: 5rem 0;
+          }
         }
 
         .party-pricing-grid {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 4rem;
+          gap: 2.5rem;
           align-items: center;
+        }
+        @media (min-width: 768px) {
+          .party-pricing-grid {
+            gap: 4rem;
+          }
         }
         @media (min-width: 768px) {
           .party-pricing-grid {
@@ -788,7 +832,7 @@ export default function PartyPacks() {
           padding: 1rem;
           background: var(--color-surface);
           border: none;
-          border-radius: var(--radius-xl);
+          border-radius: var(--radius-lg);
           font-size: 0.9375rem;
           color: var(--color-on-surface);
           outline: none;
@@ -805,17 +849,17 @@ export default function PartyPacks() {
           padding: 1rem;
           background: var(--color-primary);
           color: var(--color-on-primary);
-          border-radius: var(--radius-xl);
+          border-radius: var(--radius-lg);
           font-size: 0.875rem;
-          font-weight: 700;
+          font-weight: 600;
           border: none;
           cursor: pointer;
           box-shadow: var(--shadow-lg);
           transition: background 0.2s ease;
           margin-top: 1rem;
         }
-        .party-submit-btn:hover {
-          background: var(--color-primary-container);
+        .party-submit-btn:hover:not(:disabled) {
+          background: color-mix(in srgb, var(--color-primary) 80%, #000);
         }
 
         /* ─── Trust Bar ─────────────────────────────────────── */
@@ -828,12 +872,18 @@ export default function PartyPacks() {
         .party-trust-inner {
           display: flex;
           flex-wrap: wrap;
-          justify-content: space-between;
+          justify-content: center;
           align-items: center;
-          gap: 2rem;
+          gap: 1.5rem;
           opacity: 0.6;
           filter: grayscale(100%);
           transition: opacity 0.3s ease, filter 0.3s ease;
+        }
+        @media (min-width: 768px) {
+          .party-trust-inner {
+            justify-content: space-between;
+            gap: 2rem;
+          }
         }
         .party-trust-inner:hover {
           opacity: 1;

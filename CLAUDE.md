@@ -16,13 +16,13 @@ triology/          Root: package.json with "workspaces": ["client", "server"]
 │   │   │   ├── layout/     Navbar, Footer, MobileNav, BottomMobileNav, FAB, Section, DeliveryBanner
 │   │   │   └── ui/         Button, Icon, Badge, SectionHeading, MenuProductGrid, ProductDetailModal,
 │   │   │                   SearchBar, CategoryIcons, ContactCard, InquiryForm, StatDisplay, ServiceCard,
-│   │   │                   MenuCard, MenuFilterTabs, BentoCard, BounceCards
+│   │   │                   MenuCard, MenuFilterTabs, BentoCard, BounceCards, AuthPanel
 │   │   ├── pages/          Home, Menu, PartyPacks, EventsContact, NotFound
 │   │   ├── data/           Static data (menuItems.js — 7 categories 41 items, bundles.js, business.js)
 │   │   ├── design-system/  tokens.js (JS design tokens) + index.js barrel
 │   │   ├── styles/         global.css (CSS custom properties, reset, utilities)
 │   │   ├── lib/            api.js (fetch wrapper), supabase.js (browser Supabase client)
-│   │   ├── context/        ActiveSectionContext.jsx (scroll-based nav highlighting)
+│   │   ├── context/        ActiveSectionContext.jsx, AuthContext.jsx
 │   │   ├── hooks/          Barrel file only — no hooks defined yet
 │   │   ├── App.jsx         Root component + Routes
 │   │   └── main.jsx        Entry point (BrowserRouter)
@@ -31,9 +31,9 @@ triology/          Root: package.json with "workspaces": ["client", "server"]
 ├── server/        Express.js (Express 5, ESM)
 │   ├── src/
 │   │   ├── config/        env.js (validated env), supabase.js (admin + anon clients)
-│   │   ├── controllers/   health.js
-│   │   ├── middleware/     errorHandler.js, validate.js, auth.js
-│   │   ├── routes/        index.js (mounts /api routes)
+│   │   ├── controllers/   health.js, auth.js (JWT sessions, PKCE OAuth, refresh rotation)
+│   │   ├── middleware/     errorHandler.js, validate.js, auth.js (Supabase JWT verify)
+│   │   ├── routes/        index.js (mounts /api routes), auth.js
 │   │   ├── services/      PLACEHOLDER — only .gitkeep
 │   │   ├── validators/    PLACEHOLDER — only .gitkeep
 │   │   ├── utils/         PLACEHOLDER — only .gitkeep
@@ -43,10 +43,48 @@ triology/          Root: package.json with "workspaces": ["client", "server"]
 │
 ├── stitch-*.html    Stitch-generated screen designs (home, menu, party, event) — not part of the app
 ├── docs/            website-structure-for-stitch.txt (detailed page map used as Stitch context)
+├── AUTH-SETUP.md    Auth system overview (how JWT sessions work, in-memory vs DB tokens)
 └── .prettierrc      Semi, single quotes, trailing commas
 ```
 
 ## Key Architecture Decisions
+
+### Auth System (Now Wired End-to-End)
+
+The auth system is fully implemented across frontend and backend:
+
+**Frontend:**
+- `AuthContext` (`client/src/context/AuthContext.jsx`) — manages panel visibility, current view (login/signup/forgot), and authenticated user state. Restores session on mount via `GET /auth/me`. Exposes `openAuthPanel('login'|'signup')`, `closeAuthPanel`, `switchView`, `logout`, `setUser`.
+- `AuthPanel` (`client/src/components/ui/AuthPanel.jsx`) — full login/signup panel with:
+  - Desktop two-region split (form + branded image panel)
+  - Mobile full-screen takeover
+  - Email/password login and signup (with client-side validation)
+  - Google OAuth via PKCE flow
+  - Forgot password mode
+  - Password visibility toggle, keyboard (Escape to close), body scroll lock
+  - Signup success confirmation screen
+- Navbar integrates `useAuth()` — shows user menu (signed in) or Sign In / Sign Up buttons
+- FAB and other action icons remain **display-only** with no onClick handlers
+
+**Backend** (`server/src/controllers/auth.js`):
+- **POST `/api/auth/signup`** — creates account via Supabase Auth, returns email verification notice
+- **POST `/api/auth/login`** — validates credentials via Supabase, issues app-level JWT access token (15 min) + rotated refresh token (7 days) as httpOnly cookies
+- **POST `/api/auth/logout`** — clears cookies, invalidates refresh token
+- **POST `/api/auth/refresh`** — rotates refresh token on each use; detects reuse of superseded tokens (theft signal) and revokes the entire token family
+- **GET `/api/auth/oauth/:provider`** — initiates OAuth 2.0 Authorization Code flow with PKCE (SHA-256 code challenge, cryptographically random state)
+- **GET `/api/auth/oauth/callback`** — exchanges auth code for Supabase session, creates app session, redirects to frontend
+- **GET `/api/auth/me`** — returns current user from access token cookie
+
+**Security model:**
+- OAuth 2.0 Authorization Code + PKCE (never Implicit)
+- Short-lived access tokens (15 min) + rotated refresh tokens
+- httpOnly, Secure (prod), SameSite=Strict cookies
+- Generic error messages only ("invalid email or password")
+- Refresh token theft detection via superseded-token tracking
+- ⚠️ Refresh tokens stored in **in-memory Map** — persist to database for production
+
+**Auth middleware** (`server/src/middleware/auth.js`):
+- `requireAuth` — verifies Supabase JWT from `Authorization` header via `@supabase/server/core` (`extractCredentials` + `verifyAuth`). Caches JWKS endpoint. Attaches `req.user`, `req.supabase`, `req.authMode` on success. Currently no routes use it — the auth controller uses its own cookie-based session instead.
 
 ### Design System: Dual Token Source
 
@@ -75,16 +113,12 @@ Vite is configured with `@` → `./src`. Import with `import Foo from '@/compone
 | Client | Key | File |
 |--------|-----|------|
 | Browser | `anon` key (public, `VITE_SUPABASE_ANON_KEY`) | `client/src/lib/supabase.js` |
-| Server (admin) | `service_role` key (secret) | `server/src/config/supabase.js` |
-| Server (anon) | `publishable` key | `server/src/config/supabase.js` |
+| Server (admin) | `service_role` key (secret, `createAdminClient` from `@supabase/server/core`) | `server/src/config/supabase.js` |
+| Server (anon) | `publishable` key (standard `createClient`) | `server/src/config/supabase.js` |
 
 The admin client (`supabaseAdmin`) bypasses RLS. Never expose the service-role key. The anon client (`supabaseAnon`) enforces RLS.
 
 **Important:** The server's admin client uses `createAdminClient` from `@supabase/server/core` (not standard `@supabase/supabase-js`). The server's anon client uses the standard `createClient`. Both are in `server/src/config/supabase.js`.
-
-### Server Auth Middleware
-
-`server/src/middleware/auth.js` exports `requireAuth` — Express middleware that verifies a Supabase JWT from the `Authorization` header using `@supabase/server`'s `extractCredentials` + `verifyAuth`. It caches the JWKS endpoint. On success it attaches `req.user`, `req.supabase`, and `req.authMode`. Currently no routes use it — it's ready for when authenticated endpoints are added.
 
 ### Express Backend
 
@@ -96,6 +130,10 @@ The admin client (`supabaseAdmin`) bypasses RLS. Never expose the service-role k
 - Health check at `GET /api/health`.
 - Service, validator, and utility directories are **scaffolded but empty** (only .gitkeep) — ready for business logic.
 - Route pattern: mount everything under `/api` via `routes/index.js`.
+
+### API Client Pattern
+
+`client/src/lib/api.js` exports an `api` object with `get`, `post`, `put`, `patch`, `delete` methods. All point to `/api/*` (proxied to Express in dev). Throws on non-2xx with parsed error body (`.error.message` or `.message`). Returns `null` on 204. The auth panel and AuthContext use this client for all auth API calls.
 
 ### Frontend
 
@@ -121,6 +159,27 @@ Menu items live in `client/src/data/menuItems.js` as structured data with 7 layo
 | `horizontal-list` | Short Orders | Small thumbnails |
 | `horizontal-card` | Snacks | Detailed card with price variants |
 
+**Menu item data shape** (each item within a category):
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | string | kebab-case slug |
+| `name` | string | Display name |
+| `price` | number (optional) | Direct price, or use `variants` for options |
+| `variants` | `{label, price, highlight?}`[] | For items with size/option pricing (e.g. Solo vs w/ Drink) |
+| `image` | import | Individual item image; falls back to `categoryImage` |
+| `images` | import[] | 3-image array for detail modal carousel |
+| `tags` | string[] | Hashtag-style tags like `['#ube', '#halohalo']` |
+| `rating` | number (1-5) | Star rating |
+| `description` | string | Full description shown in detail modal |
+| `badge` | string (optional) | e.g. `'Best Seller'` |
+| `isBestSeller` | boolean | Controls BestSellerBadge visibility |
+| `serves` | string | e.g. `'1 person'`, `'4-5 people'` |
+| `prepTime` | string | e.g. `'~10 mins'` |
+| `note` | string (optional) | Category-level note (e.g. `'All include a drink'`) |
+
+**Price resolution logic** (in MenuProductGrid): `item.price` → `item.variants` min/max range → `category.priceNote` fallback.
+
 Each category has a shared `categoryImage` + optional individual item images (Halo-Halo has per-item assets in `client/src/assets/halo_halo/`). Most food images currently point to `foodsample.jpg` placeholder.
 
 **Category icons** are custom inline SVG components in `CategoryIcons.jsx`, mapped by category ID via the `CATEGORY_ICONS` lookup object (e.g., `'halo-halo': { Icon: HaloHaloIcon, shortLabel: 'Desserts' }`).
@@ -133,18 +192,25 @@ Two image sourcing strategies coexist:
 
 ### Client-Side State
 
-- **No global state library** — uses React Context (`ActiveSectionContext`) for nav highlighting
+- **No global state library** — uses React Context (`ActiveSectionContext` for nav highlighting, `AuthContext` for auth)
 - **localStorage** used for favorites persistence in `MenuProductGrid`
-- **Form submissions are simulated** — both `InquiryForm` usages (EventsContact, PartyPacks) use `setTimeout` to simulate async submission, no actual API calls yet
-- **FAB and Navbar action icons** (user, favorites, cart) are currently **display-only** with no onClick handlers
+- **Product detail modal** — `ProductDetailModal` is rendered by `MenuProductGrid` when a card is clicked. It includes an image carousel (with dot navigation and arrow keys), star rating, tags, serving info, and add-to-cart. It locks body scroll and supports keyboard navigation (Escape, arrow keys).
+- **Inline search** — `SearchBar` is rendered inside `MenuProductGrid` (visible on mobile, hidden on desktop via media query). Filtering/search logic lives in `SearchBar.jsx`.
+- **Form submissions are simulated** — both `InquiryForm` usages (EventsContact, PartyPacks) use `setTimeout` to simulate async submission (800ms delay), no actual API calls yet. When wiring real endpoints, the form's `onSubmit` async handler should be wired to `api.post('/inquiries', data)`.
+- **FAB and Navbar action icons** (user, favorites, cart) are wired for auth but other actions are **display-only**
+- **Add-to-cart** is display-only — clicking the card FAB or the Add to Cart button in the detail modal toggles a `"Added ✓"` state for 2 seconds but doesn't persist anywhere.
 
-### Mobile Navigation Routes
+### Mobile Navigation
 
-`BottomMobileNav` links to four routes: Home (`/`), Menu (`/menu`), Orders (`/orders`), Profile (`/profile`). **Orders and Profile have no corresponding React Router routes** — they currently lead to the NotFound page.
+`BottomMobileNav` (mobile-only bottom nav bar) exists as a component file with four links: Home, Menu, Orders, Profile. **It is NOT currently imported or rendered in `App.jsx`** — it's dead code. Orders and Profile have no corresponding React Router routes and would lead to the NotFound page. The mobile nav is handled by `MobileNav` (sidebar/menu drawer) and the `FAB` component instead.
 
 ### Root Dependencies
 
 GSAP (`^3.15.0`) is in the root `package.json` for animation. It's installed but **not yet imported by any component**.
+
+### Okinawa Brush Font
+
+A **self-hosted cursive/brush script font** (`Okinawa`, loaded from `/public/fonts/okinawa.ttf` via `@font-face` in `global.css`) is used for hero/section titles on pages like Menu (`font-family: 'Okinawa', cursive;`). This is the decorative brand font, distinct from the Inter / Plus Jakarta Sans body and headline fonts.
 
 ### Icons
 
@@ -191,7 +257,7 @@ Business info, menu items, and bundles are all **static JS modules** (no databas
 - `client/src/data/menuItems.js` — 7 categories, 41 items
 - `client/src/data/bundles.js` — party pack bundles + features + filter tabs
 
-The Supabase backend is scaffolded but only the health endpoint is wired. Content rendering is entirely frontend-driven from these static files.
+The Supabase backend is scaffolded: health endpoint is wired, and **auth endpoints are wired** (login, signup, logout, refresh, oauth, me). Content rendering is entirely frontend-driven from static files.
 
 ## Dead / Unused Code
 
@@ -200,12 +266,9 @@ Some components are exported from the barrel (`components/index.js`) but their f
 - `MenuFilterTabs.jsx` — Filter tabs are rendered inline inside `MenuProductGrid.jsx`
 - `BentoCard.jsx` — PartyPacks page has its own inline bento card rendering
 - `BounceCards.jsx` — Only used directly by `Home.jsx`, not exported from barrel
+- `BottomMobileNav.jsx` — Exists as a component but **not imported or rendered anywhere** in the app
 
 These may be legacy components or intended for future reuse. When making changes, prefer modifying the inlined implementations (they're the live code), not the standalone wrappers.
-
-## API Client Pattern
-
-`client/src/lib/api.js` exports an `api` object with `get`, `post`, `put`, `patch`, `delete` methods. All point to `/api/*` (proxied to Express in dev). Throws on non-2xx with parsed error body. Returns `null` on 204.
 
 ## Assets
 

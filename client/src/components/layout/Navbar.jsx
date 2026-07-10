@@ -12,11 +12,14 @@ import SearchBar from '../ui/SearchBar';
 import Button from '../ui/Button';
 import MobileNav from './MobileNav';
 import { useActiveSection } from '../../context/ActiveSectionContext';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar({ className = '' }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const { activeSection } = useActiveSection();
+  const { user, isAuthenticated, openAuthPanel, logout } = useAuth();
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const isEventsPage = location.pathname === '/events';
   const isHomePage = location.pathname === '/';
 
@@ -41,7 +44,7 @@ export default function Navbar({ className = '' }) {
             height: '72px',
           }}
         >
-          {/* Logo with green glow */}
+          {/* Logo */}
           <Link
             to="/"
             className="nav-logo-link"
@@ -50,21 +53,8 @@ export default function Navbar({ className = '' }) {
               alignItems: 'center',
               justifyContent: 'center',
               textDecoration: 'none',
-              position: 'relative',
             }}
           >
-            <svg
-              className="nav-logo-glow"
-              viewBox="0 0 120 60"
-              fill="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M35 30 C35 12, 55 8, 65 22 C75 36, 95 32, 95 30 C95 28, 75 24, 65 38 C55 52, 35 48, 35 30Z"
-                fill="var(--color-primary)"
-                opacity="0.35"
-              />
-            </svg>
             <img
               src={logo}
               alt={business.name}
@@ -72,8 +62,6 @@ export default function Navbar({ className = '' }) {
                 height: '2.5rem',
                 width: 'auto',
                 display: 'block',
-                position: 'relative',
-                zIndex: 1,
               }}
             />
           </Link>
@@ -101,7 +89,7 @@ export default function Navbar({ className = '' }) {
 
               return (
                 <NavLink
-                  key={link.path}
+                  key={link.label}
                   to={link.path}
                   onClick={(e) => {
                     if (isEventsPage && isEventsOrContact) {
@@ -133,23 +121,157 @@ export default function Navbar({ className = '' }) {
             {/* Desktop action buttons */}
             <div className="nav-buttons" style={{ display: 'none', alignItems: 'center', gap: '0.75rem' }}>
               {/* User / Login */}
-              <button
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 40,
-                  height: 40,
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--color-on-surface-variant)',
-                  transition: 'color 0.2s',
-                }}
-                aria-label="Login or Sign Up"
-              >
-                <Icon name="person" size={24} />
-              </button>
+              <div style={{ position: 'relative' }}>
+                <button
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 40,
+                    height: 40,
+                    background: isAuthenticated && !user?.avatar_url
+                      ? 'var(--color-primary-container)'
+                      : 'none',
+                    border: isAuthenticated && user?.avatar_url
+                      ? '2px solid var(--color-primary-container)'
+                      : 'none',
+                    borderRadius: 'var(--radius-full)',
+                    cursor: 'pointer',
+                    color: isAuthenticated
+                      ? 'var(--color-on-primary-container)'
+                      : 'var(--color-on-surface-variant)',
+                    transition: 'color 0.2s, background 0.2s',
+                    overflow: 'hidden',
+                    padding: 0,
+                  }}
+                  aria-label={isAuthenticated ? 'Account' : 'Login or Sign Up'}
+                  onClick={() => {
+                    if (isAuthenticated) {
+                      setUserMenuOpen(!userMenuOpen);
+                    } else {
+                      openAuthPanel('login');
+                    }
+                  }}
+                >
+                  {isAuthenticated && user?.avatar_url ? (
+                    <img
+                      src={user.avatar_url}
+                      alt=""
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        display: 'block',
+                      }}
+                    />
+                  ) : (
+                    <Icon name="person" size={24} fill={isAuthenticated ? 1 : 0} />
+                  )}
+                </button>
+
+                {/* User dropdown when authenticated */}
+                {isAuthenticated && userMenuOpen && (
+                  <>
+                    <div
+                      style={{
+                        position: 'fixed',
+                        inset: 0,
+                        zIndex: 49,
+                      }}
+                      onClick={() => setUserMenuOpen(false)}
+                    />
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '100%',
+                        right: 0,
+                        marginTop: '0.5rem',
+                        minWidth: '200px',
+                        background: 'var(--color-surface-container-lowest)',
+                        borderRadius: 'var(--radius-xl)',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                        padding: '0.5rem',
+                        zIndex: 50,
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.75rem',
+                          padding: '0.625rem 0.75rem',
+                          fontSize: '0.8125rem',
+                          color: 'var(--color-on-surface-variant)',
+                          borderBottom: '1px solid var(--color-outline-variant)',
+                          marginBottom: '0.25rem',
+                        }}
+                      >
+                        {user?.avatar_url ? (
+                          <img
+                            src={user.avatar_url}
+                            alt=""
+                            style={{
+                              width: 32,
+                              height: 32,
+                              borderRadius: '50%',
+                              objectFit: 'cover',
+                              display: 'block',
+                              flexShrink: 0,
+                            }}
+                          />
+                        ) : (
+                          <div
+                            style={{
+                              width: 32,
+                              height: 32,
+                              borderRadius: '50%',
+                              background: 'var(--color-primary-container)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: 'var(--color-on-primary-container)',
+                              flexShrink: 0,
+                              fontSize: '0.875rem',
+                              fontWeight: 600,
+                            }}
+                          >
+                            {user?.email?.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <div style={{ fontWeight: 600, color: 'var(--color-on-surface)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {user?.email}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setUserMenuOpen(false);
+                          logout();
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          width: '100%',
+                          padding: '0.5rem 0.75rem',
+                          border: 'none',
+                          background: 'none',
+                          cursor: 'pointer',
+                          fontSize: '0.875rem',
+                          color: 'var(--color-error)',
+                          borderRadius: 'var(--radius-lg)',
+                          transition: 'background 0.2s',
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-surface-container)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+                      >
+                        <Icon name="logout" size={18} />
+                        Sign Out
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
               {/* Search */}
               <SearchBar />
               {/* Favorites heart (hollow) */}
@@ -241,19 +363,6 @@ export default function Navbar({ className = '' }) {
       />
 
       <style>{`
-        .nav-logo-link {
-          overflow: visible;
-        }
-
-        .nav-logo-glow {
-          position: absolute;
-          width: 130px;
-          height: 64px;
-          filter: blur(14px);
-          pointer-events: none;
-          transform: rotate(-6deg);
-        }
-
         /* ─── Animated hamburger icon ─────────────────────── */
         .hamburger-icon {
           height: 1.75em;
@@ -285,13 +394,12 @@ export default function Navbar({ className = '' }) {
 
         @media (min-width: 768px) {
           .nav-desktop { display: flex !important; }
-          .nav-buttons { display: flex !important; }
           .nav-mobile-toggle { display: none !important; }
         }
+        @media (min-width: 1024px) {
+          .nav-buttons { display: flex !important; }
+        }
         @media (max-width: 767px) {
-          .nav-logo-glow {
-            opacity: 0.5;
-          }
           nav {
             box-shadow: none !important;
           }
