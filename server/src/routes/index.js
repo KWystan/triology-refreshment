@@ -10,8 +10,8 @@ router.get('/health', getHealth);
 // ─── Auth ────────────────────────────────────────────────────
 router.use('/auth', authRouter);
 
-// ─── API v1 mount point ─────────────────────────────────────
-// import { apiV1Router } from './v1.js';
-// router.use('/v1', apiV1Router);
+// ─── Menu CRUD ─────────────────────────────────────────────
+import { menuRouter } from './menu.js';
+router.use('/menu', menuRouter);
 
 export { router as apiRouter };

@@ -1,20 +1,25 @@
 /**
- * App — root layout with Navbar, routes, Footer, and mobile FAB.
+ * App — root layout with Navbar, routes, Footer, Messenger FAB, ContactBar, and mobile FAB.
  */
 import { Routes, Route } from 'react-router-dom';
-import { Navbar, Footer, FAB, AuthPanel } from './components';
+import { Navbar, Footer, FAB, AuthPanel, MessengerFAB, ContactBar } from './components';
 import { ActiveSectionProvider } from './context/ActiveSectionContext';
 import { AuthProvider } from './context/AuthContext';
+import { OrderListProvider } from './context/OrderListContext';
+import { business } from './data/business';
 import Home from './pages/Home';
 import Menu from './pages/Menu';
 import PartyPacks from './pages/PartyPacks';
 import EventsContact from './pages/EventsContact';
+import Venue from './pages/Venue';
+import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 
 export default function App() {
   return (
     <AuthProvider>
     <ActiveSectionProvider>
+    <OrderListProvider>
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Navbar />
 
@@ -25,14 +30,22 @@ export default function App() {
           <Route path="/menu" element={<Menu />} />
           <Route path="/party-packs" element={<PartyPacks />} />
           <Route path="/events" element={<EventsContact />} />
+          <Route path="/venue" element={<Venue />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
+
+      {/* Contact info bar above footer */}
+      <ContactBar business={business} />
 
       <Footer />
 
       {/* Mobile-only Quick Order FAB */}
       <FAB className="mobile-fab" />
+
+      {/* Persistent Messenger chat FAB */}
+      <MessengerFAB messengerUrl={business.messengerUrl} />
 
       {/* Auth Panel overlay */}
       <AuthPanel />
@@ -54,6 +67,7 @@ export default function App() {
         }
       `}</style>
     </div>
+    </OrderListProvider>
     </ActiveSectionProvider>
     </AuthProvider>
   );

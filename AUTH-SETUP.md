@@ -94,20 +94,23 @@ User authorizes the app
        │
        ▼
 Google redirects → Supabase callback → Supabase redirects to redirect_to:
-  http://localhost:5173/api/auth/oauth/callback?code=...&state=...
+  http://localhost:5173/api/auth/oauth/callback?code=...
        │
        ▼
-Express (via Vite proxy) receives code + state in query params:
-  1. Validates state against stored map (CSRF protection)
-  2. Deletes used state from map
-  3. Calls Supabase POST /auth/v1/token?grant_type=authorization_code
+Express (via Vite proxy) receives code in query params,
+reads oauth_state from httpOnly cookie (SameSite=Lax):
+  1. Reads oauth_state cookie to look up code_verifier
+  2. Clears the cookie immediately (one-time use)
+  3. Validates state against stored Map (CSRF protection + verifier lookup)
+  4. Deletes used state from Map
+  5. Calls Supabase POST /auth/v1/token?grant_type=authorization_code
      with code + code_verifier + redirect_uri
-  4. On success: extracts user id + email from response
-  5. Signs app-level JWT access token (15 min)
-  6. Generates random refresh token (40 bytes hex)
-  7. Stores refresh token in in-memory Map
-  8. Sets httpOnly cookies on response
-  9. Redirects browser to CLIENT_ORIGIN/?auth=success
+  6. On success: extracts user id + email from response
+  7. Signs app-level JWT access token (15 min)
+  8. Generates random refresh token (40 bytes hex)
+  9. Stores refresh token in in-memory Map
+  10. Sets httpOnly cookies on response (access_token + refresh_token)
+  11. Redirects browser to CLIENT_ORIGIN/?auth=success
 ```
 
 **Why self-managed?** Gives the app full control over session token format and lifetime, decoupling from Supabase's session management. The trade-off is more code to maintain and an in-memory token store that must be persisted for production.
@@ -119,7 +122,7 @@ Express (via Vite proxy) receives code + state in query params:
 | Feature | Implementation |
 |---------|---------------|
 | OAuth 2.0 flow | Authorization Code + PKCE (SHA-256), never Implicit |
-| CSRF protection on OAuth | Cryptographically random `state` parameter, validated on callback |
+| CSRF protection on OAuth | Cryptographically random state stored in httpOnly `oauth_state` cookie (`SameSite=Lax`, one-time use) + PKCE code_verifier binding |
 | Access token lifetime | 15 minutes (JWT signed with `SESSION_SECRET`) |
 | Refresh token lifetime | 7 days, rotated on every use |
 | Refresh token reuse detection | If a superseded token is used, revokes ENTIRE token family (all tokens for that userId) |
@@ -133,14 +136,15 @@ Express (via Vite proxy) receives code + state in query params:
 
 ## Cookie Configuration
 
-| Cookie | Path | Max-Age | Purpose |
-|--------|------|---------|---------|
-| `access_token` | `/` | 15 min | JWT with user claims (sub, email, role) |
-| `refresh_token` | `/api/auth` | 7 days | Opaque random token, single-use + rotation |
+| Cookie | Path | Max-Age | SameSite | Purpose |
+|--------|------|---------|----------|---------|
+| `access_token` | `/` | 15 min | `Strict` | JWT with user claims (sub, email, role) |
+| `refresh_token` | `/api/auth` | 7 days | `Strict` | Opaque random token, single-use + rotation |
+| `oauth_state` | `/api/auth/oauth/callback` | 10 min | `Lax` | CSRF state for OAuth; survives cross-site redirect from Supabase |
 
-Both cookies: `httpOnly: true`, `secure: true` (prod, omitted in dev), `sameSite: 'strict'`.
+All cookies: `httpOnly: true`, `secure: true` (prod, omitted in dev).
 
-The refresh token cookie is scoped to `/api/auth` so it's only sent on auth endpoint requests, reducing exposure.
+`SameSite=Lax` on `oauth_state` is critical — with `Strict`, the cookie would not be sent when Supabase redirects the browser back to the callback URL (cross-site navigation). The PKCE code challenge/verifier provides the real CSRF protection; the state cookie just links the callback to the correct `code_verifier`.
 
 ---
 

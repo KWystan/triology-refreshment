@@ -330,11 +330,16 @@ export default function EventsContact() {
         /* ─── Hero ──────────────────────────────────────────── */
         .events-hero {
           position: relative;
-          height: 400px;
+          height: 320px;
           display: flex;
           align-items: center;
           justify-content: center;
           overflow: hidden;
+        }
+        @media (min-width: 768px) {
+          .events-hero {
+            height: 400px;
+          }
         }
 
         .events-hero-bg {
@@ -384,7 +389,12 @@ export default function EventsContact() {
 
         /* ─── Event Room Section ────────────────────────────── */
         .events-room-section {
-          padding: 5rem 0;
+          padding: 3rem 0;
+        }
+        @media (min-width: 768px) {
+          .events-room-section {
+            padding: 5rem 0;
+          }
         }
 
         .events-room-layout {
@@ -542,7 +552,12 @@ export default function EventsContact() {
         /* ─── Contact Section ────────────────────────────────── */
         .events-contact-section {
           background: var(--color-surface-container-low);
-          padding: 5rem 0;
+          padding: 3rem 0;
+        }
+        @media (min-width: 768px) {
+          .events-contact-section {
+            padding: 5rem 0;
+          }
         }
 
         .events-contact-header {

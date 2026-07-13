@@ -1,0 +1,57 @@
+<h2>Admin CRUD for Menu Cards</h2>
+<p class="subtitle">How the admin card management system would work</p>
+
+<div class="section">
+  <h3>🔐 Admin Access</h3>
+  <p>Only authorized users (specific Firebase Auth UID / email) can edit the menu. When logged in as admin, a small toggle appears in the navbar to enter "Admin Mode".</p>
+  <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin:0.75rem 0;">
+    <span style="background:var(--surface);padding:0.35rem 0.75rem;border-radius:999px;font-size:0.8rem;">Sign in as admin → gear icon appears ⚙️</span>
+    <span style="background:var(--surface);padding:0.35rem 0.75rem;border-radius:999px;font-size:0.8rem;">Toggle "Admin Mode" on/off</span>
+    <span style="background:var(--surface);padding:0.35rem 0.75rem;border-radius:999px;font-size:0.8rem;">Edits save to Firestore in real-time</span>
+  </div>
+</div>
+
+<div class="section">
+  <h3>🖼 Card States in Admin Mode</h3>
+  <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+    <div style="flex:1;min-width:200px;background:var(--surface);border-radius:12px;padding:1rem;border:1px solid var(--border);">
+      <div style="background:#e8e8e8;height:60px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#999;font-size:0.75rem;position:relative;">
+        [Card Image]
+        <span style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);color:white;padding:2px 8px;border-radius:4px;font-size:0.65rem;cursor:pointer;">✏️</span>
+      </div>
+      <div style="margin-top:0.5rem;font-weight:600;font-size:0.85rem;">Item Name</div>
+      <div style="font-size:0.75rem;color:#666;">₱75 - ₱95</div>
+      <div style="margin-top:0.5rem;font-size:0.7rem;color:var(--primary);">Edit overlay on hover</div>
+    </div>
+    <div style="flex:1;min-width:200px;background:var(--surface);border-radius:12px;padding:1rem;border:2px dashed var(--primary);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;">
+      <span style="font-size:1.5rem;">➕</span>
+      <span style="font-size:0.85rem;font-weight:600;color:var(--primary);">Add New Item</span>
+      <span style="font-size:0.7rem;color:#666;">Shown at end of each category</span>
+    </div>
+  </div>
+</div>
+
+<h3>How would you like the admin to be identified?</h3>
+<div class="options">
+  <div class="option" data-choice="hardcoded" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Hardcoded Email/UID</h3>
+      <p>One specific Firebase Auth user (e.g., the owner's email) is the admin. Simple and secure for a single admin.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="role-db" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Role in Firestore</h3>
+      <p>A users collection in Firestore with an admin role flag. Lets you grant admin access to multiple people later.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="secret-url" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Secret URL / Toggle</h3>
+      <p>No auth required — a hidden URL like /admin or a secret click pattern reveals the admin controls. Simplest but least secure.</p>
+    </div>
+  </div>
+</div>

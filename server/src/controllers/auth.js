@@ -3,7 +3,7 @@
  *
  * Security model (following the spec):
  *   - OAuth 2.0 Authorization Code flow with PKCE (never Implicit)
- *   - Short-lived access tokens (15 min) + rotated refresh tokens
+ *   - 1-hour access tokens + rotated refresh tokens persisted to disk
  *   - httpOnly, Secure, SameSite=Strict cookies (Secure omitted in dev)
  *   - bcrypt/argon2 handled by Supabase Auth
  *   - Generic error messages only ("invalid email or password")
@@ -11,34 +11,69 @@
  *   - Email verification required before full account activation
  *
  * ══════════════════════════════════════════════════════════════
- * NOTE: Refresh tokens are stored in an in-memory Map. A
- * production deployment should persist these in a database
- * (e.g., a `refresh_tokens` table in Supabase).
+ * Refresh tokens are persisted to a JSON file (sessions.json)
+ * so they survive server restarts during development. In
+ * production, swap this for a database table.
  * ══════════════════════════════════════════════════════════════
  */
 import jwt from 'jsonwebtoken';
 import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { supabaseAdmin, supabaseAnon } from '../config/supabase.js';
 import { env } from '../config/env.js';
 
 /* ─── Constants ─────────────────────────────────────────────── */
-const ACCESS_TOKEN_EXPIRY = '15m';
-const REFRESH_TOKEN_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const ACCESS_TOKEN_EXPIRY = '1h';
+const REFRESH_TOKEN_EXPIRY_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
-/* ─── In-memory refresh token store ────────────────────────── */
+/* ─── Persistent refresh token store (disk-backed) ─────────── */
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const SESSIONS_PATH = path.resolve(__dirname, '..', '..', 'sessions.json');
+
 /** @type {Map<string, { userId: string, email: string, expiresAt: number, supersededBy: string|null }>} */
 const refreshTokens = new Map();
 
+function loadSessions() {
+  try {
+    if (fs.existsSync(SESSIONS_PATH)) {
+      const raw = fs.readFileSync(SESSIONS_PATH, 'utf-8');
+      const data = JSON.parse(raw);
+      const now = Date.now();
+      for (const [key, val] of Object.entries(data)) {
+        if (val.expiresAt > now) {
+          refreshTokens.set(key, val);
+        }
+      }
+    }
+  } catch {
+    // Corrupted file — start fresh
+  }
+}
+
+function saveSessions() {
+  try {
+    const obj = Object.fromEntries(refreshTokens.entries());
+    fs.writeFileSync(SESSIONS_PATH, JSON.stringify(obj, null, 2), 'utf-8');
+  } catch {
+    // Non-critical — next boot loads stale data if write fails
+  }
+}
+
+// Load existing sessions on boot
+loadSessions();
+
 /* ─── Cookie helpers ────────────────────────────────────────── */
 
-/** Cookie options for access token (15 min, Path=/) */
+/** Cookie options for access token (1 hour, Path=/) */
 function accessCookieOptions() {
   return {
     httpOnly: true,
     secure: env.isProd,
     sameSite: 'strict',
     path: '/',
-    maxAge: 15 * 60 * 1000, // 15 min
+    maxAge: 60 * 60 * 1000, // 1 hour
   };
 }
 
@@ -69,7 +104,7 @@ function generateRefreshToken() {
   return crypto.randomBytes(40).toString('hex');
 }
 
-/** Store a refresh token in the in-memory store */
+/** Store a refresh token in the persistent store */
 function storeRefreshToken(token, userId, email, avatarUrl = null) {
   refreshTokens.set(token, {
     userId,
@@ -78,6 +113,7 @@ function storeRefreshToken(token, userId, email, avatarUrl = null) {
     expiresAt: Date.now() + REFRESH_TOKEN_EXPIRY_MS,
     supersededBy: null,
   });
+  saveSessions();
 }
 
 /** Set both auth cookies on the response */
@@ -272,6 +308,7 @@ export async function logout(_req, res, next) {
     const token = _req.cookies?.refresh_token;
     if (token && refreshTokens.has(token)) {
       refreshTokens.delete(token);
+      saveSessions();
     }
 
     clearAuthCookies(res);
@@ -303,6 +340,7 @@ export async function refresh(req, res, next) {
     // Token not found or expired
     if (!stored || stored.expiresAt < Date.now()) {
       refreshTokens.delete(token);
+      saveSessions();
       clearAuthCookies(res);
       return res.status(401).json({
         error: { message: 'Session expired. Please sign in again.' },
@@ -317,6 +355,7 @@ export async function refresh(req, res, next) {
           refreshTokens.delete(key);
         }
       }
+      saveSessions();
       clearAuthCookies(res);
       return res.status(401).json({
         error: { message: 'Session revoked. Please sign in again.' },
@@ -390,12 +429,19 @@ export async function oauthInit(req, res, next) {
 
     const redirectUrl = `${env.SUPABASE_URL}/auth/v1/authorize?${params.toString()}`;
 
-    // Validate the provider is enabled by checking Supabase's response
+    // Validate the provider is enabled by checking Supabase's response.
+    // Node.js native fetch (18+) returns status 0 with type "opaqueredirect"
+    // when redirect: 'manual' is set — NOT 302/303 like browser fetch.
     const validateRes = await fetch(redirectUrl, { method: 'GET', redirect: 'manual' });
-    if (validateRes.status !== 302 && validateRes.status !== 303) {
+    const isRedirect = validateRes.status === 0 || validateRes.status === 302 || validateRes.status === 303;
+    if (!isRedirect) {
       // Provider not enabled — clean up state and return a friendly error
       oauthStates.delete(state);
-      const body = await validateRes.text().catch(() => '');
+      res.clearCookie('oauth_state', { path: '/api/auth/oauth/callback' });
+      // Read the response body for a useful error message.
+      // If status is 0 (unexpected opaque redirect), body will be empty
+      // so we fall through to the generic message.
+      const body = validateRes.status !== 0 ? await validateRes.text().catch(() => '') : '';
       const detail = body.includes('not enabled')
         ? `"${provider}" login is not enabled in your Supabase project. Go to Authentication → Providers and enable it.`
         : `"${provider}" login returned an error (${validateRes.status}). Check your Supabase Auth configuration.`;
@@ -545,6 +591,8 @@ export async function me(req, res, next) {
       // Fallback: just use what's in the token
     }
 
+    const isAdmin = !!env.ADMIN_EMAIL && payload.email === env.ADMIN_EMAIL;
+
     res.json({
       data: {
         user: {
@@ -553,6 +601,7 @@ export async function me(req, res, next) {
           avatar_url: profile.avatar_url || payload.avatar_url || null,
           full_name: profile.full_name || null,
           role: payload.role,
+          isAdmin,
         },
       },
     });
@@ -566,9 +615,11 @@ export async function me(req, res, next) {
 const CLEANUP_INTERVAL = 15 * 60 * 1000; // 15 min
 setInterval(() => {
   const now = Date.now();
+  let changed = false;
   for (const [key, val] of refreshTokens) {
-    if (val.expiresAt < now) refreshTokens.delete(key);
+    if (val.expiresAt < now) { refreshTokens.delete(key); changed = true; }
   }
+  if (changed) saveSessions();
   for (const [key, val] of oauthStates) {
     if (val.expiresAt < now) oauthStates.delete(key);
   }

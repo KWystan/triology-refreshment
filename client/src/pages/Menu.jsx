@@ -7,13 +7,153 @@
  *   3. Product Grid — unified MenuProductGrid with category filter pills,
  *      sort dropdown, and uniform product cards
  *   4. Event CTA + Delivery Direct card
+ *
+ * Admin mode:
+ *   When logged in as admin, fetches categories from the API instead of
+ *   using static data, and shows CRUD controls (add/edit/delete).
  */
+import { useState, useEffect, useCallback } from 'react';
 import { menuCategories } from '../data/menuItems';
 import { business } from '../data/business';
 import Icon from '../components/ui/Icon';
 import MenuProductGrid from '../components/ui/MenuProductGrid';
+import OrderListDrawer from '../components/ui/OrderListDrawer';
+import AdminMenuToolbar from '../components/ui/AdminMenuToolbar';
+import CategoryEditorModal from '../components/ui/CategoryEditorModal';
+import ItemEditorModal from '../components/ui/ItemEditorModal';
+import { useOrderList } from '../context/OrderListContext';
+import { useAuth } from '../context/AuthContext';
+import { fetchCategories, fetchItems } from '../lib/menuApi';
 
 export default function Menu() {
+  const { addItem } = useOrderList();
+  const { isAdmin, isLoading: authLoading } = useAuth();
+
+  // Global state — all users fetch from API; static data is the fallback
+  const [liveCategories, setLiveCategories] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [apiFailed, setApiFailed] = useState(false);
+  const [categoryEditor, setCategoryEditor] = useState(null); // null | 'new' | category
+  const [itemEditor, setItemEditor] = useState(null);         // null | { categoryId } | item
+
+  // Fetch categories + items from the API (always — for every user)
+  const loadMenuData = useCallback(async () => {
+    setLoading(true);
+    setApiFailed(false);
+    try {
+      const cats = await fetchCategories();
+      // Fetch items for each category to build the full structure
+      const withItems = await Promise.all(
+        cats.map(async (cat) => {
+          try {
+            const items = await fetchItems(cat.id);
+            return { ...cat, items };
+          } catch {
+            return { ...cat, items: [] };
+          }
+        }),
+      );
+      setLiveCategories(withItems);
+      setApiFailed(false);
+    } catch (err) {
+      console.warn('[Menu] API unavailable, using static fallback:', err.message);
+      setLiveCategories(null);
+      setApiFailed(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Load from API on mount
+  useEffect(() => {
+    loadMenuData();
+  }, [loadMenuData]);
+
+  // The data to render — API data when available, static data otherwise
+  const usingApi = liveCategories !== null;
+  const displayCategories = usingApi ? liveCategories : menuCategories;
+  const isLiveData = liveCategories !== null;
+  const categoryCount = displayCategories.length;
+  // Derived — always the sum of items in whatever we're rendering. This used
+  // to be tracked as separate state, which forced nested setState calls inside
+  // the optimistic CRUD updaters (a React anti-pattern that double-counts in
+  // StrictMode). Deriving it removes that hazard entirely.
+  const itemCount = displayCategories.reduce(
+    (sum, c) => sum + (c.items?.length || 0),
+    0,
+  );
+
+  // Admin callbacks — apply the change to local state immediately (no full
+  // re-fetch flash). The modals only call these AFTER the API succeeded, so
+  // the returned object / id is authoritative. `refreshData` is kept for the
+  // toolbar's manual Refresh button.
+  const refreshData = useCallback(() => {
+    loadMenuData();
+  }, [loadMenuData]);
+
+  const handleCategorySaved = useCallback((cat) => {
+    setCategoryEditor(null);
+    if (!cat) return;
+    setLiveCategories((prev) => {
+      if (!prev) return prev;
+      const idx = prev.findIndex((c) => c.id === cat.id);
+      if (idx === -1) {
+        // New category — append (preserves fetch order; re-sort if order exists)
+        const next = [...prev, { ...cat, items: cat.items || [] }];
+        return next.sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+      }
+      // Updated category — replace metadata, keep existing items intact
+      const existing = prev[idx];
+      const next = [...prev];
+      next[idx] = { ...existing, ...cat, items: existing.items || cat.items || [] };
+      return next.sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+    });
+  }, []);
+
+  const handleCategoryDeleted = useCallback((catId) => {
+    setCategoryEditor(null);
+    setLiveCategories((prev) => {
+      if (!prev) return prev;
+      return prev.filter((c) => c.id !== catId);
+    });
+  }, []);
+
+  const handleItemSaved = useCallback((item) => {
+    setItemEditor(null);
+    if (!item) return;
+    setLiveCategories((prev) => {
+      if (!prev) return prev;
+      const catId = item.categoryId;
+      const catIdx = prev.findIndex((c) => c.id === catId);
+      if (catIdx === -1) return prev;
+      const cat = prev[catIdx];
+      const items = cat.items || [];
+      const itemIdx = items.findIndex((i) => i.id === item.id);
+      const nextItems = itemIdx === -1
+        ? [...items, item]
+        : items.map((i, idx) => (idx === itemIdx ? item : i));
+      const next = [...prev];
+      next[catIdx] = { ...cat, items: nextItems };
+      return next;
+    });
+  }, []);
+
+  const handleItemDeleted = useCallback((itemId) => {
+    setItemEditor(null);
+    setLiveCategories((prev) => {
+      if (!prev) return prev;
+      let removed = 0;
+      const next = prev.map((cat) => {
+        const items = cat.items || [];
+        if (!items.some((i) => i.id === itemId)) return cat;
+        removed += 1;
+        return { ...cat, items: items.filter((i) => i.id !== itemId) };
+      });
+      if (removed > 0) setLiveItemCount((n) => Math.max(0, n - removed));
+      return next;
+    });
+  }, []);
+
   return (
     <main>
       {/* ═══════════════════════════════════════════════════════
@@ -52,11 +192,46 @@ export default function Menu() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════
+          ADMIN TOOLBAR (admin only — gated on auth resolving to avoid flash)
+          ═══════════════════════════════════════════════════════ */}
+      {!authLoading && isAdmin && (
+        <div className="container">
+          <AdminMenuToolbar
+            onAddCategory={() => setCategoryEditor('new')}
+            onRefresh={loadMenuData}
+            isLiveData={isLiveData}
+            itemCount={itemCount}
+            categoryCount={categoryCount}
+          />
+        </div>
+      )}
+
+      {/* Loading indicator — visible to ALL users during API fetch */}
+      {loading && (
+        <div className="container">
+          <div className="menu-loading">
+            <div className="menu-loading-spinner" />
+            <p>Loading menu…</p>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════
           PRODUCT GRID — filterable, sortable, unified cards
           ═══════════════════════════════════════════════════════ */}
-      <div className="container" style={{ paddingBottom: '5rem' }}>
-        <MenuProductGrid categories={menuCategories} />
+      <div className="container menu-grid-wrap">
+        <MenuProductGrid
+          categories={displayCategories}
+          onAddToCart={addItem}
+          adminMode={isAdmin}
+          onEditItem={(item) => setItemEditor(item)}
+          onAddItem={(categoryId) => setItemEditor({ _new: true, categoryId })}
+          onEditCategory={(cat) => setCategoryEditor(cat)}
+        />
       </div>
+
+      {/* Order List Drawer — floating trigger + slide-out panel */}
+      <OrderListDrawer />
 
       {/* ═══════════════════════════════════════════════════════
           EVENT CTA + DELIVERY DIRECT
@@ -168,6 +343,28 @@ export default function Menu() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════
+          ADMIN MODALS
+          ═══════════════════════════════════════════════════════ */}
+      {categoryEditor && (
+        <CategoryEditorModal
+          category={categoryEditor === 'new' ? null : categoryEditor}
+          onClose={() => setCategoryEditor(null)}
+          onSaved={handleCategorySaved}
+          onDeleted={handleCategoryDeleted}
+        />
+      )}
+
+      {itemEditor && (
+        <ItemEditorModal
+          item={itemEditor._new ? null : itemEditor}
+          categories={displayCategories}
+          onClose={() => setItemEditor(null)}
+          onSaved={handleItemSaved}
+          onDeleted={handleItemDeleted}
+        />
+      )}
+
+      {/* ═══════════════════════════════════════════════════════
           RESPONSIVE STYLES
           ═══════════════════════════════════════════════════════ */}
       <style>{`
@@ -268,6 +465,16 @@ export default function Menu() {
           .menu-hero-desc {
             margin-left: 0;
             margin-right: 0;
+          }
+        }
+
+        /* ─── Grid wrapper padding (responsive) ───────────── */
+        .menu-grid-wrap {
+          padding-bottom: 3rem;
+        }
+        @media (min-width: 768px) {
+          .menu-grid-wrap {
+            padding-bottom: 5rem;
           }
         }
 
@@ -443,6 +650,29 @@ export default function Menu() {
         }
 
         /* ─── Mobile: delivery banner ─────────────────────── */
+        /* ─── Loading state ──────────────────────────────────── */
+        .menu-loading {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 1rem;
+          padding: 4rem 0;
+          color: var(--color-on-surface-variant);
+          font-size: 0.9375rem;
+          font-weight: 500;
+        }
+        .menu-loading-spinner {
+          width: 36px;
+          height: 36px;
+          border: 3px solid var(--color-outline-variant);
+          border-top-color: var(--color-primary);
+          border-radius: 50%;
+          animation: menu-spin 0.7s linear infinite;
+        }
+        @keyframes menu-spin {
+          to { transform: rotate(360deg); }
+        }
+
         @media (max-width: 767px) {
           html, body {
             overflow-x: hidden;
@@ -470,4 +700,3 @@ export default function Menu() {
     </main>
   );
 }
-

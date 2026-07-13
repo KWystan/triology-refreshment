@@ -249,14 +249,14 @@ export default function ProductDetailModal({
             </div>
           )}
 
-          {/* ── Add to Cart ────────────────────────────────── */}
+          {/* ── Add to Order List ────────────────────────────── */}
           <button
             onClick={handleAdd}
             className={`btn-interact pdm-add-btn${added ? ' pdm-add-btn-done' : ''}`}
             disabled={added}
           >
-            <span className="pdm-add-icon material-symbols-outlined">shopping_cart</span>
-            {added ? 'Added ✓' : 'Add to Cart'}
+            <span className="pdm-add-icon material-symbols-outlined">playlist_add</span>
+            {added ? 'Added!' : 'Add to List'}
           </button>
         </div>
       </div>

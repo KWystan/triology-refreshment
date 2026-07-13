@@ -14,6 +14,17 @@
  */
 
 import foodsample from '../assets/foodsample.jpg';
+import riceMealImg from '../assets/rice_meal.jpg';
+
+// ─── Halo-Halo real images (existing assets) ─────────────
+import ubeCrazeImg from '../assets/halo_halo/ube_craze_crash_overload.png';
+import cocoPandanImg from '../assets/halo_halo/coco_pandan_crash_overload.png';
+import cremelonImg from "../assets/halo_halo/creme'lon_overload.png";
+import realMangoImg from '../assets/halo_halo/real_mango_overload.png';
+import sayCheeseImg from '../assets/halo_halo/say_cheese_halo_overload.png';
+import haloCadoImg from '../assets/halo_halo/halo_cado_overload.png';
+import maisConYeloImg from '../assets/halo_halo/mais_con_yelo_halo_overload.png';
+import bananaImg from '../assets/halo_halo/banana_overload.png';
 
 export const menuCategories = [
   {
@@ -23,20 +34,20 @@ export const menuCategories = [
     layout: 'compact-square',
     priceNote: '₱89 Reg / ₱109 Big',
     items: [
-      { id: 'ube-craze', name: 'Ube Craze', image: foodsample, tags: ['#ube', '#halohalo', '#overload'], images: [foodsample, foodsample, foodsample], badge: 'Best Seller', isBestSeller: true, rating: 4.8, description: 'Rich and creamy ube-flavored halo-halo loaded with sweet toppings, leche flan, and ube ice cream.', serves: '1 person', prepTime: '~5 mins' },
-      { id: 'coco-pandan', name: 'Coco Pandan', image: foodsample, tags: ['#coconut', '#pandan', '#halohalo'], images: [foodsample, foodsample, foodsample], rating: 4.7, description: 'A refreshing blend of coconut strips, pandan jelly, and creamy milk topped with coconut ice cream.', serves: '1 person', prepTime: '~5 mins' },
-      { id: 'cremelon', name: "Creme'lon", image: foodsample, tags: ['#cremelon', '#melon', '#halohalo'], images: [foodsample, foodsample, foodsample], rating: 4.5, description: 'Cool and fruity melon-flavored halo-halo with fresh melon slices, sago, and a scoop of melon ice cream.', serves: '1 person', prepTime: '~5 mins' },
-      { id: 'real-mango', name: 'Real Mango', image: foodsample, tags: ['#mango', '#halohalo', '#sweet'], images: [foodsample, foodsample, foodsample], rating: 4.6, description: 'Sweet ripe mangoes layered with shaved ice, evaporated milk, and mango ice cream — a tropical delight.', serves: '1 person', prepTime: '~5 mins' },
-      { id: 'say-cheese', name: 'Say Cheese', image: foodsample, tags: ['#cheese', '#halohalo', '#savory'], images: [foodsample, foodsample, foodsample], rating: 4.4, description: 'A unique savory-sweet halo-halo with cheese strips, macapuno, and a scoop of cheese ice cream.', serves: '1 person', prepTime: '~5 mins' },
-      { id: 'halo-cado', name: 'Halo Cado', image: foodsample, tags: ['#avocado', '#halohalo', '#creamy'], images: [foodsample, foodsample, foodsample], rating: 4.7, description: 'Creamy avocado slices meet shaved ice and milk, topped with avocado ice cream — simple and divine.', serves: '1 person', prepTime: '~5 mins' },
-      { id: 'mais-con-yelo', name: 'Mais Con Yelo', image: foodsample, tags: ['#mais', '#corn', '#halohalo'], images: [foodsample, foodsample, foodsample], rating: 4.3, description: 'Sweet corn kernels over shaved ice with milk and a scoop of corn ice cream — a classic Filipino favorite.', serves: '1 person', prepTime: '~5 mins' },
-      { id: 'banana', name: 'Banana', image: foodsample, tags: ['#banana', '#halohalo', '#saba'], images: [foodsample, foodsample, foodsample], rating: 4.2, description: 'Caramelized saba bananas layered with shaved ice, milk, and banana ice cream — sweet comfort.', serves: '1 person', prepTime: '~5 mins' },
+      { id: 'ube-craze', name: 'Ube Craze', image: ubeCrazeImg, tags: ['#ube', '#halohalo', '#overload'], images: [ubeCrazeImg, foodsample, foodsample], badge: 'Best Seller', isBestSeller: true, rating: 4.8, description: 'Rich and creamy ube-flavored halo-halo loaded with sweet toppings, leche flan, and ube ice cream.', serves: '1 person', prepTime: '~5 mins' },
+      { id: 'coco-pandan', name: 'Coco Pandan', image: cocoPandanImg, tags: ['#coconut', '#pandan', '#halohalo'], images: [cocoPandanImg, foodsample, foodsample], rating: 4.7, description: 'A refreshing blend of coconut strips, pandan jelly, and creamy milk topped with coconut ice cream.', serves: '1 person', prepTime: '~5 mins' },
+      { id: 'cremelon', name: "Creme'lon", image: cremelonImg, tags: ['#cremelon', '#melon', '#halohalo'], images: [cremelonImg, foodsample, foodsample], rating: 4.5, description: 'Cool and fruity melon-flavored halo-halo with fresh melon slices, sago, and a scoop of melon ice cream.', serves: '1 person', prepTime: '~5 mins' },
+      { id: 'real-mango', name: 'Real Mango', image: realMangoImg, tags: ['#mango', '#halohalo', '#sweet'], images: [realMangoImg, foodsample, foodsample], rating: 4.6, description: 'Sweet ripe mangoes layered with shaved ice, evaporated milk, and mango ice cream — a tropical delight.', serves: '1 person', prepTime: '~5 mins' },
+      { id: 'say-cheese', name: 'Say Cheese', image: sayCheeseImg, tags: ['#cheese', '#halohalo', '#savory'], images: [sayCheeseImg, foodsample, foodsample], rating: 4.4, description: 'A unique savory-sweet halo-halo with cheese strips, macapuno, and a scoop of cheese ice cream.', serves: '1 person', prepTime: '~5 mins' },
+      { id: 'halo-cado', name: 'Halo Cado', image: haloCadoImg, tags: ['#avocado', '#halohalo', '#creamy'], images: [haloCadoImg, foodsample, foodsample], rating: 4.7, description: 'Creamy avocado slices meet shaved ice and milk, topped with avocado ice cream — simple and divine.', serves: '1 person', prepTime: '~5 mins' },
+      { id: 'mais-con-yelo', name: 'Mais Con Yelo', image: maisConYeloImg, tags: ['#mais', '#corn', '#halohalo'], images: [maisConYeloImg, foodsample, foodsample], rating: 4.3, description: 'Sweet corn kernels over shaved ice with milk and a scoop of corn ice cream — a classic Filipino favorite.', serves: '1 person', prepTime: '~5 mins' },
+      { id: 'banana', name: 'Banana', image: bananaImg, tags: ['#banana', '#halohalo', '#saba'], images: [bananaImg, foodsample, foodsample], rating: 4.2, description: 'Caramelized saba bananas layered with shaved ice, milk, and banana ice cream — sweet comfort.', serves: '1 person', prepTime: '~5 mins' },
     ],
   },
   {
     id: 'all-day-rice',
     label: 'All Day Rice Meals',
-    categoryImage: foodsample,
+    categoryImage: riceMealImg,
     layout: 'rice-card',
     items: [
       { id: 'fried-chicken-rice', name: 'Fried Chicken Rice Meal', price: 120, tags: ['#friedchicken', '#ricemeal', '#sulit'], images: [foodsample, foodsample, foodsample], rating: 4.5, description: 'Crispy fried chicken served with steaming white rice and your choice of sauce — a hearty everyday favorite.', serves: '1 person', prepTime: '~10 mins' },

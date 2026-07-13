@@ -31,6 +31,12 @@ export const env = {
   CLIENT_ORIGIN: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
   SESSION_SECRET: process.env.SESSION_SECRET || 'dev-secret-change-me',
 
+  // ─── Cloudinary ─────────────────────────────────────────────
+  CLOUDINARY_URL: process.env.CLOUDINARY_URL,
+
+  // ─── Admin ───────────────────────────────────────────────────
+  ADMIN_EMAIL: process.env.ADMIN_EMAIL || '',
+
   get isDev() {
     return this.NODE_ENV === 'development';
   },

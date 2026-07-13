@@ -7,8 +7,12 @@
  *   - Responsive product card grid (4→2→1 columns)
  *
  * Props:
- *   categories   — menuCategories array from data/menuItems
- *   onAddToCart  — (item) => void, called when Add to Cart is clicked
+ *   categories     — menuCategories array from data/menuItems
+ *   onAddToCart    — (item) => void, called when Add to Cart is clicked
+ *   adminMode      — boolean, shows edit/delete controls when true
+ *   onEditItem     — (item) => void, admin edit callback
+ *   onAddItem      — (categoryId) => void, admin add item callback
+ *   onEditCategory — (category) => void, admin edit category callback
  */
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import ProductDetailModal from './ProductDetailModal';
@@ -31,12 +35,24 @@ function formatItemPrice(item, categoryPriceNote) {
 /* ═══════════════════════════════════════════════════════════════
    CategoryHeader — title + separator line + optional notes
    ═══════════════════════════════════════════════════════════════ */
-function CategoryHeader({ category }) {
+function CategoryHeader({ category, adminMode, onEditCategory }) {
   const { label, priceNote, note } = category;
   return (
     <div className="mpg-section-header">
       <h2 className="mpg-section-title">{label}</h2>
+      {adminMode && (
+        <button
+          className="mpg-admin-btn mpg-admin-header-btn"
+          onClick={() => onEditCategory?.(category)}
+          title="Edit category"
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 18 }}>edit</span>
+          <span className="mpg-admin-btn-label">Edit</span>
+        </button>
+      )}
       <div className="mpg-section-line" />
+      {priceNote && <span className="mpg-section-note">{priceNote}</span>}
+      {note && <span className="mpg-section-note-italic">{note}</span>}
     </div>
   );
 }
@@ -44,7 +60,7 @@ function CategoryHeader({ category }) {
 /* ═══════════════════════════════════════════════════════════════
    ProductCard
    ═══════════════════════════════════════════════════════════════ */
-function ProductCard({ item, onAddToCart, onClick, style }) {
+function ProductCard({ item, onAddToCart, onClick, adminMode, onEditItem }) {
   const [added, setAdded] = useState(false);
   const [imgError, setImgError] = useState(false);
 
@@ -55,8 +71,13 @@ function ProductCard({ item, onAddToCart, onClick, style }) {
     setTimeout(() => setAdded(false), 2000);
   }, [item, onAddToCart]);
 
+  const handleEdit = useCallback((e) => {
+    e.stopPropagation();
+    onEditItem?.(item);
+  }, [item, onEditItem]);
+
   return (
-    <div className="mpg-card" style={style} onClick={onClick}>
+    <div className="mpg-card" style={adminMode ? { position: 'relative' } : undefined} onClick={onClick}>
       {/* Best Seller badge — positioned relative to the card, overhangs the edge */}
       {item.isBestSeller && <BestSellerBadge size={60} />}
 
@@ -78,7 +99,7 @@ function ProductCard({ item, onAddToCart, onClick, style }) {
           onClick={handleAdd}
           className={`mpg-card-fab${added ? ' mpg-card-fab-added' : ''}`}
           disabled={added}
-          aria-label={`Add ${item.name} to cart`}
+          aria-label={`Add ${item.name} to order list`}
         >
           <span className="material-symbols-outlined mpg-card-fab-icon">
             {added ? 'check' : 'add'}
@@ -90,6 +111,13 @@ function ProductCard({ item, onAddToCart, onClick, style }) {
       <div className="mpg-card-footer">
         <p className="mpg-card-price">{item.displayPrice}</p>
         <h3 className="mpg-card-name">{item.name}</h3>
+        {/* Admin edit button — shown below the name */}
+        {adminMode && (
+          <button className="mpg-admin-edit-link" onClick={handleEdit}>
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>edit_square</span>
+            Edit
+          </button>
+        )}
       </div>
     </div>
   );
@@ -98,7 +126,14 @@ function ProductCard({ item, onAddToCart, onClick, style }) {
 /* ═══════════════════════════════════════════════════════════════
    MenuProductGrid
    ═══════════════════════════════════════════════════════════════ */
-export default function MenuProductGrid({ categories, onAddToCart = () => {} }) {
+export default function MenuProductGrid({
+  categories,
+  onAddToCart = () => {},
+  adminMode = false,
+  onEditItem,
+  onAddItem,
+  onEditCategory,
+}) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedItem, setSelectedItem] = useState(null);
   const [favorites, setFavorites] = useState(() => {
@@ -178,9 +213,9 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
           Toolbar — filter tabs with scroll gradient hint
           ═══════════════════════════════════════════════════════ */}
       <div className="mpg-toolbar">
-        {/* Mobile search — appears above the category swiper on small screens */}
+        {/* Search — mobile above tabs, desktop inline */}
         <div className="mpg-mobile-search">
-          <SearchBar />
+          <SearchBar categories={categories} />
         </div>
 
         {/* Icon slider tabs */}
@@ -212,7 +247,11 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
           ═══════════════════════════════════════════════════════ */}
       {categorySections.map(({ category, items }) => (
         <div key={category.id} className="mpg-section">
-          <CategoryHeader category={category} />
+          <CategoryHeader
+            category={category}
+            adminMode={adminMode}
+            onEditCategory={onEditCategory}
+          />
           <div className="mpg-grid">
             {items.map((item) => (
               <ProductCard
@@ -220,9 +259,23 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
                 item={item}
                 onAddToCart={onAddToCart}
                 onClick={() => setSelectedItem(item)}
+                adminMode={adminMode}
+                onEditItem={onEditItem}
               />
             ))}
           </div>
+          {/* Admin "Add Item" button — below each category grid */}
+          {adminMode && (
+            <div style={{ marginTop: '0.75rem', textAlign: 'center' }}>
+              <button
+                className="mpg-admin-add-item-btn"
+                onClick={() => onAddItem?.(category.id)}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
+                Add Item to {category.label}
+              </button>
+            </div>
+          )}
         </div>
       ))}
 
@@ -259,7 +312,7 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
           ═══════════════════════════════════════════════════════ */}
       <style>{`
         /* ─── Toolbar row ──────────────────────────────────── */
-        /* Mobile search bar (hidden on desktop) */
+        /* Search bar — full-width on mobile, inline on desktop */
         .mpg-mobile-search {
           width: 100%;
         }
@@ -268,7 +321,16 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
         }
         @media (min-width: 768px) {
           .mpg-mobile-search {
-            display: none;
+            width: 300px;
+            flex-shrink: 0;
+          }
+          .mpg-mobile-search .search-bar {
+            width: 100%;
+          }
+        }
+        @media (min-width: 1024px) {
+          .mpg-mobile-search {
+            width: 340px;
           }
         }
 
@@ -278,6 +340,11 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
           align-items: center;
           gap: 1rem;
           margin-bottom: 2.5rem;
+        }
+        @media (min-width: 768px) {
+          .mpg-toolbar {
+            align-items: center;
+          }
         }
 
         /* ─── Scroll wrapper — track + peek affordance ──────── */
@@ -293,15 +360,16 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
         .mpg-tabs-scroll-wrap::after {
           content: '';
           position: absolute;
-          top: 6px;
-          right: 6px;
-          bottom: 6px;
-          width: 32px;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          width: 48px;
           background: linear-gradient(
             to right,
             transparent,
-            var(--color-surface-container)
+            var(--color-surface-container) 85%
           );
+          opacity: 0.95;
           pointer-events: none;
           border-radius: 0 var(--radius-2xl) var(--radius-2xl) 0;
         }
@@ -641,6 +709,66 @@ export default function MenuProductGrid({ categories, onAddToCart = () => {} }) 
           color: var(--color-on-surface-variant);
         }
 
+        /* ─── Admin controls ──────────────────────────────── */
+        .mpg-admin-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.25rem;
+          background: var(--color-surface-container-high);
+          color: var(--color-on-surface-variant);
+          border: 1px solid var(--color-outline-variant);
+          border-radius: var(--radius-lg);
+          padding: 0.25rem 0.5rem;
+          font-size: 0.75rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: opacity 0.15s;
+          flex-shrink: 0;
+        }
+        .mpg-admin-btn:hover {
+          opacity: 0.8;
+        }
+        .mpg-admin-header-btn {
+          margin-right: -0.5rem;
+        }
+
+        .mpg-admin-edit-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.25rem;
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: var(--color-primary);
+          font-size: 0.6875rem;
+          font-weight: 600;
+          padding: 0.25rem 0 0;
+          margin-top: 0.125rem;
+          transition: opacity 0.15s;
+        }
+        .mpg-admin-edit-link:hover {
+          opacity: 0.75;
+          text-decoration: underline;
+        }
+
+        .mpg-admin-add-item-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.375rem;
+          background: transparent;
+          color: var(--color-primary);
+          border: 1.5px dashed var(--color-outline-variant);
+          border-radius: var(--radius-xl);
+          padding: 0.5rem 1rem;
+          font-size: 0.8125rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background 0.15s, border-color 0.15s;
+        }
+        .mpg-admin-add-item-btn:hover {
+          background: var(--color-primary-container);
+          border-color: var(--color-primary);
+        }
       `}</style>
     </div>
   );

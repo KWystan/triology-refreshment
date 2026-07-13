@@ -20,6 +20,7 @@ export const bundles = [
     name: 'Grand Family Reunion Bundle',
     description: 'Customizable for up to 50 pax',
     serves: 'up to 50',
+    startingPrice: 1500,
     badge: null,
     image:
       'https://lh3.googleusercontent.com/aida-public/AB6AXuDyFDJ0VhZdaLacS-_acHURU_qig84PM_xVKQgYpbWcF6KC6wwOdPaoz0nL8175jL6fHWo9IKkw4_s_AeuSYOAlb5lETu-MvAtE61ntSIBatfDRjSKWhLgHo82b3RlPXn1gZAO9vTBKtBmhyzyx3dHuqfNbvm7v0L4RFeOdKHOxCc-tmQZfnLzUW2xNvMCxtCWRXoLeLOk03N1GtQEQQb3IKRj_g4qHsq3sLaNYZrJ0eJx-OSViDW62EtahkEWYTH3Ucs3qppO-YEbq',

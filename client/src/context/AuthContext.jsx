@@ -79,6 +79,7 @@ export function AuthProvider({ children }) {
         currentView,
         user,
         isAuthenticated: !!user,
+        isAdmin: !!user?.isAdmin,
         isLoading,
         openAuthPanel,
         closeAuthPanel,

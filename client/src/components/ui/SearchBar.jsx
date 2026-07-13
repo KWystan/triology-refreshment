@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { menuCategories } from '../../data/menuItems';
 import Icon from './Icon';
 
-export default function SearchBar() {
+export default function SearchBar({ categories: liveCategories }) {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [imgErrors, setImgErrors] = useState({});
@@ -18,18 +18,22 @@ export default function SearchBar() {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
+  /* ─── Use live categories when provided, fall back to static ─── */
+  const sourceCategories = liveCategories || menuCategories;
+
   /* ─── Flatten items with category context ──────────────── */
   const allItems = useMemo(
     () =>
-      menuCategories.flatMap((cat) =>
-        cat.items.map((item) => ({
+      sourceCategories.flatMap((cat) => {
+        const items = cat.items || [];
+        return items.map((item) => ({
           ...item,
           categoryId: cat.id,
           categoryLabel: cat.label,
           resolvedImage: item.image || cat.categoryImage,
-        })),
-      ),
-    [],
+        }));
+      }),
+    [sourceCategories],
   );
 
   /* ─── Filter results ───────────────────────────────────── */

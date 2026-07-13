@@ -7,7 +7,9 @@
  *   3. Pricing & Features — feature list + Messenger booking card + quick quote form
  *   4. Trust Bar — word badges with grayscale → full color on hover
  */
+import { useState } from 'react';
 import { bundles, bundleFeatures } from '../data/bundles';
+import { business } from '../data/business';
 
 const BENTO_APPETIZER =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuBVCgBsRwbiPd7t0ukPnMwD8__vx7PpolhtOYn83YCoXuo52OlqLscvyfyCy9obLWvy98C9-WDMsnXQS3l22lYaki5-y_VN8DNO_lybELTIZALQtZk-QdD0dWJT1x6NCFKl6Xx9dyR5Kslcjq5kRgJ3Sc17mWmor-DYo3-ES0M2S7FpUTt4Ux5XEYRrw-F-wHkzHMyl_vX7WkiCHFIOuZIsIYyx_IC1JQ7fGvJCteP5jD0TMEFMs0XRHNObmayQOxUkbfkqUm87qQGO';
@@ -18,7 +20,29 @@ const BENTO_OFFICE =
 const HERO_IMG =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuDOoSxq4CoSOZYqbdLMfakPV7rsuGJEC8bihguAAvP6LK_K_8g41Pz_EgTy5NjAcDEw9-X8RatSFKUJMoJ48_Qxl31Xjd6b0StNkGwlJOcghTqrEQjRnr3mBfbZNsmJNsZ5YmNo_64w09DBtE1_2esEzjqFrKm4jCKoMlJ6eIrQaHGXKFGpjzdMaUu6bcuI4MZArPUtn5CITl-0GDOqe5nQljVGozrHXtIRAvW7fqt02x32HmHGMuW0FeREGbGSqUdlAn0xNC9Bb9cj';
 
+const FEATURED_ITEMS = [
+  { type: 'bundle', data: bundles[0] },            // Classic Triple Feast
+  { type: 'scene', data: { image: BENTO_APPETIZER, label: 'Appetizer Spread', subtitle: 'Kwek-kwek, fishballs & dipping sauces' } },
+  { type: 'bundle', data: bundles[1] },            // Grand Family Reunion
+  { type: 'scene', data: { image: BENTO_OFFICE, label: 'Office Catering', subtitle: 'Packaged snacks & drinks for meetings' } },
+];
+
 export default function PartyPacks() {
+  const [formStatus, setFormStatus] = useState('idle'); // 'idle' | 'submitting' | 'submitted'
+  const [featuredIndex, setFeaturedIndex] = useState(0);
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    setFormStatus('submitting');
+    setTimeout(() => {
+      setFormStatus('submitted');
+      setTimeout(() => {
+        setFormStatus('idle');
+        e.target.reset();
+      }, 2500);
+    }, 1000);
+  };
+  const active = FEATURED_ITEMS[featuredIndex];
   return (
     <main>
       {/* ═══════════════════════════════════════════════════════
@@ -100,33 +124,79 @@ export default function PartyPacks() {
             </div>
             {/* Arrow buttons */}
             <div className="party-gallery-arrows">
-              <button className="party-arrow-btn btn-interact">
+              <button
+                className="party-arrow-btn btn-interact"
+                onClick={() => setFeaturedIndex((prev) => (prev - 1 + FEATURED_ITEMS.length) % FEATURED_ITEMS.length)}
+                aria-label="Previous item"
+              >
                 <span className="material-symbols-outlined" style={{ fontSize: 20 }}>arrow_back</span>
               </button>
-              <button className="party-arrow-btn party-arrow-btn-primary btn-interact">
+              <button
+                className="party-arrow-btn party-arrow-btn-primary btn-interact"
+                onClick={() => setFeaturedIndex((prev) => (prev + 1) % FEATURED_ITEMS.length)}
+                aria-label="Next item"
+              >
                 <span className="material-symbols-outlined" style={{ fontSize: 20 }}>arrow_forward</span>
               </button>
+              {/* Dot indicators */}
+              <div className="party-dots" aria-hidden="true">
+                {FEATURED_ITEMS.map((_, i) => (
+                  <span
+                    key={i}
+                    className={`party-dot${i === featuredIndex ? ' party-dot--active' : ''}`}
+                    onClick={() => setFeaturedIndex(i)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => e.key === 'Enter' && setFeaturedIndex(i)}
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Bento grid */}
           <div className="party-bento-grid">
-            {/* Large card: The Classic Triple Feast */}
-            <div className="party-bento-card party-bento-large">
-              <img
-                src={bundles[0].image}
-                alt="A classic bilao pack with pancit, spring rolls, and fried chicken"
-                loading="lazy"
-                className="party-bento-img"
-              />
-              <div className="party-bento-gradient" />
-              <div className="party-bento-content">
-                <span className="party-bento-badge">Most Popular</span>
-                <h3 className="party-bento-title">{bundles[0].name}</h3>
-                <p className="party-bento-desc">
-                  {bundles[0].description} (Serves {bundles[0].serves})
-                </p>
-              </div>
+            {/* Large card: Dynamic featured spotlight */}
+            <div className="party-bento-card party-bento-large" key={featuredIndex}>
+              {active.type === 'bundle' ? (
+                <>
+                  <img
+                    src={active.data.image}
+                    alt={active.data.name}
+                    loading="lazy"
+                    className="party-bento-img"
+                  />
+                  <div className="party-bento-gradient" />
+                  <div className="party-bento-content">
+                    {active.data.badge && (
+                      <span className="party-bento-badge">{active.data.badge}</span>
+                    )}
+                    <h3 className="party-bento-title">{active.data.name}</h3>
+                    <p className="party-bento-desc">
+                      {active.data.description} &mdash; Serves {active.data.serves}
+                    </p>
+                    {active.data.startingPrice && (
+                      <span className="party-bento-price">
+                        From ₱{active.data.startingPrice.toLocaleString()}
+                      </span>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <img
+                    src={active.data.image}
+                    alt={active.data.label}
+                    loading="lazy"
+                    className="party-bento-img"
+                  />
+                  <div className="party-bento-gradient" />
+                  <div className="party-bento-content">
+                    <span className="party-bento-tag">{active.data.label}</span>
+                    <p className="party-bento-desc">{active.data.subtitle}</p>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Small card: Appetizer bilao */}
@@ -167,6 +237,11 @@ export default function PartyPacks() {
                 <p className="party-bento-desc">
                   {bundles[1].description}
                 </p>
+                {bundles[1].startingPrice && (
+                  <span className="party-bento-price">
+                    From ₱{bundles[1].startingPrice.toLocaleString()}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -223,20 +298,22 @@ export default function PartyPacks() {
               <div className="party-contact-body">
                 {/* Messenger button */}
                 <a
-                  href="https://m.me/triology"
+                  href={business.messengerUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="party-messenger-btn btn-interact"
                 >
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    style={{ flexShrink: 0 }}
-                  >
-                    <path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.91 1.455 5.503 3.734 7.202.195.145.313.376.313.626l-.004 2.215c-.004.57.587.973 1.11.75l2.47-1.054a1.001 1.001 0 01.764-.02c.516.16 1.06.245 1.613.245 5.523 0 10-4.145 10-9.258S17.523 2 12 2zm.8 11.6l-1.9-2.02-3.7 2.02 4.07-4.32 1.9 2.02 3.7-2.02-4.07 4.32z" />
-                  </svg>
+                  <span className="party-mssgr-icon">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.91 1.455 5.503 3.734 7.202.195.145.313.376.313.626l-.004 2.215c-.004.57.587.973 1.11.75l2.47-1.054a1.001 1.001 0 01.764-.02c.516.16 1.06.245 1.613.245 5.523 0 10-4.145 10-9.258S17.523 2 12 2zm.8 11.6l-1.9-2.02-3.7 2.02 4.07-4.32 1.9 2.02 3.7-2.02-4.07 4.32z" />
+                    </svg>
+                  </span>
                   Chat on Messenger
                 </a>
 
@@ -248,26 +325,36 @@ export default function PartyPacks() {
                 </div>
 
                 {/* Quick form */}
-                <div className="party-form">
+                <form className="party-form" onSubmit={handleFormSubmit}>
                   <div className="party-field">
                     <label className="party-label">Your Name</label>
                     <input
                       type="text"
+                      name="name"
                       placeholder="Juan Dela Cruz"
                       className="party-input"
+                      required
                     />
                   </div>
                   <div className="party-field">
                     <label className="party-label">Event Date</label>
                     <input
                       type="date"
+                      name="eventDate"
                       className="party-input"
+                      required
                     />
                   </div>
-                  <button className="party-submit-btn btn-interact">
-                    Request a Quote
+                  <button
+                    type="submit"
+                    className={`party-submit-btn btn-interact${formStatus === 'submitted' ? ' party-submit-btn--sent' : ''}`}
+                    disabled={formStatus === 'submitting'}
+                  >
+                    {formStatus === 'idle' && 'Request a Quote'}
+                    {formStatus === 'submitting' && 'Sending...'}
+                    {formStatus === 'submitted' && 'Quote Requested!'}
                   </button>
-                </div>
+                </form>
               </div>
             </div>
           </div>
@@ -292,6 +379,8 @@ export default function PartyPacks() {
           RESPONSIVE STYLES
           ═══════════════════════════════════════════════════════ */}
       <style>{`
+        html { scroll-behavior: smooth; }
+
         /* ─── Hero Section ──────────────────────────────────── */
         .party-hero {
           position: relative;
@@ -656,6 +745,60 @@ export default function PartyPacks() {
           font-size: 0.875rem;
         }
 
+        .party-bento-price {
+          display: inline-block;
+          margin-top: 0.5rem;
+          padding: 0.25rem 0.75rem;
+          background: var(--color-secondary);
+          color: var(--color-on-secondary);
+          font-size: 0.8125rem;
+          font-weight: 700;
+          border-radius: var(--radius-full);
+        }
+
+        .party-bento-tag {
+          color: var(--color-secondary);
+          font-weight: 700;
+          font-size: 0.8125rem;
+          margin-bottom: 0.5rem;
+          display: block;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+        }
+
+        /* Fade transition for spotlight card */
+        .party-bento-large {
+          animation: party-fade-in 0.35s ease-out;
+        }
+        @keyframes party-fade-in {
+          from { opacity: 0.6; }
+          to   { opacity: 1; }
+        }
+
+        /* Dot indicators */
+        .party-dots {
+          display: flex;
+          gap: 0.375rem;
+          margin-top: 0.5rem;
+          justify-content: center;
+        }
+        .party-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: var(--radius-full);
+          background: var(--color-outline-variant);
+          cursor: pointer;
+          transition: background 0.25s ease, transform 0.25s ease;
+        }
+        .party-dot:hover {
+          background: var(--color-outline);
+          transform: scale(1.2);
+        }
+        .party-dot--active {
+          background: var(--color-primary);
+          transform: scale(1.3);
+        }
+
         /* ─── Pricing Section ───────────────────────────────── */
         .party-pricing {
           background: var(--color-surface-container-low);
@@ -776,17 +919,33 @@ export default function PartyPacks() {
           gap: 0.75rem;
           width: 100%;
           padding: 1rem;
-          background: #0084ff;
+          background: linear-gradient(135deg, #0099ff 0%, #1877F2 100%);
           color: #ffffff;
           border-radius: var(--radius-xl);
           font-size: 0.875rem;
           font-weight: 700;
           text-decoration: none;
-          box-shadow: var(--shadow-md);
-          transition: filter 0.2s ease;
+          box-shadow: 0 4px 14px rgba(24, 119, 242, 0.35);
+          transition: box-shadow 0.2s ease, transform 0.2s ease;
         }
         .party-messenger-btn:hover {
-          filter: brightness(1.1);
+          box-shadow: 0 6px 20px rgba(24, 119, 242, 0.5);
+        }
+
+        .party-mssgr-icon {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 32px;
+          height: 32px;
+          background: rgba(255, 255, 255, 0.18);
+          border-radius: var(--radius-full);
+          transition: transform 0.2s ease, background 0.2s ease;
+          flex-shrink: 0;
+        }
+        .party-messenger-btn:hover .party-mssgr-icon {
+          transform: scale(1.12);
+          background: rgba(255, 255, 255, 0.28);
         }
 
         .party-or-divider {
@@ -831,15 +990,16 @@ export default function PartyPacks() {
           width: 100%;
           padding: 1rem;
           background: var(--color-surface);
-          border: none;
+          border: 1px solid var(--color-outline-variant);
           border-radius: var(--radius-lg);
           font-size: 0.9375rem;
           color: var(--color-on-surface);
           outline: none;
           box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
-          transition: box-shadow 0.2s ease;
+          transition: box-shadow 0.2s ease, border-color 0.2s ease;
         }
         .party-input:focus {
+          border-color: var(--color-primary);
           box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06),
             0 0 0 2px var(--color-primary);
         }
@@ -860,6 +1020,14 @@ export default function PartyPacks() {
         }
         .party-submit-btn:hover:not(:disabled) {
           background: color-mix(in srgb, var(--color-primary) 80%, #000);
+        }
+        .party-submit-btn:disabled {
+          opacity: 0.8;
+          cursor: default;
+        }
+        .party-submit-btn--sent {
+          background: var(--color-secondary) !important;
+          color: var(--color-on-secondary) !important;
         }
 
         /* ─── Trust Bar ─────────────────────────────────────── */

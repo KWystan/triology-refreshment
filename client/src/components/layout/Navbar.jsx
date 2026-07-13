@@ -4,7 +4,7 @@
  * Order Now + View Menu buttons in desktop nav.
  */
 import { useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { business } from '../../data/business';
 import logo from '../../assets/triology-logo.png';
 import Icon from '../ui/Icon';
@@ -19,6 +19,7 @@ export default function Navbar({ className = '' }) {
   const location = useLocation();
   const { activeSection } = useActiveSection();
   const { user, isAuthenticated, openAuthPanel, logout } = useAuth();
+  const navigate = useNavigate();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const isEventsPage = location.pathname === '/events';
   const isHomePage = location.pathname === '/';
@@ -243,6 +244,31 @@ export default function Navbar({ className = '' }) {
                           {user?.email}
                         </div>
                       </div>
+                      <button
+                        onClick={() => {
+                          setUserMenuOpen(false);
+                          navigate('/dashboard');
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          width: '100%',
+                          padding: '0.5rem 0.75rem',
+                          border: 'none',
+                          background: 'none',
+                          cursor: 'pointer',
+                          fontSize: '0.875rem',
+                          color: 'var(--color-on-surface)',
+                          borderRadius: 'var(--radius-lg)',
+                          transition: 'background 0.2s',
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-surface-container)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+                      >
+                        <Icon name="dashboard" size={18} />
+                        My Dashboard
+                      </button>
                       <button
                         onClick={() => {
                           setUserMenuOpen(false);
