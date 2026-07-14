@@ -5,7 +5,7 @@
  */
 import { useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { business } from '../../data/business';
+import { useLiveBusiness } from '../../hooks/useLiveBusiness';
 import logo from '../../assets/triology-logo.png';
 import Icon from '../ui/Icon';
 import SearchBar from '../ui/SearchBar';
@@ -15,6 +15,7 @@ import { useActiveSection } from '../../context/ActiveSectionContext';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar({ className = '' }) {
+  const business = useLiveBusiness();
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const { activeSection } = useActiveSection();

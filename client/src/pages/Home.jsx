@@ -8,7 +8,7 @@
  *   4. Social Proof — Facebook community CTA with branding
  */
 import { useState, useRef, useEffect } from 'react';
-import { business } from '../data/business';
+import { useLiveBusiness } from '../hooks/useLiveBusiness';
 import { SectionHeading, Button, Section } from '../components';
 import MobileNav from '../components/layout/MobileNav';
 import heroImg1 from '../assets/hero/hero-page-image-1.jpg';
@@ -123,6 +123,7 @@ function FloatingPartyElements() {
 }
 
 export default function Home() {
+  const business = useLiveBusiness();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   const collageRef = useRef(null);

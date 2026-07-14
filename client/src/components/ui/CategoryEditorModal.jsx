@@ -26,6 +26,7 @@ export default function CategoryEditorModal({ category, onClose, onSaved, onDele
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [showConfirm, setShowConfirm] = useState(false);
 
   const [form, setForm] = useState({
@@ -68,18 +69,12 @@ export default function CategoryEditorModal({ category, onClose, onSaved, onDele
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  // Auto-dismiss error after 10s so a stale network error doesn't linger
-  useEffect(() => {
-    if (!error) return;
-    const t = setTimeout(() => setError(null), 10000);
-    return () => clearTimeout(t);
-  }, [error]);
-
-  // Clear error as soon as the user starts editing again
+  // Error persists until the user changes a field or closes the modal
   const handleChange = (field) => (e) => {
     const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
     setForm((prev) => ({ ...prev, [field]: value }));
     if (error) setError(null);
+    if (fieldErrors[field]) setFieldErrors((prev) => ({ ...prev, [field]: '' }));
   };
 
   // Item count for the delete confirmation warning
@@ -115,6 +110,15 @@ export default function CategoryEditorModal({ category, onClose, onSaved, onDele
       onSaved(result.data);
     } catch (err) {
       setError(err.message || 'Failed to save category');
+      // Map server field-level errors to inline field errors
+      const serverErrors = err.body?.error?.errors;
+      if (serverErrors && Array.isArray(serverErrors)) {
+        const fe = {};
+        serverErrors.forEach((e) => {
+          if (e.field) fe[e.field] = e.message;
+        });
+        setFieldErrors(fe);
+      }
     } finally {
       setSaving(false);
     }
@@ -150,13 +154,14 @@ export default function CategoryEditorModal({ category, onClose, onSaved, onDele
           <div className="aem-field">
             <label className="aem-label">Label <span className="aem-req">*</span></label>
             <input
-              className="aem-input"
+              className={`aem-input${fieldErrors.label ? ' aem-input-error' : ''}`}
               type="text"
               value={form.label}
               onChange={handleChange('label')}
               placeholder="e.g. Halo-Halo Overloads"
               required
             />
+            {fieldErrors.label && <span className="aem-field-error">{fieldErrors.label}</span>}
             <span className="aem-hint">This is the category name customers see.</span>
           </div>
 
@@ -335,6 +340,16 @@ export default function CategoryEditorModal({ category, onClose, onSaved, onDele
           box-shadow: 0 0 0 2px var(--color-primary-container);
         }
         .aem-row { display: flex; gap: 1rem; }
+        .aem-input-error {
+          border-color: var(--color-error) !important;
+          box-shadow: 0 0 0 2px var(--color-error-container) !important;
+        }
+        .aem-field-error {
+          font-size: 0.75rem;
+          color: var(--color-error);
+          font-weight: 500;
+          margin-top: 0.125rem;
+        }
         .aem-actions {
           display: flex; gap: 0.75rem; justify-content: flex-end;
           padding-top: 0.5rem;
@@ -352,7 +367,11 @@ export default function CategoryEditorModal({ category, onClose, onSaved, onDele
           background: var(--color-surface-container);
           color: var(--color-on-surface);
         }
-        .aem-btn-danger { background: var(--color-error); color: var(--color-on-error); }
+        .aem-btn-danger {
+          background: var(--color-error-container);
+          color: var(--color-on-error-container);
+          border: 1px solid var(--color-error);
+        }
         .aem-delete-section {
           padding: 1rem 1.5rem 1.5rem;
           border-top: 1px solid var(--color-outline-variant);

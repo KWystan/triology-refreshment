@@ -1,6 +1,6 @@
 # Triology
 
-A modern full-stack web application built with **React + Vite** (frontend) and **Express.js** (backend), backed by **Supabase**.
+A modern full-stack web application built with **React + Vite** (frontend) and **Express.js** (backend), backed by **Firebase** (Firestore + Auth).
 
 ```
 triology/
@@ -28,10 +28,11 @@ cp client/.env.example client/.env
 cp server/.env.example server/.env
 ```
 
-Then open both `.env` files and fill in your Supabase project credentials:
+Then open `server/.env` and fill in the Firebase Web API Key:
 
-- **`VITE_SUPABASE_URL`** / **`VITE_SUPABASE_ANON_KEY`** — from Supabase dashboard → Settings → API
-- **`SUPABASE_URL`** / **`SUPABASE_SERVICE_KEY`** — same page, but use the `service_role` key (keep secret!)
+- **`FIREBASE_WEB_API_KEY`** — from Firebase Console → Project Settings → General
+
+Also ensure `server/service-account.json` exists (download from Firebase Console → Project Settings → Service Accounts → Generate New Private Key).
 
 ### 3. Start development
 
@@ -65,7 +66,8 @@ triology/
 │   │   ├── hooks/                   # Custom React hooks
 │   │   ├── lib/                     # SDKs & API clients
 │   │   │   ├── api.js               # Express API wrapper
-│   │   │   └── supabase.js          # Supabase browser client
+│   │   │   ├── menuApi.js           # Menu API client
+│   │   │   └── contentApi.js        # Content API client
 │   │   ├── pages/                   # Route-level page components
 │   │   │   ├── Home.jsx
 │   │   │   └── NotFound.jsx
@@ -81,7 +83,7 @@ triology/
 │   ├── src/
 │   │   ├── config/
 │   │   │   ├── env.js               # Environment validation
-│   │   │   └── supabase.js          # Supabase admin client
+│   │   │   └── firebase.js          # Firebase Admin SDK
 │   │   ├── controllers/             # Route handlers
 │   │   │   └── health.js
 │   │   ├── middleware/

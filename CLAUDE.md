@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Triology Refreshment** — a full-stack restaurant/food business website for a Filipino refreshment shop in Trapiche, Oton, Iloilo. Built with React + Vite (frontend) and Express.js (backend), backed by Supabase.
+**Triology Refreshment** — a full-stack restaurant/food business website for a Filipino refreshment shop in Trapiche, Oton, Iloilo. Built with React + Vite (frontend) and Express.js (backend), backed by Firebase Firestore + Firebase Auth.
 
 ### Monorepo Structure (npm workspaces)
 
@@ -12,61 +12,57 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 triology/
 ├── client/              React + Vite (React 19, React Router 7)
 │   ├── src/
-│   │   ├── components/
-│   │   │   ├── layout/      Navbar, Footer, MobileNav, BottomMobileNav, FAB, Section, DeliveryBanner
-│   │   │   └── ui/          Button, Icon, Badge, SectionHeading, MenuProductGrid, ProductDetailModal,
-│   │   │                     SearchBar, CategoryIcons, ContactCard, InquiryForm, StatDisplay, ServiceCard,
-│   │   │                     MenuCard, MenuFilterTabs, BentoCard, BounceCards, AuthPanel, BestSellerBadge
-│   │   ├── pages/            Home, Menu, PartyPacks, EventsContact, NotFound
-│   │   ├── data/             Static data (menuItems.js — 7 categories 41 items, bundles.js, business.js)
-│   │   ├── design-system/    tokens.js (JS design tokens) + index.js barrel
-│   │   ├── styles/           global.css (CSS custom properties, reset, utilities)
-│   │   ├── lib/              api.js (fetch wrapper), supabase.js (browser Supabase client)
-│   │   ├── context/          ActiveSectionContext.jsx, AuthContext.jsx
-│   │   ├── App.jsx           Root component + Routes
-│   │   └── main.jsx          Entry point (BrowserRouter)
-│   └── vite.config.js        @ import alias, /api proxy → localhost:4000
+│   │   ├── components/    layout/ (Navbar, Footer, MobileNav, FAB, …) + ui/ (Button, Icon, MenuProductGrid, AuthPanel, …)
+│   │   ├── pages/         Home, Menu, PartyPacks, EventsContact, NotFound
+│   │   ├── data/          Static data (menuItems.js — 7 categories 41 items, bundles.js, business.js)
+│   │   ├── design-system/ tokens.js (JS design tokens) + index.js barrel
+│   │   ├── styles/        global.css (CSS custom properties, reset, utilities)
+│   │   ├── lib/           api.js (fetch wrapper), contentApi.js, menuApi.js
+│   │   ├── context/       ActiveSectionContext.jsx, AuthContext.jsx
+│   │   ├── App.jsx        Root component + Routes
+│   │   └── main.jsx       Entry point (BrowserRouter)
+│   └── vite.config.js     @ import alias, /api proxy → localhost:4000
 │
 ├── server/              Express.js (Express 5, ESM)
 │   ├── src/
-│   │   ├── config/           env.js (validated env), supabase.js (admin + anon clients)
-│   │   ├── controllers/      health.js, auth.js (JWT sessions, PKCE OAuth, refresh rotation)
-│   │   ├── middleware/        errorHandler.js, validate.js, auth.js (Supabase JWT verify)
-│   │   ├── routes/            index.js (mounts /api routes), auth.js
+│   │   ├── config/        env.js (validated env), firebase.js (Admin SDK)
+│   │   ├── controllers/   health.js, auth.js (Firebase Auth, JWT sessions, refresh rotation), content.js, menu.js
+│   │   ├── middleware/    errorHandler.js, validate.js, auth.js (Firebase ID token verify)
+│   │   ├── routes/        index.js (mounts /api routes), auth.js
 │   │   └── services/ validators/ utils/ — PLACEHOLDER directories (only .gitkeep)
 │   └── package.json
 │
+├── docs/               website-structure-for-stitch.txt (page map used as Stitch context)
 ├── stitch-*.html       Stitch-generated screen designs (Home, Menu, Party, Event) — design specs, not app code
 ├── client/public/stitch-mobile-*.html  Mobile-specific stitch designs (same purpose)
-├── docs/               website-structure-for-stitch.txt (page map used as Stitch context)
-└── AUTH-SETUP.md       Deep auth system docs (architecture, OAuth flow, security model, troubleshooting)
+├── AUTH-SETUP.md       Deep auth system docs (architecture, OAuth flow, security model, troubleshooting)
+└── .env.example         Shared env template (root vars apply to BOTH client and server in dev)
 ```
 
 ## Request Flow
 
 ```
-Browser → Vite (:5173) → /api/* proxy → Express (:4000) → controllers → Supabase REST
+Browser → Vite (:5173) → /api/* proxy → Express (:4000) → controllers → Firebase Firestore / Auth
 ```
 
 - In development, Vite proxies `/api/*` to Express (no CORS issues). The Express `app.js` also configures CORS with credentials for production.
 - API client (`client/src/lib/api.js`) wraps `fetch` and always calls `/api/*` paths. Returns parsed JSON, throws on non-2xx, returns `null` on 204.
-- Auth endpoints use httpOnly cookies for tokens (access_token + refresh_token). Non-auth endpoints use the `requireAuth` middleware checking `Authorization: Bearer <supabase-jwt>`.
+- Auth endpoints use httpOnly cookies for tokens (access_token + refresh_token). Non-auth endpoints use the `requireAuth` middleware checking `Authorization: Bearer <firebase-id-token>`.
 
 ## Key Architecture Decisions
 
-### Auth System (Wired End-to-End)
+### Auth System
 
-Uses **app-level JWT sessions** managed by Express, backed by Supabase Auth. Auth controller at `server/src/controllers/auth.js` handles all 7 endpoints (signup, login, logout, refresh, oauthInit, oauthCallback, me) with:
-- Short-lived JWTs (15 min) + rotated refresh tokens (7 days) as httpOnly cookies
-- Google OAuth via self-managed PKCE (Authorization Code flow, never Implicit)
+Uses **app-level JWT sessions** managed by Express, backed by **Firebase Auth**. Auth controller at `server/src/controllers/auth.js` handles 5 endpoints (signup, login, logout, refresh, me):
+- Firebase Admin SDK (`getAuth()`) for user creation (`createUser`) and ID token verification (`verifyIdToken`)
+- Firebase Auth REST API (`identitytoolkit.googleapis.com`) for email/password sign-in
+- Short-lived JWTs (1h) + rotated refresh tokens (30 days) as httpOnly cookies
 - Refresh token theft detection: reuse of a superseded token revokes the entire token family
-- In-memory `Map` stores (refresh tokens + OAuth states) with periodic cleanup every 15 min
+- In-memory `Map` store with periodic cleanup every 15 min
 
-**Frontend:** `AuthContext` manages panel state + user session, restores on mount via `GET /auth/me` with refresh fallback. `AuthPanel` provides login/signup/forgot-password UI + Google OAuth button. `Navbar` integrates `useAuth()` for conditional rendering.
+**Frontend:** `AuthContext` manages panel state + user session, restores on mount via `GET /auth/me` with refresh fallback. `AuthPanel` provides login/signup/forgot-password UI. `Navbar` integrates `useAuth()` for conditional rendering.
 
-See `AUTH-SUPABASE.md` for endpoint table, OAuth flow diagram, security model, cookie config, and troubleshooting.
-
-**`requireAuth` middleware** (`server/src/middleware/auth.js`): uses `@supabase/server/core` (`extractCredentials` + `verifyAuth`) with JWKS caching to verify Supabase JWTs from `Authorization` header. Not used by auth routes (they use cookie-based sessions) — reserved for future authenticated API endpoints (orders, profiles).
+**`requireAuth` middleware** (`server/src/middleware/auth.js`): uses `firebaseAuth.verifyIdToken()` to verify Firebase ID tokens from the `Authorization` header. Not used by auth routes (they use cookie-based sessions) — reserved for future authenticated API endpoints (orders, profiles).
 
 ### Request Validation Pattern
 
@@ -150,18 +146,18 @@ Menu items have a `layoutType` field determining card rendering in `MenuProductG
 ## Adding Environment Variables
 
 1. Add to `server/src/config/env.js` using `required('VAR_NAME')` (throws on missing) or `process.env.VAR_NAME || 'default'`
-2. Add to `server/.env.example`
+2. Add to `server/.env.example` AND root `.env.example`
 3. If needed client-side, add to `client/.env.example` with `VITE_` prefix and read via `import.meta.env.VITE_VAR_NAME`
 
-## Supabase: Three Client Split
+## Data Sources
 
-| Client | Key | File |
-|--------|-----|------|
-| Browser (React) | `anon` key (public, VITE env) | `client/src/lib/supabase.js` |
-| Server (admin) | `service_role` key (secret, `createAdminClient` from `@supabase/server/core`) | `server/src/config/supabase.js` |
-| Server (anon) | `publishable` key (standard `createClient`) | `server/src/config/supabase.js` |
+All persistent data lives in **Firebase Firestore**:
+- `menu_categories` / `menu_items` — menu CRUD data
+- `site_content` — business info, bundles, features, filter tabs
 
-Admin client bypasses RLS. Never expose the service-role key. **Note:** the server's admin client uses `createAdminClient` from `@supabase/server/core` (not standard `@supabase/supabase-js`).
+Auth data lives in **Firebase Auth** (managed via Admin SDK `getAuth()`).
+
+No Supabase was used in the making of this project.
 
 ## Image Sourcing
 
@@ -208,7 +204,7 @@ Images in `client/src/assets/`: `hero/` (4 hero images), `halo_halo/` (8 per-ite
 ## Dependencies
 
 - Root has `gsap` (installed but not yet used) and `concurrently` (dev)
-- `@supabase/supabase-js`, `@supabase/server/core` — Supabase client libraries
+- `firebase-admin` — Firebase Admin SDK (Auth + Firestore)
 - `jsonwebtoken` — JWT signing for app-level sessions
 - `cookie-parser` — cookie reading for auth
 - `helmet`, `cors`, `morgan` — Express middleware
@@ -246,5 +242,5 @@ npm run clean            # Remove build artifacts
 - **React 19** + **React Router 7** (BrowserRouter in main.jsx)
 - **ESLint 9 flat config** (`eslint.config.js` per package), zero warnings allowed
 - **Prettier** with semi, single quotes, trailing commas, 100 print width
-- **Readme note:** references `SUPABASE_SERVICE_KEY` but the codebase uses env var name `SUPABASE_SECRET_KEY` — use the latter when setting up `.env`
+- **Firebase Web API Key** (`FIREBASE_WEB_API_KEY`) — get from Firebase Console → Project Settings → General. Used for Firebase Auth REST API calls (sign-in endpoint)
 - No test framework configured yet (Vitest intended)

@@ -8,11 +8,11 @@
  *   itemCount       — number
  *   categoryCount   — number
  */
-export default function AdminMenuToolbar({ onAddCategory, onRefresh, isLiveData, itemCount, categoryCount }) {
+export default function AdminMenuToolbar({ onAddCategory, onRefresh, isLiveData, disabled, isRefreshing, itemCount, categoryCount }) {
   return (
     <div className="amt-bar">
       <div className="amt-left">
-        <span className="amt-badge" data-live={isLiveData}>
+        <span className="amt-badge" data-live={isLiveData} data-disabled={disabled}>
           {isLiveData ? '● Live' : '○ Static'}
         </span>
         <span className="amt-counts">
@@ -20,11 +20,15 @@ export default function AdminMenuToolbar({ onAddCategory, onRefresh, isLiveData,
         </span>
       </div>
       <div className="amt-right">
-        <button className="amt-btn amt-btn-secondary" onClick={onRefresh} title="Refresh from API">
-          <span className="material-symbols-outlined amt-icon">refresh</span>
-          Refresh
+        <button className="amt-btn amt-btn-secondary" onClick={onRefresh} disabled={disabled || isRefreshing} title="Refresh from API">
+          {isRefreshing ? (
+            <span className="material-symbols-outlined amt-icon amt-icon-spin">sync</span>
+          ) : (
+            <span className="material-symbols-outlined amt-icon">refresh</span>
+          )}
+          {isRefreshing ? 'Refreshing…' : 'Refresh'}
         </button>
-        <button className="amt-btn amt-btn-primary" onClick={onAddCategory}>
+        <button className="amt-btn amt-btn-primary" onClick={onAddCategory} disabled={disabled}>
           <span className="material-symbols-outlined amt-icon">add_circle</span>
           Add Category
         </button>
@@ -88,7 +92,14 @@ export default function AdminMenuToolbar({ onAddCategory, onRefresh, isLiveData,
           white-space: nowrap;
         }
         .amt-btn:hover { opacity: 0.85; }
+        .amt-btn:disabled { opacity: 0.45; cursor: not-allowed; }
         .amt-icon { font-size: 18px !important; }
+        .amt-icon-spin {
+          animation: amt-spin 0.7s linear infinite;
+        }
+        @keyframes amt-spin {
+          to { transform: rotate(360deg); }
+        }
         .amt-btn-primary {
           background: var(--color-primary);
           color: var(--color-on-primary);

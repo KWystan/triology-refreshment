@@ -23,10 +23,7 @@ export const env = {
   PORT: parseInt(process.env.PORT || '4000', 10),
   NODE_ENV: process.env.NODE_ENV || 'development',
 
-  SUPABASE_URL: required('SUPABASE_URL'),
-  SUPABASE_PUBLISHABLE_KEY: required('SUPABASE_PUBLISHABLE_KEY'),
-  SUPABASE_SECRET_KEY: required('SUPABASE_SECRET_KEY'),
-  SUPABASE_JWKS_URL: process.env.SUPABASE_JWKS_URL,
+  FIREBASE_WEB_API_KEY: required('FIREBASE_WEB_API_KEY'),
 
   CLIENT_ORIGIN: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
   SESSION_SECRET: process.env.SESSION_SECRET || 'dev-secret-change-me',

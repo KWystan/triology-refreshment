@@ -4,12 +4,13 @@
  */
 import { useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { business } from '../../data/business';
+import { useLiveBusiness } from '../../hooks/useLiveBusiness';
 import Icon from '../ui/Icon';
 import logo from '../../assets/triology-logo.png';
 import { useActiveSection } from '../../context/ActiveSectionContext';
 
 export default function MobileNav({ open, links, onClose, position = 'side' }) {
+  const business = useLiveBusiness();
   const location = useLocation();
   const { activeSection } = useActiveSection();
   const isEventsPage = location.pathname === '/events';

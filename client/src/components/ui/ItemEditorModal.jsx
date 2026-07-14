@@ -17,6 +17,7 @@ export default function ItemEditorModal({ item, categories, onClose, onSaved, on
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [showConfirm, setShowConfirm] = useState(false);
 
   const [form, setForm] = useState({
@@ -75,19 +76,14 @@ export default function ItemEditorModal({ item, categories, onClose, onSaved, on
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  // Auto-dismiss error after 10s so a stale network error doesn't linger
-  useEffect(() => {
-    if (!error) return;
-    const t = setTimeout(() => setError(null), 10000);
-    return () => clearTimeout(t);
-  }, [error]);
-
+  // Error persists until the user changes a field or closes the modal
   const set = (field) => (e) => {
     const value = e.target.type === 'number' ? (e.target.value === '' ? '' : Number(e.target.value))
       : e.target.type === 'checkbox' ? e.target.checked
       : e.target.value;
     setForm((prev) => ({ ...prev, [field]: value }));
     if (error) setError(null);
+    if (fieldErrors[field]) setFieldErrors((prev) => ({ ...prev, [field]: '' }));
   };
 
   const handleSubmit = async (e) => {
@@ -132,6 +128,15 @@ export default function ItemEditorModal({ item, categories, onClose, onSaved, on
       onSaved(result.data);
     } catch (err) {
       setError(err.message || 'Failed to save item');
+      // Map server field-level errors to inline field errors
+      const serverErrors = err.body?.error?.errors;
+      if (serverErrors && Array.isArray(serverErrors)) {
+        const fe = {};
+        serverErrors.forEach((e) => {
+          if (e.field) fe[e.field] = e.message;
+        });
+        setFieldErrors(fe);
+      }
     } finally {
       setSaving(false);
     }
@@ -167,12 +172,14 @@ export default function ItemEditorModal({ item, categories, onClose, onSaved, on
           <div className="iem-row">
             <div className="iem-field" style={{ flex: 2 }}>
               <label className="iem-label">Name <span className="iem-req">*</span></label>
-              <input className="iem-input" type="text" value={form.name} onChange={set('name')} placeholder="Item name" required />
+              <input className={`iem-input${fieldErrors.name ? ' iem-input-error' : ''}`} type="text" value={form.name} onChange={set('name')} placeholder="Item name" required />
+              {fieldErrors.name && <span className="iem-field-error">{fieldErrors.name}</span>}
               <span className="iem-hint">The dish name shown to customers.</span>
             </div>
             <div className="iem-field">
               <label className="iem-label">Price (₱)</label>
-              <input className="iem-input" type="number" value={form.price} onChange={set('price')} min="0" step="1" placeholder="0" />
+              <input className={`iem-input${fieldErrors.price ? ' iem-input-error' : ''}`} type="number" value={form.price} onChange={set('price')} min="0" step="1" placeholder="0" />
+              {fieldErrors.price && <span className="iem-field-error">{fieldErrors.price}</span>}
               <span className="iem-hint">Leave blank if price varies by size.</span>
             </div>
           </div>
@@ -187,7 +194,7 @@ export default function ItemEditorModal({ item, categories, onClose, onSaved, on
 
           <div className="iem-field">
             <label className="iem-label">Category <span className="iem-req">*</span></label>
-            <select className="iem-input" value={form.categoryId} onChange={set('categoryId')} required>
+            <select className={`iem-input${fieldErrors.categoryId ? ' iem-input-error' : ''}`} value={form.categoryId} onChange={set('categoryId')} required>
               <option value="">— Select category —</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>{cat.label}</option>
@@ -204,7 +211,8 @@ export default function ItemEditorModal({ item, categories, onClose, onSaved, on
           <div className="iem-row">
             <div className="iem-field">
               <label className="iem-label">Rating (0–5)</label>
-              <input className="iem-input" type="number" value={form.rating} onChange={set('rating')} min="0" max="5" step="0.1" />
+              <input className={`iem-input${fieldErrors.rating ? ' iem-input-error' : ''}`} type="number" value={form.rating} onChange={set('rating')} min="0" max="5" step="0.1" />
+              {fieldErrors.rating && <span className="iem-field-error">{fieldErrors.rating}</span>}
             </div>
             <div className="iem-field">
               <label className="iem-label">Badge</label>
@@ -383,6 +391,16 @@ export default function ItemEditorModal({ item, categories, onClose, onSaved, on
           box-shadow: 0 0 0 2px var(--color-primary-container);
         }
         .iem-textarea { resize: vertical; min-height: 60px; }
+        .iem-input-error {
+          border-color: var(--color-error) !important;
+          box-shadow: 0 0 0 2px var(--color-error-container) !important;
+        }
+        .iem-field-error {
+          font-size: 0.75rem;
+          color: var(--color-error);
+          font-weight: 500;
+          margin-top: 0.125rem;
+        }
         .iem-row { display: flex; gap: 1rem; }
         .iem-hint {
           font-size: 0.75rem;
@@ -452,7 +470,11 @@ export default function ItemEditorModal({ item, categories, onClose, onSaved, on
         .iem-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .iem-btn-primary { background: var(--color-primary); color: var(--color-on-primary); }
         .iem-btn-secondary { background: var(--color-surface-container); color: var(--color-on-surface); }
-        .iem-btn-danger { background: var(--color-error); color: var(--color-on-error); }
+        .iem-btn-danger {
+          background: var(--color-error-container);
+          color: var(--color-on-error-container);
+          border: 1px solid var(--color-error);
+        }
         .iem-delete-section {
           padding: 1rem 1.5rem 1.5rem;
           border-top: 1px solid var(--color-outline-variant);

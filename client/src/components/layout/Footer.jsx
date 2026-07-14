@@ -4,10 +4,11 @@
  * Quick Links (Menu, Party Packs, Order Tracking), Contact, Facebook link.
  */
 import { Link } from 'react-router-dom';
-import { business } from '../../data/business';
+import { useLiveBusiness } from '../../hooks/useLiveBusiness';
 import Icon from '../ui/Icon';
 
 export default function Footer({ className = '' }) {
+  const business = useLiveBusiness();
   const year = business.year || new Date().getFullYear();
 
   return (

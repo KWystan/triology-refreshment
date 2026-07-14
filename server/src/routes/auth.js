@@ -1,5 +1,5 @@
 /**
- * Auth routes — login, signup, OAuth, logout, refresh, me.
+ * Auth routes — login, signup, logout, refresh, me.
  *
  * All mounted at /api/auth/* via routes/index.js.
  */
@@ -9,8 +9,6 @@ import {
   login,
   logout,
   refresh,
-  oauthInit,
-  oauthCallback,
   me,
 } from '../controllers/auth.js';
 
@@ -19,10 +17,6 @@ const router = Router();
 // ─── Email/password ──────────────────────────────────────────
 router.post('/signup', signup);       // Create account
 router.post('/login', login);         // Sign in
-
-// ─── OAuth ────────────────────────────────────────────────────
-router.get('/oauth/callback', oauthCallback); // OAuth callback handler — MUST be before :provider
-router.get('/oauth/:provider', oauthInit);   // Start OAuth flow
 
 // ─── Session ──────────────────────────────────────────────────
 router.post('/logout', logout);       // Sign out (clear cookies)

@@ -60,7 +60,8 @@ function CategoryHeader({ category, adminMode, onEditCategory }) {
 /* ═══════════════════════════════════════════════════════════════
    ProductCard
    ═══════════════════════════════════════════════════════════════ */
-function ProductCard({ item, onAddToCart, onClick, adminMode, onEditItem }) {
+function ProductCard({ item, onAddToCart, onClick, adminMode, adminToolsDisabled, onEditItem }) {
+  const isAdminActive = adminMode && !adminToolsDisabled;
   const [added, setAdded] = useState(false);
   const [imgError, setImgError] = useState(false);
 
@@ -77,14 +78,16 @@ function ProductCard({ item, onAddToCart, onClick, adminMode, onEditItem }) {
   }, [item, onEditItem]);
 
   return (
-    <div className="mpg-card" style={adminMode ? { position: 'relative' } : undefined} onClick={onClick}>
+    <div className={`mpg-card${isAdminActive ? ' mpg-card-admin' : ''}`} onClick={onClick}>
       {/* Best Seller badge — positioned relative to the card, overhangs the edge */}
       {item.isBestSeller && <BestSellerBadge size={60} />}
 
       {/* Image with FAB */}
       <div className="mpg-card-img-wrap">
-        {imgError ? (
-          <div className="mpg-card-img-fallback" aria-label={item.name} />
+        {imgError || !item.resolvedImage ? (
+          <div className="mpg-card-img-placeholder" aria-label={item.name}>
+            <span className="material-symbols-outlined mpg-card-placeholder-icon">restaurant_menu</span>
+          </div>
         ) : (
           <img
             src={item.resolvedImage}
@@ -94,28 +97,30 @@ function ProductCard({ item, onAddToCart, onClick, adminMode, onEditItem }) {
             onError={() => setImgError(true)}
           />
         )}
-        {/* Floating action button — replaces full-width "Add to Cart" */}
-        <button
-          onClick={handleAdd}
-          className={`mpg-card-fab${added ? ' mpg-card-fab-added' : ''}`}
-          disabled={added}
-          aria-label={`Add ${item.name} to order list`}
-        >
-          <span className="material-symbols-outlined mpg-card-fab-icon">
-            {added ? 'check' : 'add'}
-          </span>
-        </button>
+        {/* Floating action button — hidden in admin active mode */}
+        {!isAdminActive && (
+          <button
+            onClick={handleAdd}
+            className={`mpg-card-fab${added ? ' mpg-card-fab-added' : ''}`}
+            disabled={added}
+            aria-label={`Add ${item.name} to order list`}
+          >
+            <span className="material-symbols-outlined mpg-card-fab-icon">
+              {added ? 'check' : 'add'}
+            </span>
+          </button>
+        )}
       </div>
 
       {/* Price + Name column */}
       <div className="mpg-card-footer">
         <p className="mpg-card-price">{item.displayPrice}</p>
         <h3 className="mpg-card-name">{item.name}</h3>
-        {/* Admin edit button — shown below the name */}
-        {adminMode && (
+        {/* Admin edit button — shown below the name in admin active mode */}
+        {isAdminActive && (
           <button className="mpg-admin-edit-link" onClick={handleEdit}>
             <span className="material-symbols-outlined" style={{ fontSize: 14 }}>edit_square</span>
-            Edit
+            Edit Item
           </button>
         )}
       </div>
@@ -130,6 +135,7 @@ export default function MenuProductGrid({
   categories,
   onAddToCart = () => {},
   adminMode = false,
+  adminToolsDisabled = false,
   onEditItem,
   onAddItem,
   onEditCategory,
@@ -260,13 +266,14 @@ export default function MenuProductGrid({
                 onAddToCart={onAddToCart}
                 onClick={() => setSelectedItem(item)}
                 adminMode={adminMode}
+                adminToolsDisabled={adminToolsDisabled}
                 onEditItem={onEditItem}
               />
             ))}
           </div>
           {/* Admin "Add Item" button — below each category grid */}
-          {adminMode && (
-            <div style={{ marginTop: '0.75rem', textAlign: 'center' }}>
+          {adminMode && !adminToolsDisabled && (
+            <div className="mpg-admin-add-item-wrap">
               <button
                 className="mpg-admin-add-item-btn"
                 onClick={() => onAddItem?.(category.id)}
@@ -288,7 +295,21 @@ export default function MenuProductGrid({
           >
             search_off
           </span>
-          <p className="mpg-empty-text">No items found in this category.</p>
+          <p className="mpg-empty-text">
+            {adminMode && !adminToolsDisabled
+              ? 'This category has no items yet.'
+              : 'No items found in this category.'}
+          </p>
+          {adminMode && !adminToolsDisabled && activeCategory !== 'all' && (
+            <button
+              className="mpg-admin-add-item-btn"
+              onClick={() => onAddItem?.(activeCategory)}
+              style={{ marginTop: '0.75rem' }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
+              Add Item to this category
+            </button>
+          )}
         </div>
       )}
 
@@ -455,9 +476,6 @@ export default function MenuProductGrid({
             background: none;
             padding: 0;
           }
-          .mpg-tabs-scroll-wrap::after {
-            display: none;
-          }
 
           .mpg-tab {
             flex-direction: row;
@@ -507,6 +525,13 @@ export default function MenuProductGrid({
           }
           .mpg-tab:not(.mpg-tab-active) .mpg-tab-label {
             color: inherit;
+          }
+        }
+
+        /* Hide scroll gradient at ≥1024px where tabs fit without overflow */
+        @media (min-width: 1024px) {
+          .mpg-tabs-scroll-wrap::after {
+            display: none;
           }
         }
 
@@ -568,7 +593,7 @@ export default function MenuProductGrid({
         }
         @media (min-width: 640px) {
           .mpg-grid {
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
           }
         }
         @media (min-width: 1024px) {
@@ -615,10 +640,19 @@ export default function MenuProductGrid({
           transform: scale(1.04);
         }
 
-        .mpg-card-img-fallback {
+        .mpg-card-img-placeholder {
           width: 100%;
           height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           background: var(--color-surface-container-high);
+          background-image: radial-gradient(circle at 30% 40%, var(--color-surface-container) 0%, transparent 70%);
+        }
+        .mpg-card-placeholder-icon {
+          font-size: 42px !important;
+          color: var(--color-outline-variant);
+          opacity: 0.6;
         }
 
         /* FAB — floating add-to-cart button, bottom-right of image */
@@ -735,20 +769,34 @@ export default function MenuProductGrid({
         .mpg-admin-edit-link {
           display: inline-flex;
           align-items: center;
-          gap: 0.25rem;
-          background: none;
-          border: none;
-          cursor: pointer;
+          gap: 0.375rem;
+          background: var(--color-surface-container-high);
           color: var(--color-primary);
-          font-size: 0.6875rem;
+          border: 1px solid var(--color-outline-variant);
+          border-radius: var(--radius-lg);
+          padding: 0.375rem 0.625rem;
+          font-size: 0.75rem;
           font-weight: 600;
-          padding: 0.25rem 0 0;
-          margin-top: 0.125rem;
+          cursor: pointer;
           transition: opacity 0.15s;
+          margin-top: 0.375rem;
+          align-self: flex-start;
+          position: relative;
         }
         .mpg-admin-edit-link:hover {
-          opacity: 0.75;
-          text-decoration: underline;
+          opacity: 0.8;
+        }
+        /* 44x44px touch target on mobile — expands hit area without changing visual size */
+        @media (max-width: 639px) {
+          .mpg-admin-edit-link::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: var(--radius-lg);
+          }
         }
 
         .mpg-admin-add-item-btn {
@@ -768,6 +816,31 @@ export default function MenuProductGrid({
         .mpg-admin-add-item-btn:hover {
           background: var(--color-primary-container);
           border-color: var(--color-primary);
+        }
+
+        /* ─── Admin mode card indicator (C1) ─────────────────── */
+        .mpg-card-admin {
+          border-left: 2px solid var(--color-primary);
+          position: relative;
+        }
+
+        /* ─── Admin button collapse on mobile (M4/M5/C4) ─────── */
+        .mpg-admin-add-item-wrap {
+          margin-top: 0.75rem;
+          text-align: center;
+        }
+        @media (max-width: 480px) {
+          .mpg-section-header {
+            flex-wrap: wrap;
+          }
+          .mpg-admin-header-btn {
+            margin-right: 0;
+          }
+          .mpg-admin-add-item-wrap,
+          .mpg-admin-add-item-btn {
+            width: 100%;
+            justify-content: center;
+          }
         }
       `}</style>
     </div>

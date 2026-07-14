@@ -84,7 +84,15 @@ export async function uploadImage(file) {
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({ message: res.statusText }));
-    const err = new Error(body.message || 'Failed to upload image');
+    // Map common HTTP statuses to friendly messages (R4)
+    const friendlyMessages = {
+      413: 'Image too large — max 5MB',
+      415: 'Unsupported file type — use JPEG/PNG',
+      400: 'Image upload failed — check the file format',
+      404: 'Upload service unavailable — try again later',
+    };
+    const message = friendlyMessages[res.status] || body.message || 'Failed to upload image';
+    const err = new Error(message);
     err.status = res.status;
     err.body = body;
     throw err;

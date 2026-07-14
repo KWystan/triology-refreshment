@@ -6,7 +6,7 @@ import { Navbar, Footer, FAB, AuthPanel, MessengerFAB, ContactBar } from './comp
 import { ActiveSectionProvider } from './context/ActiveSectionContext';
 import { AuthProvider } from './context/AuthContext';
 import { OrderListProvider } from './context/OrderListContext';
-import { business } from './data/business';
+import { useLiveBusiness } from './hooks/useLiveBusiness';
 import Home from './pages/Home';
 import Menu from './pages/Menu';
 import PartyPacks from './pages/PartyPacks';
@@ -16,6 +16,7 @@ import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 
 export default function App() {
+  const business = useLiveBusiness();
   return (
     <AuthProvider>
     <ActiveSectionProvider>

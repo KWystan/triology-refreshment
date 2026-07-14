@@ -7,9 +7,10 @@
  *   3. Pricing & Features — feature list + Messenger booking card + quick quote form
  *   4. Trust Bar — word badges with grayscale → full color on hover
  */
-import { useState } from 'react';
-import { bundles, bundleFeatures } from '../data/bundles';
-import { business } from '../data/business';
+import { useState, useEffect } from 'react';
+import { bundles as bundlesStatic, bundleFeatures as bundleFeaturesStatic } from '../data/bundles';
+import { business as businessStatic } from '../data/business';
+import { fetchBundles, fetchBusiness } from '../lib/contentApi';
 
 const BENTO_APPETIZER =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuBVCgBsRwbiPd7t0ukPnMwD8__vx7PpolhtOYn83YCoXuo52OlqLscvyfyCy9obLWvy98C9-WDMsnXQS3l22lYaki5-y_VN8DNO_lybELTIZALQtZk-QdD0dWJT1x6NCFKl6Xx9dyR5Kslcjq5kRgJ3Sc17mWmor-DYo3-ES0M2S7FpUTt4Ux5XEYRrw-F-wHkzHMyl_vX7WkiCHFIOuZIsIYyx_IC1JQ7fGvJCteP5jD0TMEFMs0XRHNObmayQOxUkbfkqUm87qQGO';
@@ -20,16 +21,44 @@ const BENTO_OFFICE =
 const HERO_IMG =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuDOoSxq4CoSOZYqbdLMfakPV7rsuGJEC8bihguAAvP6LK_K_8g41Pz_EgTy5NjAcDEw9-X8RatSFKUJMoJ48_Qxl31Xjd6b0StNkGwlJOcghTqrEQjRnr3mBfbZNsmJNsZ5YmNo_64w09DBtE1_2esEzjqFrKm4jCKoMlJ6eIrQaHGXKFGpjzdMaUu6bcuI4MZArPUtn5CITl-0GDOqe5nQljVGozrHXtIRAvW7fqt02x32HmHGMuW0FeREGbGSqUdlAn0xNC9Bb9cj';
 
-const FEATURED_ITEMS = [
-  { type: 'bundle', data: bundles[0] },            // Classic Triple Feast
-  { type: 'scene', data: { image: BENTO_APPETIZER, label: 'Appetizer Spread', subtitle: 'Kwek-kwek, fishballs & dipping sauces' } },
-  { type: 'bundle', data: bundles[1] },            // Grand Family Reunion
-  { type: 'scene', data: { image: BENTO_OFFICE, label: 'Office Catering', subtitle: 'Packaged snacks & drinks for meetings' } },
+const SCENE_ITEMS = [
+  { image: BENTO_APPETIZER, label: 'Appetizer Spread', subtitle: 'Kwek-kwek, fishballs & dipping sauces' },
+  { image: BENTO_OFFICE, label: 'Office Catering', subtitle: 'Packaged snacks & drinks for meetings' },
 ];
 
 export default function PartyPacks() {
   const [formStatus, setFormStatus] = useState('idle'); // 'idle' | 'submitting' | 'submitted'
   const [featuredIndex, setFeaturedIndex] = useState(0);
+  const [liveBundles, setLiveBundles] = useState(bundlesStatic);
+  const [liveFeatures, setLiveFeatures] = useState(bundleFeaturesStatic);
+  const [liveBusiness, setLiveBusiness] = useState(businessStatic);
+
+  // Fetch bundles + business from the API
+  useEffect(() => {
+    (async () => {
+      try {
+        const bundlesRes = await fetchBundles();
+        if (bundlesRes?.data?.bundles) setLiveBundles(bundlesRes.data.bundles);
+        if (bundlesRes?.data?.features) setLiveFeatures(bundlesRes.data.features);
+      } catch (err) {
+        console.warn('[PartyPacks] Bundles API unavailable, using static fallback:', err.message);
+      }
+      try {
+        const busRes = await fetchBusiness();
+        if (busRes?.data) setLiveBusiness(busRes.data);
+      } catch (err) {
+        console.warn('[PartyPacks] Business API unavailable, using static fallback:', err.message);
+      }
+    })();
+  }, []);
+
+  const featuredItems = [
+    { type: 'bundle', data: liveBundles[0] },
+    { type: 'scene', data: SCENE_ITEMS[0] },
+    { type: 'bundle', data: liveBundles[1] },
+    { type: 'scene', data: SCENE_ITEMS[1] },
+  ];
+  const active = featuredItems[featuredIndex];
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
@@ -42,7 +71,6 @@ export default function PartyPacks() {
       }, 2500);
     }, 1000);
   };
-  const active = FEATURED_ITEMS[featuredIndex];
   return (
     <main>
       {/* ═══════════════════════════════════════════════════════
@@ -126,21 +154,21 @@ export default function PartyPacks() {
             <div className="party-gallery-arrows">
               <button
                 className="party-arrow-btn btn-interact"
-                onClick={() => setFeaturedIndex((prev) => (prev - 1 + FEATURED_ITEMS.length) % FEATURED_ITEMS.length)}
+                onClick={() => setFeaturedIndex((prev) => (prev - 1 + featuredItems.length) % featuredItems.length)}
                 aria-label="Previous item"
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 20 }}>arrow_back</span>
               </button>
               <button
                 className="party-arrow-btn party-arrow-btn-primary btn-interact"
-                onClick={() => setFeaturedIndex((prev) => (prev + 1) % FEATURED_ITEMS.length)}
+                onClick={() => setFeaturedIndex((prev) => (prev + 1) % featuredItems.length)}
                 aria-label="Next item"
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 20 }}>arrow_forward</span>
               </button>
               {/* Dot indicators */}
               <div className="party-dots" aria-hidden="true">
-                {FEATURED_ITEMS.map((_, i) => (
+                {featuredItems.map((_, i) => (
                   <span
                     key={i}
                     className={`party-dot${i === featuredIndex ? ' party-dot--active' : ''}`}
@@ -224,7 +252,7 @@ export default function PartyPacks() {
             {/* Wide card: Grand Family Reunion Bundle */}
             <div className="party-bento-card party-bento-wide">
               <img
-                src={bundles[1].image}
+                src={liveBundles[1].image}
                 alt="Family reunion banquet table with multiple bilaos"
                 loading="lazy"
                 className="party-bento-img"
@@ -232,14 +260,14 @@ export default function PartyPacks() {
               <div className="party-bento-gradient" />
               <div className="party-bento-content">
                 <h3 className="party-bento-title" style={{ fontSize: '1.25rem' }}>
-                  {bundles[1].name}
+                  {liveBundles[1].name}
                 </h3>
                 <p className="party-bento-desc">
-                  {bundles[1].description}
+                  {liveBundles[1].description}
                 </p>
-                {bundles[1].startingPrice && (
+                {liveBundles[1].startingPrice && (
                   <span className="party-bento-price">
-                    From ₱{bundles[1].startingPrice.toLocaleString()}
+                    From ₱{liveBundles[1].startingPrice.toLocaleString()}
                   </span>
                 )}
               </div>
@@ -265,7 +293,7 @@ export default function PartyPacks() {
                 bundles tailored to your guest count and budget.
               </p>
               <div className="party-features-list">
-                {bundleFeatures.map((feature) => (
+                {liveFeatures.map((feature) => (
                   <div key={feature.icon} className="party-feature-item">
                     <div className="party-feature-icon">
                       <span
@@ -298,7 +326,7 @@ export default function PartyPacks() {
               <div className="party-contact-body">
                 {/* Messenger button */}
                 <a
-                  href={business.messengerUrl}
+                  href={liveBusiness.messengerUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="party-messenger-btn btn-interact"

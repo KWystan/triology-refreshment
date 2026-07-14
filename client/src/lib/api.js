@@ -2,6 +2,7 @@ const BASE_URL = '/api';
 
 /**
  * Thin wrapper around fetch for the Express backend API.
+ * Always sends credentials (cookies) for authentication.
  * Throws on non-2xx responses with the parsed error body.
  */
 async function request(endpoint, options = {}) {
@@ -12,6 +13,7 @@ async function request(endpoint, options = {}) {
       'Content-Type': 'application/json',
       ...options.headers,
     },
+    credentials: 'include',
     ...options,
   };
 

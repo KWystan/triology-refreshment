@@ -21,23 +21,32 @@ export function AuthProvider({ children }) {
     let cancelled = false;
 
     async function restoreSession() {
+      console.log('[Auth] restoreSession: checking /auth/me');
       try {
         // Try restoring from access token first
         const meRes = await api.get('/auth/me');
+        console.log('[Auth] /auth/me succeeded:', meRes?.data?.user?.email);
         if (!cancelled && meRes?.data?.user) {
           setUser(meRes.data.user);
         }
-      } catch {
+      } catch (err) {
+        console.log('[Auth] /auth/me failed:', err.message);
         // Access token expired or missing — try refresh
         try {
+          console.log('[Auth] trying /auth/refresh');
           const refreshRes = await api.post('/auth/refresh');
+          console.log('[Auth] /auth/refresh result:', refreshRes?.data?.message);
           if (!cancelled && refreshRes?.data?.message === 'Session refreshed.') {
             const meRes = await api.get('/auth/me');
+            console.log('[Auth] /auth/me after refresh:', meRes?.data?.user?.email);
             if (!cancelled && meRes?.data?.user) {
               setUser(meRes.data.user);
             }
+          } else {
+            console.log('[Auth] refresh did not return expected message');
           }
-        } catch {
+        } catch (refreshErr) {
+          console.log('[Auth] /auth/refresh also failed:', refreshErr.message);
           // No valid session — user stays null
         }
       }

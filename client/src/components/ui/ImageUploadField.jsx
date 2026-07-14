@@ -212,10 +212,12 @@ export default function ImageUploadField({ value, onChange, label = 'Image', acc
         }
         .iuf-preview {
           width: 100%;
-          max-height: 200px;
+          aspect-ratio: 1 / 1;
+          max-height: 280px;
           object-fit: cover;
           border-radius: var(--radius-lg);
           border: 1px solid var(--color-outline-variant);
+          background: var(--color-surface-container);
         }
         .iuf-preview-actions {
           display: flex;

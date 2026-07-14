@@ -14,4 +14,8 @@ router.use('/auth', authRouter);
 import { menuRouter } from './menu.js';
 router.use('/menu', menuRouter);
 
+// ─── Content (business info, bundles) ──────────────────────
+import { contentRouter } from './content.js';
+router.use('/content', contentRouter);
+
 export { router as apiRouter };

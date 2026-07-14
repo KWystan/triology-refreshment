@@ -56,7 +56,7 @@ TABLE OF CONTENTS
 
   Backend (server/):
   - Express 5 (ESM, "type": "module")
-  - Supabase (two clients: admin with service_role key, anon for RLS)
+  - Firebase (Admin SDK for Firestore + Auth)
   - Helmet, CORS, Morgan logging
   - Health check at GET /api/health
   - Scaffolded but not fully wired — most content is static JS data

@@ -14,7 +14,7 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import { menuCategories } from '../data/menuItems';
-import { business } from '../data/business';
+import { business as businessStatic } from '../data/business';
 import Icon from '../components/ui/Icon';
 import MenuProductGrid from '../components/ui/MenuProductGrid';
 import OrderListDrawer from '../components/ui/OrderListDrawer';
@@ -24,6 +24,7 @@ import ItemEditorModal from '../components/ui/ItemEditorModal';
 import { useOrderList } from '../context/OrderListContext';
 import { useAuth } from '../context/AuthContext';
 import { fetchCategories, fetchItems } from '../lib/menuApi';
+import { fetchBusiness as fetchBusinessApi } from '../lib/contentApi';
 
 export default function Menu() {
   const { addItem } = useOrderList();
@@ -35,6 +36,19 @@ export default function Menu() {
   const [apiFailed, setApiFailed] = useState(false);
   const [categoryEditor, setCategoryEditor] = useState(null); // null | 'new' | category
   const [itemEditor, setItemEditor] = useState(null);         // null | { categoryId } | item
+  const [liveBusiness, setLiveBusiness] = useState(businessStatic); // live data, fall back to static
+
+  // Fetch business info from the API
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetchBusinessApi();
+        if (res?.data) setLiveBusiness(res.data);
+      } catch (err) {
+        console.warn('[Menu] Business API unavailable, using static fallback:', err.message);
+      }
+    })();
+  }, []);
 
   // Fetch categories + items from the API (always — for every user)
   const loadMenuData = useCallback(async () => {
@@ -73,6 +87,10 @@ export default function Menu() {
   const usingApi = liveCategories !== null;
   const displayCategories = usingApi ? liveCategories : menuCategories;
   const isLiveData = liveCategories !== null;
+  // Admin tools only work against the API. If the API failed, all admin
+  // controls (toolbar, per-card Edit, Add Item) are disabled so admins don't
+  // click buttons that would silently fail.
+  const adminToolsDisabled = !isLiveData;
   const categoryCount = displayCategories.length;
   // Derived — always the sum of items in whatever we're rendering. This used
   // to be tracked as separate state, which forced nested setState calls inside
@@ -142,15 +160,11 @@ export default function Menu() {
     setItemEditor(null);
     setLiveCategories((prev) => {
       if (!prev) return prev;
-      let removed = 0;
-      const next = prev.map((cat) => {
+      return prev.map((cat) => {
         const items = cat.items || [];
         if (!items.some((i) => i.id === itemId)) return cat;
-        removed += 1;
         return { ...cat, items: items.filter((i) => i.id !== itemId) };
       });
-      if (removed > 0) setLiveItemCount((n) => Math.max(0, n - removed));
-      return next;
     });
   }, []);
 
@@ -165,7 +179,7 @@ export default function Menu() {
             <div className="menu-delivery-info">
               <Icon name="delivery_dining" size={20} />
               <span className="menu-delivery-text">
-                Delivery via partner riders! Reach us at {business.phone}
+                Delivery via partner riders! Reach us at {liveBusiness.phone}
               </span>
             </div>
             <span className="menu-delivery-location">
@@ -196,10 +210,20 @@ export default function Menu() {
           ═══════════════════════════════════════════════════════ */}
       {!authLoading && isAdmin && (
         <div className="container">
+          {adminToolsDisabled && (
+            <div className="menu-admin-disabled-banner" role="status">
+              <span className="material-symbols-outlined menu-admin-disabled-icon">cloud_off</span>
+              <span>
+                Admin tools are disabled — using static data. Reconnect the API to manage the menu.
+              </span>
+            </div>
+          )}
           <AdminMenuToolbar
             onAddCategory={() => setCategoryEditor('new')}
             onRefresh={loadMenuData}
             isLiveData={isLiveData}
+            disabled={adminToolsDisabled}
+            isRefreshing={loading}
             itemCount={itemCount}
             categoryCount={categoryCount}
           />
@@ -224,6 +248,7 @@ export default function Menu() {
           categories={displayCategories}
           onAddToCart={addItem}
           adminMode={isAdmin}
+          adminToolsDisabled={adminToolsDisabled}
           onEditItem={(item) => setItemEditor(item)}
           onAddItem={(categoryId) => setItemEditor({ _new: true, categoryId })}
           onEditCategory={(cat) => setCategoryEditor(cat)}
@@ -333,7 +358,7 @@ export default function Menu() {
               Delivery Direct
             </h3>
             <p className="menu-cta-delivery-phone">
-              {business.phone}
+              {liveBusiness.phone}
             </p>
             <p className="menu-cta-delivery-desc">
               Call us for quick orders within Oton area.

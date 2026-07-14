@@ -7,7 +7,7 @@
  *   3. Contact — glass-card sidebar + inquiry form + map image
  */
 import { useState, useEffect } from 'react';
-import { business } from '../data/business';
+import { useLiveBusiness } from '../hooks/useLiveBusiness';
 import Icon from '../components/ui/Icon';
 import { useActiveSection } from '../context/ActiveSectionContext';
 
@@ -36,6 +36,7 @@ const eventFeatures = [
 ];
 
 export default function EventsContact() {
+  const business = useLiveBusiness();
   const [formStatus, setFormStatus] = useState('idle'); // 'idle' | 'sending' | 'sent'
   const [btnText, setBtnText] = useState('Submit Request');
   const { setActiveSection, clearActiveSection } = useActiveSection();

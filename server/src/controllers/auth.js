@@ -1,14 +1,9 @@
 /**
- * Auth controller — signup, login, OAuth, logout, refresh, me.
+ * Auth controller — signup, login, logout, refresh, me.
  *
- * Security model (following the spec):
- *   - OAuth 2.0 Authorization Code flow with PKCE (never Implicit)
- *   - 1-hour access tokens + rotated refresh tokens persisted to disk
- *   - httpOnly, Secure, SameSite=Strict cookies (Secure omitted in dev)
- *   - bcrypt/argon2 handled by Supabase Auth
- *   - Generic error messages only ("invalid email or password")
- *   - Rate limiting handled separately (helmet or express-rate-limit)
- *   - Email verification required before full account activation
+ * Uses Firebase Auth (Admin SDK + REST API) for user management.
+ * Session management uses app-level JWT access tokens + rotated
+ * refresh tokens as httpOnly cookies.
  *
  * ══════════════════════════════════════════════════════════════
  * Refresh tokens are persisted to a JSON file (sessions.json)
@@ -21,12 +16,14 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { supabaseAdmin, supabaseAnon } from '../config/supabase.js';
+import { firebaseAuth } from '../config/firebase.js';
 import { env } from '../config/env.js';
 
 /* ─── Constants ─────────────────────────────────────────────── */
 const ACCESS_TOKEN_EXPIRY = '1h';
 const REFRESH_TOKEN_EXPIRY_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+const FIREBASE_SIGN_IN_URL =
+  `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${env.FIREBASE_WEB_API_KEY}`;
 
 /* ─── Persistent refresh token store (disk-backed) ─────────── */
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -91,9 +88,9 @@ function refreshCookieOptions() {
 /* ─── JWT helpers ───────────────────────────────────────────── */
 
 /** Sign an app-level access token */
-function signAccessToken(userId, email, avatarUrl = null) {
+function signAccessToken(userId, email) {
   return jwt.sign(
-    { sub: userId, email, avatar_url: avatarUrl, role: 'user', type: 'access' },
+    { sub: userId, email, role: 'user', type: 'access' },
     env.SESSION_SECRET,
     { expiresIn: ACCESS_TOKEN_EXPIRY },
   );
@@ -105,11 +102,10 @@ function generateRefreshToken() {
 }
 
 /** Store a refresh token in the persistent store */
-function storeRefreshToken(token, userId, email, avatarUrl = null) {
+function storeRefreshToken(token, userId, email) {
   refreshTokens.set(token, {
     userId,
     email,
-    avatar_url: avatarUrl,
     expiresAt: Date.now() + REFRESH_TOKEN_EXPIRY_MS,
     supersededBy: null,
   });
@@ -128,48 +124,6 @@ function clearAuthCookies(res) {
   res.clearCookie('refresh_token', { path: '/api/auth' });
 }
 
-/* ─── OAuth PKCE helpers ────────────────────────────────────── */
-
-/** @type {Map<string, { codeVerifier: string, provider: string, expiresAt: number }>} */
-const oauthStates = new Map();
-const OAUTH_STATE_EXPIRY_MS = 10 * 60 * 1000; // 10 min
-
-function base64URLEncode(buffer) {
-  return buffer
-    .toString('base64')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
-}
-
-function generateCodeVerifier() {
-  return base64URLEncode(crypto.randomBytes(32));
-}
-
-function generateCodeChallenge(verifier) {
-  return base64URLEncode(crypto.createHash('sha256').update(verifier).digest());
-}
-
-/* ─── Database helpers ─────────────────────────────────────── */
-
-/** Upsert a user row into public.users after login / signup / OAuth */
-async function upsertUser({ id, email, avatarUrl, fullName }) {
-  try {
-    await supabaseAdmin.from('users').upsert(
-      {
-        id,
-        email,
-        avatar_url: avatarUrl || null,
-        full_name: fullName || null,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: 'id', ignoreDuplicates: false },
-    );
-  } catch {
-    // Non-critical — the Supabase Auth trigger handles creation too
-  }
-}
-
 /* ═══════════════════════════════════════════════════════════════
    Handlers
    ═══════════════════════════════════════════════════════════════ */
@@ -177,6 +131,9 @@ async function upsertUser({ id, email, avatarUrl, fullName }) {
 /**
  * POST /api/auth/signup
  * Body: { email, password }
+ *
+ * Creates a Firebase Auth user via the Admin SDK.
+ * Returns a success message — email verification may be required.
  */
 export async function signup(req, res, next) {
   try {
@@ -194,43 +151,24 @@ export async function signup(req, res, next) {
       });
     }
 
-    const { data, error } = await supabaseAnon.auth.signUp({
+    const userRecord = await firebaseAuth.createUser({
       email,
       password,
-      options: {
-        emailRedirectTo: `${env.CLIENT_ORIGIN}/`,
-      },
     });
 
-    if (error) {
-      return res.status(400).json({
-        error: { message: 'Unable to create account. Please try again.' },
-      });
-    }
-
-    // Upsert user into public.users (the Supabase trigger also handles this)
-    if (data?.user) {
-      await upsertUser({
-        id: data.user.id,
-        email: data.user.email,
-        avatarUrl: data.user?.user_metadata?.avatar_url,
-        fullName: data.user?.user_metadata?.full_name,
-      });
-    }
-
-    // If email confirmation is required, Supabase sends a verification email.
-    // The user will need to verify before they can log in.
     res.status(201).json({
       data: {
-        user: data?.user
-          ? { id: data.user.id, email: data.user.email }
-          : null,
-        message: data?.user?.identities?.length
-          ? 'Account created! Check your email to verify.'
-          : 'Account created!',
+        user: { id: userRecord.uid, email: userRecord.email },
+        message: 'Account created! Check your email to verify.',
       },
     });
   } catch (err) {
+    // Firebase errors — surface the message but keep it generic
+    if (err.code === 'auth/email-already-exists') {
+      return res.status(409).json({
+        error: { message: 'An account with this email already exists.' },
+      });
+    }
     next(err);
   }
 }
@@ -239,8 +177,9 @@ export async function signup(req, res, next) {
  * POST /api/auth/login
  * Body: { email, password }
  *
- * On success, sets httpOnly cookies (access_token + refresh_token)
- * and returns user info (no tokens in body).
+ * Authenticates via the Firebase Auth REST API, verifies the
+ * returned ID token with the Admin SDK, then issues app-level
+ * session cookies.
  */
 export async function login(req, res, next) {
   try {
@@ -252,40 +191,42 @@ export async function login(req, res, next) {
       });
     }
 
-    const { data, error } = await supabaseAnon.auth.signInWithPassword({
-      email,
-      password,
+    // Sign in via Firebase Auth REST API
+    const signInRes = await fetch(FIREBASE_SIGN_IN_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        password,
+        returnSecureToken: true,
+      }),
     });
 
-    if (error || !data?.session) {
+    const signInData = await signInRes.json();
+
+    if (!signInRes.ok) {
       // Generic message — never confirm whether the email exists
       return res.status(401).json({
         error: { message: 'Invalid email or password.' },
       });
     }
 
-    const userId = data.user?.id;
-    const userEmail = data.user?.email;
-
-    if (!userId) {
+    const idToken = signInData.idToken;
+    if (!idToken) {
       return res.status(500).json({
         error: { message: 'Authentication failed. Please try again.' },
       });
     }
 
-    // Upsert user into public.users
-    await upsertUser({
-      id: userId,
-      email: userEmail,
-      avatarUrl: data.user?.user_metadata?.avatar_url,
-      fullName: data.user?.user_metadata?.full_name,
-    });
+    // Verify the ID token with the Admin SDK
+    const decoded = await firebaseAuth.verifyIdToken(idToken);
+    const userId = decoded.uid;
+    const userEmail = decoded.email || email;
 
     // Issue app-level session
-    const avatarUrl = data.user?.user_metadata?.avatar_url || null;
-    const accessToken = signAccessToken(userId, userEmail, avatarUrl);
+    const accessToken = signAccessToken(userId, userEmail);
     const refreshToken = generateRefreshToken();
-    storeRefreshToken(refreshToken, userId, userEmail, avatarUrl);
+    storeRefreshToken(refreshToken, userId, userEmail);
     setAuthCookies(res, accessToken, refreshToken);
 
     res.json({
@@ -328,6 +269,7 @@ export async function logout(_req, res, next) {
 export async function refresh(req, res, next) {
   try {
     const token = req.cookies?.refresh_token;
+    console.log('[auth/refresh] refresh_token cookie:', token ? 'PRESENT' : 'MISSING');
 
     if (!token) {
       return res.status(401).json({
@@ -363,194 +305,15 @@ export async function refresh(req, res, next) {
     }
 
     // Invalidate old token and issue new pair
-    const newAccessToken = signAccessToken(stored.userId, stored.email, stored.avatar_url);
+    const newAccessToken = signAccessToken(stored.userId, stored.email);
     const newRefreshToken = generateRefreshToken();
     stored.supersededBy = newRefreshToken;
-    storeRefreshToken(newRefreshToken, stored.userId, stored.email, stored.avatar_url);
+    storeRefreshToken(newRefreshToken, stored.userId, stored.email);
     setAuthCookies(res, newAccessToken, newRefreshToken);
 
     res.json({ data: { message: 'Session refreshed.' } });
   } catch (err) {
     next(err);
-  }
-}
-
-/**
- * GET /api/auth/oauth/:provider
- * Initiates OAuth 2.0 Authorization Code flow with PKCE.
- *
- * URL params: provider — 'google' | 'facebook'
- *
- * Redirects the user to the provider's authorization page.
- */
-export async function oauthInit(req, res, next) {
-  try {
-    const { provider } = req.params;
-
-    if (provider !== 'google') {
-      return res.status(400).json({
-        error: { message: 'Unsupported provider. Only "google" is available.' },
-      });
-    }
-
-    // Generate PKCE challenge + state
-    const codeVerifier = generateCodeVerifier();
-    const codeChallenge = generateCodeChallenge(codeVerifier);
-    const state = crypto.randomBytes(24).toString('hex');
-
-    // Store state → verifier mapping (validated on callback)
-    oauthStates.set(state, {
-      codeVerifier,
-      provider,
-      expiresAt: Date.now() + OAUTH_STATE_EXPIRY_MS,
-    });
-
-    // Set the state in a cookie so it survives the OAuth redirect loop.
-    // SameSite=Lax ensures the browser sends it on the cross-site GET
-    // navigation from Supabase back to our callback URL.
-    res.cookie('oauth_state', state, {
-      httpOnly: true,
-      secure: env.isProd,
-      sameSite: 'lax',
-      path: '/api/auth/oauth/callback',
-      maxAge: OAUTH_STATE_EXPIRY_MS,
-    });
-
-    // Build Supabase OAuth URL
-    // NOTE: We don't pass our own `state` to Supabase — it has its own
-    // internal state management for the OAuth flow. Passing a custom
-    // `state` would conflict with Supabase's tracking.
-    const params = new URLSearchParams({
-      provider,
-      redirect_to: `${env.CLIENT_ORIGIN}/api/auth/oauth/callback`,
-      code_challenge: codeChallenge,
-      code_challenge_method: 's256',
-    });
-
-    const redirectUrl = `${env.SUPABASE_URL}/auth/v1/authorize?${params.toString()}`;
-
-    // Validate the provider is enabled by checking Supabase's response.
-    // Node.js native fetch (18+) returns status 0 with type "opaqueredirect"
-    // when redirect: 'manual' is set — NOT 302/303 like browser fetch.
-    const validateRes = await fetch(redirectUrl, { method: 'GET', redirect: 'manual' });
-    const isRedirect = validateRes.status === 0 || validateRes.status === 302 || validateRes.status === 303;
-    if (!isRedirect) {
-      // Provider not enabled — clean up state and return a friendly error
-      oauthStates.delete(state);
-      res.clearCookie('oauth_state', { path: '/api/auth/oauth/callback' });
-      // Read the response body for a useful error message.
-      // If status is 0 (unexpected opaque redirect), body will be empty
-      // so we fall through to the generic message.
-      const body = validateRes.status !== 0 ? await validateRes.text().catch(() => '') : '';
-      const detail = body.includes('not enabled')
-        ? `"${provider}" login is not enabled in your Supabase project. Go to Authentication → Providers and enable it.`
-        : `"${provider}" login returned an error (${validateRes.status}). Check your Supabase Auth configuration.`;
-      return res.status(400).json({ error: { message: detail } });
-    }
-
-    // Clean up stale states
-    for (const [key, val] of oauthStates) {
-      if (val.expiresAt < Date.now()) oauthStates.delete(key);
-    }
-
-    res.json({ data: { url: redirectUrl } });
-  } catch (err) {
-    next(err);
-  }
-}
-
-/**
- * GET /api/auth/oauth/callback
- * OAuth callback endpoint.
- *
- * Query params: code, state (Supabase's own state)
- * Cookie (read): oauth_state (our CSRF state)
- *
- * Our CSRF state is carried through the OAuth redirect loop via a cookie
- * (set by oauthInit). We rely on PKCE for CSRF protection; the cookie
- * just lets us look up which code_verifier to use.
- */
-export async function oauthCallback(req, res) {
-  try {
-    const { code } = req.query;
-    const ourState = req.cookies?.oauth_state;
-
-    if (!code || !ourState) {
-      return res.redirect(`${env.CLIENT_ORIGIN}/?error=oauth_failed`);
-    }
-
-    // Clear the state cookie immediately (one-time use)
-    res.clearCookie('oauth_state', { path: '/api/auth/oauth/callback' });
-
-    // Validate our CSRF state parameter
-    const stored = oauthStates.get(ourState);
-    if (!stored || stored.expiresAt < Date.now()) {
-      oauthStates.delete(ourState);
-      return res.redirect(`${env.CLIENT_ORIGIN}/?error=oauth_failed`);
-    }
-    oauthStates.delete(ourState);
-
-    // Exchange authorization code + PKCE verifier for Supabase session
-    const tokenParams = new URLSearchParams({
-      grant_type: 'authorization_code',
-      code,
-      code_verifier: stored.codeVerifier,
-      redirect_uri: `${env.CLIENT_ORIGIN}/api/auth/oauth/callback`,
-    });
-
-    const tokenRes = await fetch(
-      `${env.SUPABASE_URL}/auth/v1/token?grant_type=authorization_code`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'apikey': env.SUPABASE_PUBLISHABLE_KEY,
-        },
-        body: tokenParams.toString(),
-      },
-    );
-
-    const tokenData = await tokenRes.json();
-
-    if (!tokenRes.ok || !tokenData?.user?.id) {
-      // Log the detailed Supabase error for debugging
-      console.error('[oauth] Token exchange failed:', {
-        status: tokenRes.status,
-        error: tokenData.error,
-        error_description: tokenData.error_description,
-        msg: tokenData.msg,
-      });
-      return res.redirect(`${env.CLIENT_ORIGIN}/?error=oauth_failed`);
-    }
-
-    // Upsert user into public.users
-    await upsertUser({
-      id: tokenData.user.id,
-      email: tokenData.user.email,
-      avatarUrl: tokenData.user?.user_metadata?.avatar_url,
-      fullName: tokenData.user?.user_metadata?.full_name,
-    });
-
-    // Issue app-level session
-    const userId = tokenData.user.id;
-    const userEmail = tokenData.user.email;
-    const avatarUrl = tokenData.user?.user_metadata?.avatar_url || null;
-    const accessToken = signAccessToken(userId, userEmail, avatarUrl);
-    const refreshToken = generateRefreshToken();
-    storeRefreshToken(refreshToken, userId, userEmail, avatarUrl);
-    setAuthCookies(res, accessToken, refreshToken);
-
-    // Clean stale OAuth states
-    for (const [key, val] of oauthStates) {
-      if (val.expiresAt < Date.now()) oauthStates.delete(key);
-    }
-
-    // Redirect to frontend with success flag
-    res.redirect(`${env.CLIENT_ORIGIN}/?auth=success`);
-  } catch (err) {
-    // On error, redirect to frontend with error flag
-    console.error('[oauth] Callback exception:', err?.message || err);
-    res.redirect(`${env.CLIENT_ORIGIN}/?error=oauth_failed`);
   }
 }
 
@@ -561,6 +324,7 @@ export async function oauthCallback(req, res) {
 export async function me(req, res, next) {
   try {
     const token = req.cookies?.access_token;
+    console.log('[auth/me] access_token cookie:', token ? 'PRESENT' : 'MISSING');
 
     if (!token) {
       return res.status(401).json({
@@ -578,19 +342,6 @@ export async function me(req, res, next) {
       });
     }
 
-    // Fetch extended profile from public.users
-    let profile = {};
-    try {
-      const { data: row } = await supabaseAdmin
-        .from('users')
-        .select('full_name, avatar_url')
-        .eq('id', payload.sub)
-        .maybeSingle();
-      if (row) profile = row;
-    } catch {
-      // Fallback: just use what's in the token
-    }
-
     const isAdmin = !!env.ADMIN_EMAIL && payload.email === env.ADMIN_EMAIL;
 
     res.json({
@@ -598,8 +349,8 @@ export async function me(req, res, next) {
         user: {
           id: payload.sub,
           email: payload.email,
-          avatar_url: profile.avatar_url || payload.avatar_url || null,
-          full_name: profile.full_name || null,
+          avatar_url: null,
+          full_name: null,
           role: payload.role,
           isAdmin,
         },
@@ -611,7 +362,7 @@ export async function me(req, res, next) {
 }
 
 /* ─── Rate-limit cleanup ─────────────────────────────────────── */
-// Periodically purge expired refresh tokens and OAuth states
+// Periodically purge expired refresh tokens
 const CLEANUP_INTERVAL = 15 * 60 * 1000; // 15 min
 setInterval(() => {
   const now = Date.now();
@@ -620,7 +371,4 @@ setInterval(() => {
     if (val.expiresAt < now) { refreshTokens.delete(key); changed = true; }
   }
   if (changed) saveSessions();
-  for (const [key, val] of oauthStates) {
-    if (val.expiresAt < now) oauthStates.delete(key);
-  }
 }, CLEANUP_INTERVAL);

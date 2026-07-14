@@ -19,6 +19,7 @@ export function errorHandler(err, _req, res, _next) {
   res.status(status).json({
     error: {
       message,
+      ...(err.errors && { errors: err.errors }),
       ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
     },
   });

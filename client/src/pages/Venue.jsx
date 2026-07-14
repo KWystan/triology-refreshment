@@ -11,7 +11,7 @@
  *   7. Location — map + address info
  */
 import { useState, useEffect, useRef } from 'react';
-import { business } from '../data/business';
+import { useLiveBusiness } from '../hooks/useLiveBusiness';
 import Icon from '../components/ui/Icon';
 import VenueBookingForm from '../components/ui/VenueBookingForm';
 
@@ -45,6 +45,7 @@ function FloatingDecor() {
 }
 
 export default function Venue() {
+  const business = useLiveBusiness();
   const [selectedImage, setSelectedImage] = useState(null);
   const [heroError, setHeroError] = useState(false);
   const closeRef = useRef(null);

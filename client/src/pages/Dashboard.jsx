@@ -10,10 +10,11 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useOrderList } from '../context/OrderListContext';
-import { business } from '../data/business';
+import { useLiveBusiness } from '../hooks/useLiveBusiness';
 import Icon from '../components/ui/Icon';
 
 export default function Dashboard() {
+  const business = useLiveBusiness();
   const { user, isAuthenticated, isLoading, logout, openAuthPanel } = useAuth();
   const { items, totalItems, openMessenger, buildMessengerMessage } = useOrderList();
 
