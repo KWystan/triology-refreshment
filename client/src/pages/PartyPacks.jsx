@@ -60,13 +60,13 @@ export default function PartyPacks() {
         const bundlesRes = await fetchBundles();
         if (bundlesRes?.data?.bundles) setLiveBundles(bundlesRes.data.bundles);
       } catch (err) {
-        console.warn('[PartyPacks] Bundles API unavailable, using static fallback:', err.message);
+        console.warn('[ComboMeals] Bundles API unavailable, using static fallback:', err.message);
       }
       try {
         const busRes = await fetchBusiness();
         if (busRes?.data) setLiveBusiness(busRes.data);
       } catch (err) {
-        console.warn('[PartyPacks] Business API unavailable, using static fallback:', err.message);
+        console.warn('[ComboMeals] Business API unavailable, using static fallback:', err.message);
       }
     })();
   }, []);
