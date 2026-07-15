@@ -12,12 +12,14 @@ import SearchBar from '../ui/SearchBar';
 import Button from '../ui/Button';
 import MobileNav from './MobileNav';
 import { useAuth } from '../../context/AuthContext';
+import { useOrderList } from '../../context/OrderListContext';
 
 export default function Navbar({ className = '' }) {
   const business = useLiveBusiness();
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const { user, isAuthenticated, openAuthPanel, logout } = useAuth();
+  const { totalItems, openDrawer } = useOrderList();
   const navigate = useNavigate();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
@@ -261,8 +263,9 @@ export default function Navbar({ className = '' }) {
               </div>
               {/* Search */}
               <SearchBar />
-              {/* Cart — minimal icon */}
+              {/* Cart — with badge count */}
               <button
+                onClick={openDrawer}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -276,12 +279,37 @@ export default function Navbar({ className = '' }) {
                   color: 'var(--color-on-surface-variant)',
                   transition: 'opacity 0.2s',
                   opacity: 1,
+                  position: 'relative',
                 }}
-                aria-label="Cart"
+                aria-label={`Cart (${totalItems} items)`}
                 onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.65'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
               >
                 <Icon name="shopping_cart" size={22} fill={0} weight={400} />
+                {totalItems > 0 && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: -2,
+                      right: -2,
+                      minWidth: 18,
+                      height: 18,
+                      borderRadius: 'var(--radius-full)',
+                      background: 'var(--color-error)',
+                      color: 'var(--color-on-error)',
+                      fontSize: '0.625rem',
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '0 4px',
+                      lineHeight: 1,
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+                    }}
+                  >
+                    {totalItems}
+                  </span>
+                )}
               </button>
             </div>
 
@@ -353,7 +381,7 @@ export default function Navbar({ className = '' }) {
           .nav-desktop { display: flex !important; }
           .nav-mobile-toggle { display: none !important; }
         }
-        @media (min-width: 1024px) {
+        @media (min-width: 768px) {
           .nav-buttons { display: flex !important; }
         }
         @media (max-width: 767px) {

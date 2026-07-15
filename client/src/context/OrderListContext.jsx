@@ -18,6 +18,10 @@ export function OrderListProvider({ children }) {
     }
   });
 
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const openDrawer = useCallback(() => setDrawerOpen(true), []);
+  const closeDrawer = useCallback(() => setDrawerOpen(false), []);
+
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }, [items]);
@@ -101,6 +105,9 @@ export function OrderListProvider({ children }) {
         totalItems,
         buildMessengerMessage,
         openMessenger,
+        isDrawerOpen,
+        openDrawer,
+        closeDrawer,
       }}
     >
       {children}

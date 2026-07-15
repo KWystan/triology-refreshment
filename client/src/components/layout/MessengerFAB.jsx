@@ -11,7 +11,7 @@ import { useLocation } from 'react-router-dom';
 
 const GREETINGS = {
   '/menu': "Hi Triology! I'd like to order some food. Here's what I'm looking for:",
-  '/party-packs': "Hi Triology! I'm interested in your Handaan Bundles / Party Packs.",
+  '/party-packs': "Hi Triology! I'm interested in your Combo Meals bundles.",
   '/events': "Hi Triology! I'd like to book your venue / event space.",
   '/': "Hi Triology! I have a question.",
 };

@@ -1,6 +1,6 @@
 /**
- * Party Pack / Handaan Bundle data.
- * Mirrors the Stitch-generated Party Packs page structure.
+ * Combo Meal / Handaan Bundle data.
+ * Mirrors the Stitch-generated Combo Meals page structure.
  */
 
 export const bundles = [
@@ -10,7 +10,7 @@ export const bundles = [
     description: 'Pancit, Shanghai, & Chicken',
     serves: '15-20',
     startingPrice: 1200,
-    badge: 'Most Popular',
+    badge: null,
     image:
       'https://lh3.googleusercontent.com/aida-public/AB6AXuBmDM_UUHj0h4bY-IUl3hKMKOI-G8iiX8Ebi4PNLPBBYAyejJ28aWsF9WWjN10TmurAVqA96ZXDBDjJpi_KwktCc8bWZEw60Cr2F-m3eh6QM5p-PZ-A-JaswTDh2rSO1TKBow3CBymsGak8rEyijWKeO_ipxN5YH8z1Z1eqW79uPEBivjVOm0jQ5tCiOZ93KdnO1cwQoXU-P-jt8hHuE7amjOtNi8RXSS1gCIDRyLDiEtJVOX-bX36CTEOZice_nf_xGvoBNxua0K7b',
     size: 'large',
@@ -99,7 +99,7 @@ export const bundles = [
     description: 'Rice, Puto, Bilao, Burgers, Lumpia & Halo-Halo',
     serves: '15',
     startingPrice: 2160,
-    badge: null,
+    badge: 'Most Popular',
     image: null,
     size: 'wide',
     items: [

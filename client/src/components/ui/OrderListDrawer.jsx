@@ -11,31 +11,30 @@ import { useOrderList } from '../../context/OrderListContext';
 import Icon from './Icon';
 
 export default function OrderListDrawer({ messengerUrl = 'https://m.me/triologyrefreshment' }) {
-  const { items, removeItem, updateQuantity, clearList, totalItems, openMessenger, buildMessengerMessage } = useOrderList();
-  const [isOpen, setIsOpen] = useState(false);
+  const { items, removeItem, updateQuantity, clearList, totalItems, openMessenger, buildMessengerMessage, isDrawerOpen, closeDrawer } = useOrderList();
   const [copied, setCopied] = useState(false);
   const panelRef = useRef(null);
   const closeBtnRef = useRef(null);
 
-  /* ─── Close on Escape + focus trap ────────────────────── */
+  /* ─── Close on Escape ─────────────────────────────────── */
   useEffect(() => {
-    if (!isOpen) return;
-    const onKey = (e) => { if (e.key === 'Escape') setIsOpen(false); };
+    if (!isDrawerOpen) return;
+    const onKey = (e) => { if (e.key === 'Escape') closeDrawer(); };
     document.addEventListener('keydown', onKey);
     // Focus the close button when drawer opens
     setTimeout(() => closeBtnRef.current?.focus(), 100);
     return () => document.removeEventListener('keydown', onKey);
-  }, [isOpen]);
+  }, [isDrawerOpen, closeDrawer]);
 
   /* ─── Lock body scroll when open ───────────────────────── */
   useEffect(() => {
-    if (isOpen) {
+    if (isDrawerOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
     return () => { document.body.style.overflow = ''; };
-  }, [isOpen]);
+  }, [isDrawerOpen]);
 
   /* ─── Handlers ─────────────────────────────────────────── */
   const handleSend = () => {
@@ -59,37 +58,21 @@ export default function OrderListDrawer({ messengerUrl = 'https://m.me/triologyr
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleClose = () => setIsOpen(false);
-
-  if (items.length === 0) {
-    return null; // No trigger button when list is empty
-  }
+  const handleClose = () => closeDrawer();
 
   return (
     <>
       {/* ═══════════════════════════════════════════════════════
-          Floating Trigger Button (only visible when items exist)
-          ═══════════════════════════════════════════════════════ */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="old-trigger btn-interact"
-        aria-label={`View order list (${totalItems} items)`}
-      >
-        <Icon name="list_alt" size={22} />
-        <span className="old-trigger-badge">{totalItems}</span>
-      </button>
-
-      {/* ═══════════════════════════════════════════════════════
           Overlay
           ═══════════════════════════════════════════════════════ */}
-      {isOpen && <div className="old-overlay" onClick={handleClose} />}
+      {isDrawerOpen && <div className="old-overlay" onClick={handleClose} />}
 
       {/* ═══════════════════════════════════════════════════════
           Drawer Panel
           ═══════════════════════════════════════════════════════ */}
       <div
         ref={panelRef}
-        className={`old-drawer${isOpen ? ' old-drawer-open' : ''}`}
+        className={`old-drawer${isDrawerOpen ? ' old-drawer-open' : ''}`}
         role="dialog"
         aria-modal="true"
         aria-label="My Order List"
@@ -171,68 +154,6 @@ export default function OrderListDrawer({ messengerUrl = 'https://m.me/triologyr
       </div>
 
       <style>{`
-        /* ─── Trigger Button ────────────────────────────────── */
-        .old-trigger {
-          position: fixed;
-          bottom: 1.5rem;
-          left: 1.25rem;
-          z-index: 900;
-          width: 54px;
-          height: 54px;
-          border-radius: 50%;
-          border: none;
-          background: var(--color-primary);
-          color: var(--color-on-primary);
-          box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          padding: 0;
-          transition: transform 0.15s ease, box-shadow 0.15s ease;
-          animation: old-trigger-enter 0.3s ease-out;
-        }
-        .old-trigger:hover {
-          transform: scale(1.06);
-          box-shadow: 0 6px 24px rgba(0,0,0,0.3);
-        }
-        .old-trigger:active {
-          transform: scale(0.95);
-        }
-
-        @keyframes old-trigger-enter {
-          from { opacity: 0; transform: scale(0.6); }
-          to   { opacity: 1; transform: scale(1); }
-        }
-
-        .old-trigger-badge {
-          position: absolute;
-          top: -4px;
-          right: -4px;
-          min-width: 22px;
-          height: 22px;
-          border-radius: var(--radius-full);
-          background: var(--color-error);
-          color: var(--color-on-error);
-          font-size: 0.6875rem;
-          font-weight: 700;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0 4px;
-          line-height: 1;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        }
-
-        @media (min-width: 768px) {
-          .old-trigger {
-            bottom: 2.5rem;
-            left: 2.5rem;
-            width: 60px;
-            height: 60px;
-          }
-        }
-
         /* ─── Overlay ───────────────────────────────────────── */
         .old-overlay {
           position: fixed;

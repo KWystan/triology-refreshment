@@ -29,10 +29,10 @@ export const business = {
   locationLabel: 'Trapiche, Oton, Iloilo',
 
   // Social
-  facebook: 'https://facebook.com/triologyrefreshment',
+  facebook: 'https://facebook.com/stanwy.2024',
   facebookFollowers: '1.2K',
-  facebookUrl: 'https://m.me/triologyrefreshment',
-  messengerUrl: 'https://m.me/triologyrefreshment',
+  facebookUrl: 'https://www.facebook.com/messages/t/stanwy.2024',
+  messengerUrl: 'https://www.facebook.com/messages/t/stanwy.2024',
 
   // Stats
   ordersServed: '5k+',
@@ -86,7 +86,7 @@ export const business = {
   navLinks: [
     { label: 'Home', path: '/' },
     { label: 'Menu', path: '/menu' },
-    { label: 'Party Packs', path: '/party-packs' },
+    { label: 'Combo Meals', path: '/party-packs' },
     { label: 'Venue', path: '/venue' },
   ],
 };

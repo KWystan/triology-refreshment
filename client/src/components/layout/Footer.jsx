@@ -1,7 +1,7 @@
 /**
  * Footer — site footer matching Stitch design.
  * primary-container bg, on-primary-container text, restaurant icon + brand,
- * Quick Links (Menu, Party Packs, Order Tracking), Contact, Facebook link.
+ * Quick Links (Menu, Combo Meals, Order Tracking), Contact, Facebook link.
  */
 import { Link } from 'react-router-dom';
 import { useLiveBusiness } from '../../hooks/useLiveBusiness';
@@ -103,7 +103,7 @@ export default function Footer({ className = '' }) {
                 </li>
                 <li>
                   <Link to="/party-packs" className="btn-interact" style={{ fontSize: '0.8125rem', opacity: 0.8, textDecoration: 'none', color: 'inherit' }}>
-                    Party Packs
+                    Combo Meals
                   </Link>
                 </li>
                 <li>

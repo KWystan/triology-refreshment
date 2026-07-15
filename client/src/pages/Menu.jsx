@@ -271,7 +271,7 @@ export default function Menu() {
                 Hosting an Event?
               </h2>
               <p className="menu-cta-desc">
-                Our Party Packs are designed to bring Triology&rsquo;s warmth to
+                Our Combo Meals are designed to bring Triology&rsquo;s warmth to
                 your office, family gatherings, or celebrations in Iloilo.
               </p>
               <a

@@ -549,7 +549,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Card 3: Party Packs (col-span-12) — portrait layout */}
+          {/* Card 3: Combo Meals (col-span-12) — portrait layout */}
           <div className="bento-card bento-card-full bento-card-party">
             <FloatingPartyElements />
             <div className="bento-party-layout">
@@ -583,7 +583,7 @@ export default function Home() {
                     maxWidth: '500px',
                   }}
                 >
-                  Our Party Packs are designed to take the stress out of hosting.
+                  Our Combo Meals are designed to take the stress out of hosting.
                   Perfect for office lunches, birthdays, and community gatherings.
                 </p>
                 <div>
@@ -617,7 +617,7 @@ export default function Home() {
               >
                 <img
                   src={BENTO_PARTY}
-                  alt="Party Packs"
+                  alt="Combo Meals"
                   loading="lazy"
                   style={{
                     width: '100%',
