@@ -159,6 +159,13 @@ export default function ImageUploadField({ value, onChange, label = 'Image', acc
           border-color: var(--color-primary);
           background: var(--color-primary-container);
         }
+        .iuf-dropzone:hover .iuf-upload-icon {
+          color: var(--color-on-primary-container);
+        }
+        .iuf-dropzone:hover .iuf-dropzone-text,
+        .iuf-dropzone:hover .iuf-dropzone-hint {
+          color: var(--color-on-primary-container);
+        }
         .iuf-dropzone:focus-visible {
           outline: 2px solid var(--color-primary);
           outline-offset: 2px;

@@ -15,7 +15,6 @@ import { useLiveBusiness } from '../hooks/useLiveBusiness';
 import Icon from '../components/ui/Icon';
 import VenueBookingForm from '../components/ui/VenueBookingForm';
 
-const { venue } = business;
 
 /* ═══════════════════════════════════════════════════════════════
    FloatingDecor — animated leaves & sparkle (hero only)
@@ -46,6 +45,7 @@ function FloatingDecor() {
 
 export default function Venue() {
   const business = useLiveBusiness();
+  const { venue } = business;
   const [selectedImage, setSelectedImage] = useState(null);
   const [heroError, setHeroError] = useState(false);
   const closeRef = useRef(null);
@@ -94,7 +94,7 @@ export default function Venue() {
           <span className="venue-hero-badge">Event Space in Trapiche, Oton</span>
           <h1 className="venue-hero-title">{venue.name}</h1>
           <p className="venue-hero-desc">{venue.description}</p>
-          <div className="venue-hero-stats">
+          <div className="venue-hero-items">
             <div className="venue-hero-stat">
               <Icon name="groups" size={20} />
               <span>Up to {venue.capacity} guests</span>
@@ -103,8 +103,6 @@ export default function Venue() {
               <Icon name="ac_unit" size={20} />
               <span>Fully Air-Conditioned</span>
             </div>
-          </div>
-          <div className="venue-hero-actions">
             <a href="#booking" className="venue-btn-primary btn-interact">
               <Icon name="calendar_month" size={20} />
               Check Availability
@@ -173,11 +171,8 @@ export default function Venue() {
                 <span className="venue-quickfact-label">Close</span>
               </div>
               <div className="venue-quickfact-card">
-                <span className="venue-quickfact-number venue-quickfact-icons">
-                  <Icon name="restaurant" size={18} />
-                  <Icon name="chair" size={18} />
-                </span>
-                <span className="venue-quickfact-label">Food &amp; Furniture</span>
+                <span className="venue-quickfact-number">Included</span>
+                <span className="venue-quickfact-label">Catering</span>
               </div>
             </div>
           </div>
@@ -196,11 +191,11 @@ export default function Venue() {
               Two simple ways to book the venue. No hidden fees, no surprises.
             </p>
           </div>
-          <div className="venue-pricing-grid">
+          <div className="venue-pricing-panel">
             {Object.values(venue.pricing).map((tier, i) => (
               <div
                 key={tier.label}
-                className={`venue-pricing-card${i === 1 ? ' venue-pricing-card--featured' : ''}`}
+                className={`venue-pricing-half${i === 1 ? ' venue-pricing-half--featured' : ''}`}
               >
                 {i === 1 && (
                   <span className="venue-pricing-badge">
@@ -211,13 +206,20 @@ export default function Venue() {
                 <div className="venue-pricing-label">{tier.label}</div>
                 <div className="venue-pricing-price">{tier.price}</div>
                 <p className="venue-pricing-desc">{tier.description}</p>
-                <a href="#booking" className="venue-pricing-btn btn-interact">
-                  <Icon name="calendar_month" size={18} />
-                  Book Now
-                </a>
               </div>
             ))}
+            {/* Vertical divider between the two halves */}
+            <div className="venue-pricing-divider" />
           </div>
+
+          {/* ─── Single CTA button ────────────────────────── */}
+          <div className="venue-pricing-actions">
+            <a href="#booking" className="venue-pricing-action-btn btn-interact">
+              <Icon name="calendar_month" size={18} />
+              Check Availability &amp; Book
+            </a>
+          </div>
+
           <p className="venue-pricing-footnote">
             Prices are subject to change. Contact us for a personalized quote.
           </p>
@@ -543,16 +545,18 @@ export default function Venue() {
           max-width: 560px;
           margin: 0 auto 2rem;
         }
-        .venue-hero-stats {
-          display: flex;
-          justify-content: center;
-          gap: 0.75rem 2rem;
-          margin-bottom: 2rem;
-          flex-wrap: wrap;
+        .venue-hero-items {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.75rem;
+          width: 100%;
+          max-width: 500px;
+          margin: 0 auto 2rem;
         }
         .venue-hero-stat {
-          display: inline-flex;
+          display: flex;
           align-items: center;
+          justify-content: center;
           gap: 0.5rem;
           color: rgba(255, 255, 255, 0.92);
           font-size: 0.9375rem;
@@ -561,12 +565,6 @@ export default function Venue() {
           padding: 0.5rem 1rem;
           border-radius: var(--radius-full);
           backdrop-filter: blur(4px);
-        }
-        .venue-hero-actions {
-          display: flex;
-          justify-content: center;
-          gap: 1rem;
-          flex-wrap: wrap;
         }
         .venue-btn-primary {
           display: inline-flex;
@@ -617,6 +615,11 @@ export default function Venue() {
         .venue-btn-messenger:hover .v-mssgr-icon {
           transform: scale(1.12);
           background: rgba(255, 255, 255, 0.28);
+        }
+        .venue-hero-items .venue-btn-primary,
+        .venue-hero-items .venue-btn-messenger {
+          width: 100%;
+          justify-content: center;
         }
         .venue-btn-outline {
           display: inline-flex;
@@ -717,6 +720,7 @@ export default function Venue() {
           line-height: 1.6;
           color: var(--color-on-surface-variant);
           max-width: 560px;
+          margin-bottom: 0.5rem;
         }
         .venue-section-header {
           margin-bottom: 2.5rem;
@@ -788,12 +792,6 @@ export default function Venue() {
           color: var(--color-primary);
           margin-bottom: 0.25rem;
         }
-        .venue-quickfact-icons {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.25rem;
-          font-size: 1.5rem;
-        }
         .venue-quickfact-label {
           font-size: 0.6875rem;
           font-weight: 600;
@@ -810,43 +808,49 @@ export default function Venue() {
           background: var(--color-surface-container-lowest);
           position: relative;
         }
-        .venue-pricing-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 1.5rem;
+        .venue-pricing-panel {
+          display: flex;
+          position: relative;
           max-width: 800px;
           margin: 0 auto;
+          border: 1px solid var(--color-outline-variant);
+          border-radius: var(--radius-2xl);
+          overflow: hidden;
+          background: var(--color-surface-container-low);
         }
-        .venue-pricing-card {
+        .venue-pricing-half {
+          flex: 1;
           position: relative;
           padding: 2.5rem 2rem;
-          border-radius: var(--radius-2xl);
-          background: var(--color-surface-container-low);
-          border: 1px solid var(--color-outline-variant);
           text-align: center;
           display: flex;
           flex-direction: column;
           align-items: center;
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          transition: background 0.3s ease;
         }
-        .venue-pricing-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+        .venue-pricing-half:hover {
+          background: color-mix(in srgb, var(--color-primary) 4%, transparent);
         }
-        .venue-pricing-card--featured {
-          border-color: var(--color-secondary);
+        .venue-pricing-half--featured {
           background: color-mix(in srgb, var(--color-secondary) 6%, var(--color-surface-container-low));
-          box-shadow: 0 0 0 1px var(--color-secondary), var(--shadow-md);
         }
-        .venue-pricing-card--featured:hover {
-          box-shadow: 0 0 0 1px var(--color-secondary), 0 12px 28px rgba(251, 192, 2, 0.12);
+        .venue-pricing-half--featured:hover {
+          background: color-mix(in srgb, var(--color-secondary) 10%, var(--color-surface-container-low));
+        }
+        .venue-pricing-divider {
+          position: absolute;
+          top: 2rem;
+          bottom: 2rem;
+          left: 50%;
+          width: 1px;
+          background: var(--color-outline-variant);
+          flex-shrink: 0;
         }
         .venue-pricing-badge {
           display: inline-flex;
           align-items: center;
           gap: 0.375rem;
-          position: absolute;
-          top: -0.75rem;
+          margin-bottom: 1rem;
           padding: 0.25rem 1rem;
           background: var(--color-secondary);
           color: var(--color-on-secondary);
@@ -876,24 +880,32 @@ export default function Venue() {
           font-size: 0.9375rem;
           line-height: 1.55;
           color: var(--color-on-surface-variant);
-          margin-bottom: 2rem;
-          flex: 1;
+          max-width: 280px;
         }
-        .venue-pricing-btn {
+        .venue-pricing-actions {
+          max-width: 800px;
+          margin: 1.5rem auto 0;
+          text-align: center;
+        }
+        .venue-pricing-action-btn {
           display: inline-flex;
           align-items: center;
+          justify-content: center;
           gap: 0.5rem;
-          padding: 0.75rem 2rem;
-          background: var(--color-primary);
-          color: var(--color-on-primary);
-          border-radius: var(--radius-lg);
-          font-size: 0.875rem;
-          font-weight: 600;
+          width: 100%;
+          padding: 1rem 1.5rem;
+          background: var(--color-secondary);
+          color: var(--color-on-secondary);
+          font-size: 0.9375rem;
+          font-weight: 700;
           text-decoration: none;
-          transition: background 0.2s ease;
+          border-radius: var(--radius-xl);
+          transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+          box-shadow: 0 4px 14px rgba(251, 192, 2, 0.3);
         }
-        .venue-pricing-btn:hover {
-          background: color-mix(in srgb, var(--color-primary) 80%, #000);
+        .venue-pricing-action-btn:hover {
+          background: color-mix(in srgb, var(--color-secondary) 80%, #000);
+          box-shadow: 0 6px 20px rgba(251, 192, 2, 0.4);
         }
         .venue-pricing-footnote {
           text-align: center;
@@ -1121,7 +1133,8 @@ export default function Venue() {
           align-items: start;
         }
         .venue-booking-contacts {
-          margin-top: 1.5rem;
+          margin-top: 2rem;
+          margin-bottom: 2rem;
           display: flex;
           flex-direction: column;
           gap: 1rem;
@@ -1303,8 +1316,14 @@ export default function Venue() {
           .venue-gallery-grid {
             grid-template-columns: repeat(3, 1fr);
           }
-          .venue-pricing-grid {
-            grid-template-columns: repeat(2, 1fr);
+          .venue-pricing-panel {
+            flex-direction: row;
+          }
+          .venue-pricing-divider {
+            position: absolute;
+            width: 1px;
+            height: auto;
+            margin: 0;
           }
         }
 
@@ -1324,7 +1343,9 @@ export default function Venue() {
           .venue-overview-body { font-size: 1.0625rem; }
 
           .venue-pricing { padding: 5rem 0; }
-          .venue-pricing-card { padding: 3rem 2.5rem; }
+          .venue-pricing-half { padding: 3rem 2.5rem; }
+          .venue-pricing-divider { top: 2.5rem; bottom: 2.5rem; }
+          .venue-pricing-action-btn { width: auto; }
 
           .venue-amenities { padding: 5rem 0; }
           .venue-amenities-grid { grid-template-columns: repeat(4, 1fr); }
@@ -1384,6 +1405,17 @@ export default function Venue() {
           .venue-quickfact-number { font-size: 1.5rem; }
 
           .venue-map-wrapper { min-height: 220px; }
+
+          /* Stack pricing panel vertically on small mobile */
+          .venue-pricing-panel {
+            flex-direction: column;
+          }
+          .venue-pricing-divider {
+            position: static;
+            width: auto;
+            height: 1px;
+            margin: 0 2rem;
+          }
         }
       `}</style>
     </main>

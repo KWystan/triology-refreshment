@@ -16,39 +16,27 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Restore session on mount by checking /auth/me
+  // Restore session on mount by checking /auth/me (always returns 200)
   useEffect(() => {
     let cancelled = false;
 
     async function restoreSession() {
-      console.log('[Auth] restoreSession: checking /auth/me');
       try {
-        // Try restoring from access token first
         const meRes = await api.get('/auth/me');
-        console.log('[Auth] /auth/me succeeded:', meRes?.data?.user?.email);
         if (!cancelled && meRes?.data?.user) {
           setUser(meRes.data.user);
-        }
-      } catch (err) {
-        console.log('[Auth] /auth/me failed:', err.message);
-        // Access token expired or missing — try refresh
-        try {
-          console.log('[Auth] trying /auth/refresh');
+        } else if (!cancelled && meRes?.data?.user === null) {
+          // No valid access token — try refresh
           const refreshRes = await api.post('/auth/refresh');
-          console.log('[Auth] /auth/refresh result:', refreshRes?.data?.message);
           if (!cancelled && refreshRes?.data?.message === 'Session refreshed.') {
-            const meRes = await api.get('/auth/me');
-            console.log('[Auth] /auth/me after refresh:', meRes?.data?.user?.email);
-            if (!cancelled && meRes?.data?.user) {
-              setUser(meRes.data.user);
+            const meRes2 = await api.get('/auth/me');
+            if (!cancelled && meRes2?.data?.user) {
+              setUser(meRes2.data.user);
             }
-          } else {
-            console.log('[Auth] refresh did not return expected message');
           }
-        } catch (refreshErr) {
-          console.log('[Auth] /auth/refresh also failed:', refreshErr.message);
-          // No valid session — user stays null
         }
+      } catch {
+        // Network error or unexpected — user stays null
       }
       if (!cancelled) setIsLoading(false);
     }

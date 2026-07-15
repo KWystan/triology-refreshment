@@ -14,7 +14,7 @@
  *   onAddItem      — (categoryId) => void, admin add item callback
  *   onEditCategory — (category) => void, admin edit category callback
  */
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import ProductDetailModal from './ProductDetailModal';
 import BestSellerBadge from './BestSellerBadge';
 import SearchBar from './SearchBar';
@@ -78,7 +78,7 @@ function ProductCard({ item, onAddToCart, onClick, adminMode, adminToolsDisabled
   }, [item, onEditItem]);
 
   return (
-    <div className={`mpg-card${isAdminActive ? ' mpg-card-admin' : ''}`} onClick={onClick}>
+    <div className="mpg-card" onClick={onClick}>
       {/* Best Seller badge — positioned relative to the card, overhangs the edge */}
       {item.isBestSeller && <BestSellerBadge size={60} />}
 
@@ -142,31 +142,6 @@ export default function MenuProductGrid({
 }) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedItem, setSelectedItem] = useState(null);
-  const [favorites, setFavorites] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('favorites') || '[]');
-    } catch {
-      return [];
-    }
-  });
-
-  /* ─── Persist favorites to localStorage ──────────────────── */
-  useEffect(() => {
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-  }, [favorites]);
-
-  const toggleFavorite = useCallback((item) => {
-    setFavorites((prev) =>
-      prev.includes(item.id)
-        ? prev.filter((id) => id !== item.id)
-        : [...prev, item.id],
-    );
-  }, []);
-
-  const isFavorited = useCallback(
-    (item) => favorites.includes(item.id),
-    [favorites],
-  );
 
   /* ─── Tabs derived from categories ─────────────────────── */
   const tabs = useMemo(
@@ -190,13 +165,21 @@ export default function MenuProductGrid({
     [categories],
   );
 
+  /* ─── Sort: best sellers first ──────────────────────────── */
+  const sortItems = (items) =>
+    [...items].sort((a, b) => {
+      if (a.isBestSeller && !b.isBestSeller) return -1;
+      if (!a.isBestSeller && b.isBestSeller) return 1;
+      return 0;
+    });
+
   /* ─── Group items into category sections ──────────────────── */
   const categorySections = useMemo(() => {
     if (activeCategory === 'all') {
       return categories
         .map((cat) => ({
           category: cat,
-          items: allItems.filter((i) => i.categoryId === cat.id),
+          items: sortItems(allItems.filter((i) => i.categoryId === cat.id)),
         }))
         .filter((s) => s.items.length > 0);
     }
@@ -206,7 +189,7 @@ export default function MenuProductGrid({
     return [
       {
         category: cat,
-        items: allItems.filter((i) => i.categoryId === activeCategory),
+        items: sortItems(allItems.filter((i) => i.categoryId === activeCategory)),
       },
     ];
   }, [allItems, categories, activeCategory]);
@@ -323,8 +306,6 @@ export default function MenuProductGrid({
           categoryPriceNote={selectedItem.categoryPriceNote}
           onClose={() => setSelectedItem(null)}
           onAddToCart={onAddToCart}
-          isFavorited={isFavorited(selectedItem)}
-          onToggleFavorite={toggleFavorite}
         />
       )}
 
@@ -342,16 +323,7 @@ export default function MenuProductGrid({
         }
         @media (min-width: 768px) {
           .mpg-mobile-search {
-            width: 300px;
-            flex-shrink: 0;
-          }
-          .mpg-mobile-search .search-bar {
-            width: 100%;
-          }
-        }
-        @media (min-width: 1024px) {
-          .mpg-mobile-search {
-            width: 340px;
+            display: none;
           }
         }
 
@@ -815,13 +787,8 @@ export default function MenuProductGrid({
         }
         .mpg-admin-add-item-btn:hover {
           background: var(--color-primary-container);
+          color: var(--color-on-primary-container);
           border-color: var(--color-primary);
-        }
-
-        /* ─── Admin mode card indicator (C1) ─────────────────── */
-        .mpg-card-admin {
-          border-left: 2px solid var(--color-primary);
-          position: relative;
         }
 
         /* ─── Admin button collapse on mobile (M4/M5/C4) ─────── */

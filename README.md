@@ -120,14 +120,11 @@ Both `client/` and `server/` are registered as npm workspaces in the root `packa
 
 In development, Vite proxies `/api` requests to Express. This avoids CORS configuration during local development. The proxy is configured in `client/vite.config.js`.
 
-### Supabase client split
+### Firebase Auth
 
-| Client | Key | Scope | File |
-|--------|-----|-------|------|
-| Browser | `anon` key (public) | Row-Level Security enforced | `client/src/lib/supabase.js` |
-| Server | `service_role` key (secret) | Bypasses RLS | `server/src/config/supabase.js` |
+Authentication uses **Firebase Auth** (Admin SDK + REST API). The server manages its own app-level JWT sessions as httpOnly cookies. No Firebase client SDK is needed — the frontend calls the Express API via `fetch` with `credentials: 'include'`.
 
-Never expose the service-role key — it's only used server-side.
+Firebase Admin SDK reads credentials from `server/service-account.json`. The Web API Key (for REST API sign-in) comes from `FIREBASE_WEB_API_KEY` in `server/.env`.
 
 ### Error handling
 
@@ -152,10 +149,13 @@ Create the page in `client/src/pages/About.jsx`.
 
 ```js
 // server/src/controllers/items.js
+import { firestore } from '../config/firebase.js';
+
 export async function listItems(req, res, next) {
   try {
-    const { data } = await supabase.from('items').select('*');
-    res.json({ data });
+    const snap = await firestore.collection('items').get();
+    const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    res.json({ data: items });
   } catch (err) {
     next(err);
   }
@@ -186,8 +186,9 @@ router.get('/items', listItems);
 
 ## What's next
 
-- Add authentication flows with Supabase Auth
-- Create database migrations with Supabase CLI
+- Add Google OAuth via Firebase Auth client SDK
+- Add unit/integration tests (Vitest for client, Vitest or Node test for server)
+- Containerize with Docker for reproducible deployments
 - Add unit/integration tests (Vitest for client, Vitest or Node test for server)
 - Containerize with Docker for reproducible deployments
 # triology-refreshment

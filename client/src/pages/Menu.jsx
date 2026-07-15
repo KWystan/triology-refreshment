@@ -18,7 +18,6 @@ import { business as businessStatic } from '../data/business';
 import Icon from '../components/ui/Icon';
 import MenuProductGrid from '../components/ui/MenuProductGrid';
 import OrderListDrawer from '../components/ui/OrderListDrawer';
-import AdminMenuToolbar from '../components/ui/AdminMenuToolbar';
 import CategoryEditorModal from '../components/ui/CategoryEditorModal';
 import ItemEditorModal from '../components/ui/ItemEditorModal';
 import { useOrderList } from '../context/OrderListContext';
@@ -28,12 +27,11 @@ import { fetchBusiness as fetchBusinessApi } from '../lib/contentApi';
 
 export default function Menu() {
   const { addItem } = useOrderList();
-  const { isAdmin, isLoading: authLoading } = useAuth();
+  const { isAdmin } = useAuth();
 
   // Global state — all users fetch from API; static data is the fallback
   const [liveCategories, setLiveCategories] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [apiFailed, setApiFailed] = useState(false);
   const [categoryEditor, setCategoryEditor] = useState(null); // null | 'new' | category
   const [itemEditor, setItemEditor] = useState(null);         // null | { categoryId } | item
   const [liveBusiness, setLiveBusiness] = useState(businessStatic); // live data, fall back to static
@@ -53,7 +51,6 @@ export default function Menu() {
   // Fetch categories + items from the API (always — for every user)
   const loadMenuData = useCallback(async () => {
     setLoading(true);
-    setApiFailed(false);
     try {
       const cats = await fetchCategories();
       // Fetch items for each category to build the full structure
@@ -68,11 +65,9 @@ export default function Menu() {
         }),
       );
       setLiveCategories(withItems);
-      setApiFailed(false);
     } catch (err) {
       console.warn('[Menu] API unavailable, using static fallback:', err.message);
       setLiveCategories(null);
-      setApiFailed(true);
     } finally {
       setLoading(false);
     }
@@ -86,28 +81,10 @@ export default function Menu() {
   // The data to render — API data when available, static data otherwise
   const usingApi = liveCategories !== null;
   const displayCategories = usingApi ? liveCategories : menuCategories;
-  const isLiveData = liveCategories !== null;
   // Admin tools only work against the API. If the API failed, all admin
-  // controls (toolbar, per-card Edit, Add Item) are disabled so admins don't
+  // controls (per-card Edit, Add Item) are disabled so admins don't
   // click buttons that would silently fail.
-  const adminToolsDisabled = !isLiveData;
-  const categoryCount = displayCategories.length;
-  // Derived — always the sum of items in whatever we're rendering. This used
-  // to be tracked as separate state, which forced nested setState calls inside
-  // the optimistic CRUD updaters (a React anti-pattern that double-counts in
-  // StrictMode). Deriving it removes that hazard entirely.
-  const itemCount = displayCategories.reduce(
-    (sum, c) => sum + (c.items?.length || 0),
-    0,
-  );
-
-  // Admin callbacks — apply the change to local state immediately (no full
-  // re-fetch flash). The modals only call these AFTER the API succeeded, so
-  // the returned object / id is authoritative. `refreshData` is kept for the
-  // toolbar's manual Refresh button.
-  const refreshData = useCallback(() => {
-    loadMenuData();
-  }, [loadMenuData]);
+  const adminToolsDisabled = !usingApi;
 
   const handleCategorySaved = useCallback((cat) => {
     setCategoryEditor(null);
@@ -204,41 +181,6 @@ export default function Menu() {
           </p>
         </div>
       </section>
-
-      {/* ═══════════════════════════════════════════════════════
-          ADMIN TOOLBAR (admin only — gated on auth resolving to avoid flash)
-          ═══════════════════════════════════════════════════════ */}
-      {!authLoading && isAdmin && (
-        <div className="container">
-          {adminToolsDisabled && (
-            <div className="menu-admin-disabled-banner" role="status">
-              <span className="material-symbols-outlined menu-admin-disabled-icon">cloud_off</span>
-              <span>
-                Admin tools are disabled — using static data. Reconnect the API to manage the menu.
-              </span>
-            </div>
-          )}
-          <AdminMenuToolbar
-            onAddCategory={() => setCategoryEditor('new')}
-            onRefresh={loadMenuData}
-            isLiveData={isLiveData}
-            disabled={adminToolsDisabled}
-            isRefreshing={loading}
-            itemCount={itemCount}
-            categoryCount={categoryCount}
-          />
-        </div>
-      )}
-
-      {/* Loading indicator — visible to ALL users during API fetch */}
-      {loading && (
-        <div className="container">
-          <div className="menu-loading">
-            <div className="menu-loading-spinner" />
-            <p>Loading menu…</p>
-          </div>
-        </div>
-      )}
 
       {/* ═══════════════════════════════════════════════════════
           PRODUCT GRID — filterable, sortable, unified cards

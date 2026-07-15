@@ -269,12 +269,9 @@ export async function logout(_req, res, next) {
 export async function refresh(req, res, next) {
   try {
     const token = req.cookies?.refresh_token;
-    console.log('[auth/refresh] refresh_token cookie:', token ? 'PRESENT' : 'MISSING');
 
     if (!token) {
-      return res.status(401).json({
-        error: { message: 'No session found. Please sign in.' },
-      });
+      return res.json({ data: { message: 'No session' } });
     }
 
     const stored = refreshTokens.get(token);
@@ -284,9 +281,7 @@ export async function refresh(req, res, next) {
       refreshTokens.delete(token);
       saveSessions();
       clearAuthCookies(res);
-      return res.status(401).json({
-        error: { message: 'Session expired. Please sign in again.' },
-      });
+      return res.json({ data: { message: 'No session' } });
     }
 
     // Token has been superseded — someone may have stolen it
@@ -299,9 +294,7 @@ export async function refresh(req, res, next) {
       }
       saveSessions();
       clearAuthCookies(res);
-      return res.status(401).json({
-        error: { message: 'Session revoked. Please sign in again.' },
-      });
+      return res.json({ data: { message: 'No session' } });
     }
 
     // Invalidate old token and issue new pair
@@ -324,22 +317,18 @@ export async function refresh(req, res, next) {
 export async function me(req, res, next) {
   try {
     const token = req.cookies?.access_token;
-    console.log('[auth/me] access_token cookie:', token ? 'PRESENT' : 'MISSING');
 
     if (!token) {
-      return res.status(401).json({
-        error: { message: 'Not authenticated.' },
-      });
+      // No cookie at all — not an error, just not authenticated
+      return res.json({ data: { user: null } });
     }
 
     let payload;
     try {
       payload = jwt.verify(token, env.SESSION_SECRET);
     } catch {
-      // Token expired or invalid — client should try refreshing
-      return res.status(401).json({
-        error: { message: 'Session expired.' },
-      });
+      // Token expired or invalid — still a 200 so browsers don't log it
+      return res.json({ data: { user: null } });
     }
 
     const isAdmin = !!env.ADMIN_EMAIL && payload.email === env.ADMIN_EMAIL;
@@ -356,6 +345,133 @@ export async function me(req, res, next) {
         },
       },
     });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Google OAuth — server-side OAuth 2.0 flow
+   ═══════════════════════════════════════════════════════════════ */
+
+/**
+ * GET /api/auth/oauth/google
+ * Returns the Google OAuth consent URL for the client to redirect to.
+ */
+export async function oauthGoogleInit(req, res, next) {
+  try {
+    if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) {
+      return res.status(400).json({
+        error: { message: 'Google OAuth is not configured. Check GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.' },
+      });
+    }
+
+    const redirectUri = `${req.protocol}://${req.get('host')}/api/auth/oauth/google/callback`;
+
+    // State is a signed JWT — survives server restarts (--watch mode)
+    // and needs no server-side storage for validation.
+    const state = jwt.sign(
+      { purpose: 'oauth:google', createdAt: Date.now() },
+      env.SESSION_SECRET,
+      { expiresIn: '10m' },
+    );
+
+    const params = new URLSearchParams({
+      client_id: env.GOOGLE_CLIENT_ID,
+      redirect_uri: redirectUri,
+      response_type: 'code',
+      scope: 'openid email profile',
+      state,
+      access_type: 'offline',
+      prompt: 'consent',
+    });
+
+    const url = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+
+    res.json({ data: { url } });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * GET /api/auth/oauth/google/callback
+ * Handles the Google OAuth callback, exchanges the code for tokens,
+ * creates or retrieves the Firebase user, and issues session cookies.
+ * Redirects the user to the frontend.
+ */
+export async function oauthGoogleCallback(req, res, next) {
+  try {
+    const { code, state } = req.query;
+
+    if (!code || !state) {
+      return res.redirect(`${env.CLIENT_ORIGIN}/?oauth=error&message=invalid_request`);
+    }
+
+    // Validate state — it's a signed JWT, signature verification is enough
+    try {
+      jwt.verify(state, env.SESSION_SECRET);
+    } catch (err) {
+      console.warn('[oauth/callback] state JWT invalid:', err.message);
+      return res.redirect(`${env.CLIENT_ORIGIN}/?oauth=error&message=expired_or_invalid_state`);
+    }
+
+    const redirectUri = `${req.protocol}://${req.get('host')}/api/auth/oauth/google/callback`;
+
+    // Exchange the authorization code for access/ID tokens
+    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code,
+        client_id: env.GOOGLE_CLIENT_ID,
+        client_secret: env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: redirectUri,
+        grant_type: 'authorization_code',
+      }).toString(),
+    });
+
+    const tokenData = await tokenRes.json();
+    if (!tokenRes.ok || !tokenData.access_token) {
+      return res.redirect(`${env.CLIENT_ORIGIN}/?oauth=error&message=token_exchange_failed`);
+    }
+
+    // Get the authenticated Google user's profile info
+    const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: { Authorization: `Bearer ${tokenData.access_token}` },
+    });
+    const googleUser = await userInfoRes.json();
+    if (!userInfoRes.ok || !googleUser.email) {
+      return res.redirect(`${env.CLIENT_ORIGIN}/?oauth=error&message=userinfo_failed`);
+    }
+
+    // Look up existing Firebase user, or create a new one
+    let firebaseUser;
+    try {
+      firebaseUser = await firebaseAuth.getUserByEmail(googleUser.email);
+    } catch (err) {
+      if (err.code === 'auth/user-not-found') {
+        firebaseUser = await firebaseAuth.createUser({
+          email: googleUser.email,
+          displayName: googleUser.name || googleUser.email.split('@')[0],
+          photoURL: googleUser.picture || null,
+          emailVerified: !!googleUser.verified_email,
+        });
+      } else {
+        return res.redirect(`${env.CLIENT_ORIGIN}/?oauth=error&message=auth_lookup_failed`);
+      }
+    }
+
+    // Issue app-level session cookies
+    const userId = firebaseUser.uid;
+    const userEmail = firebaseUser.email || googleUser.email;
+    const accessToken = signAccessToken(userId, userEmail);
+    const refreshToken = generateRefreshToken();
+    storeRefreshToken(refreshToken, userId, userEmail);
+    setAuthCookies(res, accessToken, refreshToken);
+
+    // Redirect to the frontend — session is live
+    res.redirect(`${env.CLIENT_ORIGIN}/`);
   } catch (err) {
     next(err);
   }

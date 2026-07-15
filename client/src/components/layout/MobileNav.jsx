@@ -6,14 +6,11 @@ import { useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useLiveBusiness } from '../../hooks/useLiveBusiness';
 import Icon from '../ui/Icon';
-import logo from '../../assets/triology-logo.png';
-import { useActiveSection } from '../../context/ActiveSectionContext';
+import logo from '../../assets/logo.png';
 
 export default function MobileNav({ open, links, onClose, position = 'side' }) {
   const business = useLiveBusiness();
   const location = useLocation();
-  const { activeSection } = useActiveSection();
-  const isEventsPage = location.pathname === '/events';
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
@@ -117,28 +114,13 @@ export default function MobileNav({ open, links, onClose, position = 'side' }) {
         {/* Nav links — bottom-border active style */}
         <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
           {links.map((link) => {
-            const isEventsOrContact = link.label === 'Events' || link.label === 'Contact';
-            let linkActive;
-            if (isEventsPage && isEventsOrContact) {
-              linkActive =
-                (link.label === 'Events' && activeSection === 'events') ||
-                (link.label === 'Contact' && activeSection === 'contact');
-            } else {
-              linkActive = location.pathname === link.path;
-            }
+            const linkActive = location.pathname === link.path;
 
             return (
               <NavLink
                 key={link.label}
                 to={link.path}
-                onClick={(e) => {
-                  if (isEventsPage && isEventsOrContact) {
-                    e.preventDefault();
-                    const id = link.label === 'Events' ? 'events-room-section' : 'events-contact-section';
-                    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-                  }
-                  onClose();
-                }}
+                onClick={onClose}
                 style={{
                   display: 'flex',
                   alignItems: 'center',

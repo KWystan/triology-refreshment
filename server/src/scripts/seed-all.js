@@ -1,11 +1,10 @@
 /**
  * Seed All — comprehensive one-time migration of ALL static data into Firestore.
  *
- * Seeds the following Firestore documents — pages access these via the API
- * controllers at /api/menu/* and /api/content/*:
+ * Seeds the following Firestore documents:
  *
  *   menu_categories/{id}     — categories (7)
- *   menu_items/{id}          — items (42)
+ *   menu_items/{id}          — items (52)
  *   site_content/business    — business info, venue, nav links
  *   site_content/bundles     — party pack bundles array
  *   site_content/bundle_features — features array
@@ -13,17 +12,7 @@
  *
  * Run: node src/scripts/seed-all.js
  */
-import cloudinary from '../config/cloudinary.js';
 import { firestore } from '../config/firebase.js';
-import { readFileSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const ASSETS_DIR = resolve(__dirname, '..', '..', '..', 'client', 'src', 'assets');
-
-/* ─── Cloudinary folder ───────────────────────────────────── */
-const CLOUD_FOLDER = 'triology/menu';
 
 /* ═══════════════════════════════════════════════════════════════
    MENU DATA — mirrors client/src/data/menuItems.js
@@ -37,14 +26,14 @@ const menuData = [
     priceNote: '₱89 Reg / ₱109 Big',
     order: 1,
     items: [
-      { id: 'ube-craze', name: 'Ube Craze', image: 'halo_halo/ube_craze_crash_overload.png', images: ['halo_halo/ube_craze_crash_overload.png'], badge: 'Best Seller', isBestSeller: true, rating: 4.8, description: 'Rich and creamy ube-flavored halo-halo loaded with sweet toppings, leche flan, and ube ice cream.', serves: '1 person', prepTime: '~5 mins', tags: ['#ube', '#halohalo', '#overload'] },
-      { id: 'coco-pandan', name: 'Coco Pandan', image: 'halo_halo/coco_pandan_crash_overload.png', images: ['halo_halo/coco_pandan_crash_overload.png'], rating: 4.7, description: 'A refreshing blend of coconut strips, pandan jelly, and creamy milk topped with coconut ice cream.', serves: '1 person', prepTime: '~5 mins', tags: ['#coconut', '#pandan', '#halohalo'] },
-      { id: 'cremelon', name: "Creme'lon", image: "halo_halo/creme'lon_overload.png", images: ["halo_halo/creme'lon_overload.png"], rating: 4.5, description: 'Cool and fruity melon-flavored halo-halo with fresh melon slices, sago, and a scoop of melon ice cream.', serves: '1 person', prepTime: '~5 mins', tags: ['#cremelon', '#melon', '#halohalo'] },
-      { id: 'real-mango', name: 'Real Mango', image: 'halo_halo/real_mango_overload.png', images: ['halo_halo/real_mango_overload.png'], rating: 4.6, description: 'Sweet ripe mangoes layered with shaved ice, evaporated milk, and mango ice cream.', serves: '1 person', prepTime: '~5 mins', tags: ['#mango', '#halohalo', '#sweet'] },
-      { id: 'say-cheese', name: 'Say Cheese', image: 'halo_halo/say_cheese_halo_overload.png', images: ['halo_halo/say_cheese_halo_overload.png'], rating: 4.4, description: 'A unique savory-sweet halo-halo with cheese strips, macapuno, and a scoop of cheese ice cream.', serves: '1 person', prepTime: '~5 mins', tags: ['#cheese', '#halohalo', '#savory'] },
-      { id: 'halo-cado', name: 'Halo Cado', image: 'halo_halo/halo_cado_overload.png', images: ['halo_halo/halo_cado_overload.png'], rating: 4.7, description: 'Creamy avocado slices meet shaved ice and milk, topped with avocado ice cream.', serves: '1 person', prepTime: '~5 mins', tags: ['#avocado', '#halohalo', '#creamy'] },
-      { id: 'mais-con-yelo', name: 'Mais Con Yelo', image: 'halo_halo/mais_con_yelo_halo_overload.png', images: ['halo_halo/mais_con_yelo_halo_overload.png'], rating: 4.3, description: 'Sweet corn kernels over shaved ice with milk and a scoop of corn ice cream.', serves: '1 person', prepTime: '~5 mins', tags: ['#mais', '#corn', '#halohalo'] },
-      { id: 'banana', name: 'Banana', image: 'halo_halo/banana_overload.png', images: ['halo_halo/banana_overload.png'], rating: 4.2, description: 'Caramelized saba bananas layered with shaved ice, milk, and banana ice cream.', serves: '1 person', prepTime: '~5 mins', tags: ['#banana', '#halohalo', '#saba'] },
+      { id: 'ube-craze', name: 'Ube Craze Crush Overload', badge: 'Best Seller', isBestSeller: true, rating: 4.8, description: 'Rich and creamy ube-flavored halo-halo loaded with sweet toppings, leche flan, and ube ice cream.', serves: '1 person', prepTime: '~5 mins', tags: ['#ube', '#halohalo', '#overload'] },
+      { id: 'coco-pandan', name: 'Coco Pandan Crush Overload', rating: 4.7, description: 'A refreshing blend of coconut strips, pandan jelly, and creamy milk topped with coconut ice cream.', serves: '1 person', prepTime: '~5 mins', tags: ['#coconut', '#pandan', '#halohalo'] },
+      { id: 'cremelon', name: "Creme'Lon Overload", rating: 4.5, description: 'Cool and fruity melon-flavored halo-halo with fresh melon slices, sago, and a scoop of melon ice cream.', serves: '1 person', prepTime: '~5 mins', tags: ['#cremelon', '#melon', '#halohalo'] },
+      { id: 'real-mango', name: 'Real Mango Overload', rating: 4.6, description: 'Sweet ripe mangoes layered with shaved ice, evaporated milk, and mango ice cream.', serves: '1 person', prepTime: '~5 mins', tags: ['#mango', '#halohalo', '#sweet'] },
+      { id: 'say-cheese', name: 'Say Cheese Halo Overload', rating: 4.4, description: 'A unique savory-sweet halo-halo with cheese strips, macapuno, and a scoop of cheese ice cream.', serves: '1 person', prepTime: '~5 mins', tags: ['#cheese', '#halohalo', '#savory'] },
+      { id: 'halo-cado', name: 'Halo Cado Overload', rating: 4.7, description: 'Creamy avocado slices meet shaved ice and milk, topped with avocado ice cream.', serves: '1 person', prepTime: '~5 mins', tags: ['#avocado', '#halohalo', '#creamy'] },
+      { id: 'mais-con-yelo', name: 'Mais Con Yelo Halo Overload', rating: 4.3, description: 'Sweet corn kernels over shaved ice with milk and a scoop of corn ice cream.', serves: '1 person', prepTime: '~5 mins', tags: ['#mais', '#corn', '#halohalo'] },
+      { id: 'banana', name: 'Banana Overload', rating: 4.2, description: 'Caramelized saba bananas layered with shaved ice, milk, and banana ice cream.', serves: '1 person', prepTime: '~5 mins', tags: ['#banana', '#halohalo', '#saba'] },
     ],
   },
   // ─── Rice Meals ──────────────────────────────────────────
@@ -52,6 +41,7 @@ const menuData = [
     id: 'all-day-rice',
     label: 'All Day Rice Meals',
     layout: 'rice-card',
+    categoryImage: null,
     order: 2,
     items: [
       { id: 'fried-chicken-rice', name: 'Fried Chicken Rice Meal', price: 120, tags: ['#friedchicken', '#ricemeal', '#sulit'], rating: 4.5, description: 'Crispy fried chicken served with steaming white rice.', serves: '1 person', prepTime: '~10 mins' },
@@ -99,10 +89,16 @@ const menuData = [
     order: 5,
     items: [
       { id: 'bihon-guisado', name: 'Bihon Guisado', price: 650, tags: ['#bihon', '#guisado', '#platter'], rating: 4.5, description: 'Thin rice noodles stir-fried with vegetables and shrimp.', serves: '4-5 people', prepTime: '~15 mins' },
+      { id: 'miki-guisado-platter', name: 'Miki Guisado', price: 650, tags: ['#miki', '#guisado', '#platter'], rating: 4.4, description: 'Thick egg noodles stir-fried with pork and vegetables.', serves: '4-5 people', prepTime: '~15 mins' },
       { id: 'pancit-palabok', name: 'Pancit Palabok', price: 700, tags: ['#palabok', '#pancit', '#platter'], rating: 4.6, description: 'Rice noodles in rich annatto sauce with shrimp and pork.', serves: '4-5 people', prepTime: '~15 mins' },
+      { id: 'sotanghon-guisado-platter', name: 'Sotanghon Guisado', price: 650, tags: ['#sotanghon', '#guisado', '#platter'], rating: 4.4, description: 'Bean thread noodles sautéed with vegetables and chicken.', serves: '4-5 people', prepTime: '~15 mins' },
       { id: 'chicken-lumpia-platter', name: 'Chicken Lumpia', price: 550, tags: ['#lumpia', '#chicken', '#platter'], rating: 4.4, description: 'Fresh lumpia with seasoned chicken and vegetables.', serves: '4-5 people', prepTime: '~15 mins' },
+      { id: 'pork-lumpia-platter', name: 'Pork Lumpia', price: 550, tags: ['#lumpia', '#pork', '#platter'], rating: 4.3, description: 'Crispy pork lumpia — perfect for sharing.', serves: '4-5 people', prepTime: '~15 mins' },
+      { id: 'half-n-half-combo', name: 'Half-N-Half Combo', price: 750, tags: ['#combo', '#platter', '#sharing'], rating: 4.6, description: 'Pick two of your favorites from our noodle and lumpia selections.', serves: '4-6 people', prepTime: '~15 mins' },
       { id: 'glazed-chicken-platter', name: 'Glazed Chicken Platter', price: 950, tags: ['#glazed', '#chicken', '#party'], isBestSeller: true, rating: 4.8, description: 'Full platter of signature glazed chicken.', serves: '6-8 people', prepTime: '~20 mins' },
+      { id: 'chicken-pastil-puto-platter', name: 'Chicken Pastil Puto Platter', price: 300, tags: ['#puto', '#pastil', '#chicken', '#platter'], rating: 4.4, description: 'Fluffy puto topped with seasoned chicken pastil.', serves: '3-4 people', prepTime: '~10 mins' },
       { id: 'assorted-platter', name: 'Assorted Platter', price: 250, tags: ['#assorted', '#platter', '#sharing'], rating: 4.3, description: 'Mix of best-selling sides and bites.', serves: '2-3 people', prepTime: '~10 mins' },
+      { id: 'plain-puto-platter', name: 'Plain Puto Platter', price: 200, tags: ['#puto', '#plain', '#platter'], rating: 4.2, description: 'Classic soft and fluffy puto.', serves: '3-4 people', prepTime: '~10 mins' },
       { id: 'ube-puto-platter', name: 'Ube Puto Platter', price: 250, tags: ['#ube', '#puto', '#platter'], rating: 4.4, description: 'Fluffy ube puto steamed to perfection.', serves: '3-4 people', prepTime: '~10 mins' },
     ],
   },
@@ -129,10 +125,15 @@ const menuData = [
     items: [
       { id: 'chicken-burger', name: 'Chicken Burger', note: 'Available w/ drink upgrade', tags: ['#burger', '#chicken', '#snacks'], rating: 4.5, description: 'Juicy chicken patty with lettuce, tomato, and special mayo.', serves: '1 person', prepTime: '~8 mins', variants: [{ label: 'Solo', price: 70 }, { label: 'w/ Drink', price: 85, highlight: true }] },
       { id: 'pork-burger', name: 'Pork Burger', note: 'Available w/ drink upgrade', tags: ['#burger', '#pork', '#snacks'], rating: 4.4, description: 'Seasoned pork patty grilled to perfection.', serves: '1 person', prepTime: '~8 mins', variants: [{ label: 'Solo', price: 75 }, { label: 'w/ Drink', price: 90, highlight: true }] },
-      { id: 'molo-batchoy', name: 'Pancit Molo / Batchoy', note: 'Hot comfort soups', price: 70, tags: ['#molo', '#batchoy', '#soup'], rating: 4.6, description: 'Iloilo-style soup with wonton wrappers, chicken, and fried garlic.', serves: '1 person', prepTime: '~5 mins' },
-      { id: 'flavored-fries', name: 'Flavored Fries', note: 'Sour Cream, Cheese, BBQ', price: 65, tags: ['#fries', '#flavored', '#snacks'], rating: 4.3, description: 'Crispy fries in sour cream, cheese, or BBQ seasoning.', serves: '1 person', prepTime: '~5 mins' },
+      { id: 'creamy-pancit-molo', name: 'Creamy Pancit Molo', note: 'Hot comfort soup', price: 70, tags: ['#molo', '#soup', '#snacks'], rating: 4.6, description: 'Iloilo-style soup with wonton wrappers, chicken, and creamy broth.', serves: '1 person', prepTime: '~5 mins' },
+      { id: 'miki-batchoy', name: 'Miki Batchoy', note: 'Hot comfort bowl', price: 75, tags: ['#batchoy', '#miki', '#soup'], rating: 4.5, description: 'Savory miki batchoy with thick egg noodles, pork, and fried garlic.', serves: '1 person', prepTime: '~5 mins' },
+      { id: 'beef-pata', name: 'Beef Pata', note: 'Rich beef shank soup', price: 95, tags: ['#beef', '#pata', '#soup'], rating: 4.3, description: 'Tender beef pata simmered in flavorful broth.', serves: '1 person', prepTime: '~8 mins' },
+      { id: 'sour-cream-fries', name: 'Sour Cream Fries', note: 'Crispy coated fries', price: 65, tags: ['#fries', '#sourcream', '#snacks'], rating: 4.3, description: 'Crispy fries tossed in tangy sour cream seasoning.', serves: '1 person', prepTime: '~5 mins' },
+      { id: 'cheese-fries', name: 'Cheese Fries', note: 'Crispy coated fries', price: 65, tags: ['#fries', '#cheese', '#snacks'], rating: 4.4, description: 'Crispy fries loaded with savory cheese seasoning.', serves: '1 person', prepTime: '~5 mins' },
+      { id: 'bbq-fries', name: 'BBQ Fries', note: 'Crispy coated fries', price: 65, tags: ['#fries', '#bbq', '#snacks'], rating: 4.2, description: 'Crispy fries tossed in smoky BBQ seasoning.', serves: '1 person', prepTime: '~5 mins' },
       { id: 'regular-puto', name: 'Regular Puto', note: 'Soft & fluffy rice cakes', price: 20, tags: ['#puto', '#ricecake', '#merienda'], rating: 4.2, description: 'Classic soft and fluffy rice cakes.', serves: '1 person', prepTime: '~3 mins' },
-      { id: 'special-puto', name: 'Special Puto', note: 'Buko Pandan / Chicken Pastil', price: 35, tags: ['#puto', '#special', '#bukopandan'], rating: 4.4, description: 'Flavored puto in buko pandan or chicken pastil.', serves: '1 person', prepTime: '~3 mins' },
+      { id: 'buko-pandan-puto', name: 'Buko Pandan Puto', note: 'Flavored rice cakes', price: 35, tags: ['#puto', '#bukopandan', '#merienda'], rating: 4.4, description: 'Soft puto infused with buko pandan.', serves: '1 person', prepTime: '~3 mins' },
+      { id: 'chicken-pastil-puto', name: 'Chicken Pastil Puto', note: 'Savory topped rice cakes', price: 35, tags: ['#puto', '#pastil', '#chicken', '#merienda'], rating: 4.3, description: 'Fluffy puto topped with savory chicken pastil.', serves: '1 person', prepTime: '~3 mins' },
     ],
   },
 ];
@@ -225,7 +226,6 @@ const businessData = {
     { label: 'Menu', path: '/menu' },
     { label: 'Party Packs', path: '/party-packs' },
     { label: 'Venue', path: '/venue' },
-    { label: 'Events', path: '/events' },
   ],
 };
 
@@ -246,14 +246,99 @@ const bundlesData = [
   },
   {
     id: 'grand-family-reunion',
-    name: 'Grand Family Reunion Bundle',
-    description: 'Customizable for up to 50 pax',
+    name: 'Family Packs',
+    description: 'Customizable family packs for any gathering',
     serves: 'up to 50',
     startingPrice: 1500,
     badge: null,
     image:
       'https://lh3.googleusercontent.com/aida-public/AB6AXuDyFDJ0VhZdaLacS-_acHURU_qig84PM_xVKQgYpbWcF6KC6wwOdPaoz0nL8175jL6fHWo9IKkw4_s_AeuSYOAlb5lETu-MvAtE61ntSIBatfDRjSKWhLgHo82b3RlPXn1gZAO9vTBKtBmhyzyx3dHuqfNbvm7v0L4RFeOdKHOxCc-tmQZfnLzUW2xNvMCxtCWRXoLeLOk03N1GtQEQQb3IKRj_g4qHsq3sLaNYZrJ0eJx-OSViDW62EtahkEWYTH3Ucs3qppO-YEbq',
     size: 'wide',
+  },
+  {
+    id: 'mix-match-share-5',
+    name: 'Mix and Match Share 5',
+    description: 'French Fries, Lumpia Shanghai, Platter of Choice & Iced Tea',
+    serves: '5',
+    startingPrice: 860,
+    badge: null,
+    image: null,
+    size: 'wide',
+    items: [
+      'French Fries (Family Size 450g)',
+      'Lumpia Shanghai Platter',
+      '1 Any Platter of Choice',
+      'Iced Tea Bottomless',
+    ],
+  },
+  {
+    id: 'barkada-combo-share-8',
+    name: 'Barkada Combo Share 8',
+    description: 'French Fries, Fried Chicken Chops, Bilao of Choice & Blue Iced Tea',
+    serves: '8',
+    startingPrice: 1330,
+    badge: null,
+    image: null,
+    size: 'wide',
+    items: [
+      'French Fries (Family Size 450g)',
+      '(Bucket) Fried Chicken Chops',
+      'Bilao of Choice',
+      'Blue Bottomless Iced Tea',
+    ],
+  },
+  {
+    id: 'family-combo-10',
+    name: 'Family Combo Meal for 10',
+    description: 'Fries, Puto, Miki Batchoy, Bilao, Lumpia & Halo-Halo',
+    serves: '10',
+    startingPrice: 1640,
+    badge: null,
+    image: null,
+    size: 'wide',
+    items: [
+      '3 French Fries of Choice',
+      '1 Serve Plain Puto',
+      '2 Miki Batchoys',
+      '1 A Bilao of Choice',
+      '1 Platter of Lumpia (Pork or Chicken)',
+      '2 Any Halo-Halo Overloads (Regular Size)',
+    ],
+  },
+  {
+    id: 'family-combo-12',
+    name: 'Family Combo Meal for 12',
+    description: 'Puto, Lumpia Shanghai, Glazed Chicken, Java Rice & Lemonade',
+    serves: '12',
+    startingPrice: 1900,
+    badge: null,
+    image: null,
+    size: 'wide',
+    items: [
+      '20 Pcs Plain Puto',
+      '1 Platter Lumpia Shanghai',
+      '12 Pcs Glazed Chicken',
+      '12 Java Rice',
+      'Bottomless Cucumber Lemonade',
+    ],
+  },
+  {
+    id: 'family-meal-15',
+    name: 'Family Meal of 15',
+    description: 'Rice, Puto, Bilao, Burgers, Lumpia & Halo-Halo',
+    serves: '15',
+    startingPrice: 2160,
+    badge: null,
+    image: null,
+    size: 'wide',
+    items: [
+      '6 Serves of Plain Rice',
+      '1 Platter of Puto (Any of Choice)',
+      '1 Bilao (Any of Choice)',
+      '4 Pork Burgers',
+      '1 Lumpia Platter (Any of Choice)',
+      '4 Regular Size Halo-Halo Overloads',
+    ],
   },
 ];
 
@@ -282,32 +367,7 @@ const menuFilterTabsData = [
   { id: 'refreshments', label: 'Refreshments' },
 ];
 
-/* ─── Helpers ──────────────────────────────────────────────── */
-
-/** Upload an image file to Cloudinary, return the secure URL */
-async function uploadImage(relativePath) {
-  const filePath = resolve(ASSETS_DIR, relativePath);
-  try {
-    const result = await cloudinary.uploader.upload(filePath, {
-      folder: CLOUD_FOLDER,
-      use_filename: true,
-      unique_filename: false,
-      overwrite: true,
-    });
-    return result.secure_url;
-  } catch (err) {
-    console.warn(`  ⚠  Upload failed for ${relativePath}: ${err.message}. Skipping.`);
-    return null;
-  }
-}
-
-/** Map a bare filename to its asset path */
-function assetPath(name) {
-  if (name.includes('/')) return name;
-  return name;
-}
-
-/* ─── Menu Seeding ────────────────────────────────────────── */
+/* ─── Menu Seeding ──────────────────────────────────────────── */
 
 async function seedMenu() {
   const now = new Date();
@@ -318,22 +378,12 @@ async function seedMenu() {
   for (const category of menuData) {
     console.log(`  📂  ${category.label}`);
 
-    // Upload category image
-    let catImageUrl = null;
-    if (category.id === 'halo-halo') {
-      const firstItem = category.items[0];
-      catImageUrl = await uploadImage(firstItem.image);
-    } else if (category.id === 'all-day-rice') {
-      catImageUrl = await uploadImage('rice_meal.jpg');
-    }
-    if (!catImageUrl) catImageUrl = null;
-
     // Write category to Firestore
     const catDoc = {
       id: category.id,
       label: category.label,
       layout: category.layout,
-      categoryImage: catImageUrl,
+      categoryImage: null,
       priceNote: category.priceNote || null,
       note: category.note || null,
       order: category.order,
@@ -345,28 +395,12 @@ async function seedMenu() {
     // Write items
     for (let i = 0; i < category.items.length; i++) {
       const item = category.items[i];
-
-      // Upload item images
-      let itemImageUrl = null;
-      if (item.image) {
-        itemImageUrl = await uploadImage(assetPath(item.image));
-      }
-
-      // Upload carousel images (up to 3)
-      const carouselUrls = [];
-      if (item.images && item.images.length > 0) {
-        for (const img of item.images.slice(0, 3)) {
-          const url = await uploadImage(assetPath(img));
-          carouselUrls.push(url);
-        }
-      }
-
       const itemDoc = {
         id: item.id,
         categoryId: category.id,
         name: item.name,
-        image: itemImageUrl,
-        images: carouselUrls.length > 0 ? carouselUrls : [],
+        image: null,
+        images: [],
         price: item.price || null,
         variants: item.variants || [],
         tags: item.tags || [],

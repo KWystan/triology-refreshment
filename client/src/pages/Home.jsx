@@ -8,22 +8,22 @@
  *   4. Social Proof — Facebook community CTA with branding
  */
 import { useState, useRef, useEffect } from 'react';
-import { useLiveBusiness } from '../hooks/useLiveBusiness';
+import { business } from '../data/business';
 import { SectionHeading, Button, Section } from '../components';
 import MobileNav from '../components/layout/MobileNav';
-import heroImg1 from '../assets/hero/hero-page-image-1.jpg';
-import heroImg2 from '../assets/hero/hero-page-image-2.jpg';
-import heroImg3 from '../assets/hero/hero-page-image-3.jpg';
-import heroImg4 from '../assets/hero/hero-page-image-4.jpg';
-import locationBg from '../assets/location-background.png';
-import blobSvg from '../assets/blob.svg';
-import bentoRefreshments from '../assets/refreshments.jpg';
-import bentoRiceMeal from '../assets/rice_meal.jpg';
-import venueImage from '../assets/venue.jpg';
+import heroImg1 from '../assets/hero/hero-1.jpg';
+import heroImg2 from '../assets/hero/hero-2.jpg';
+import heroImg3 from '../assets/hero/hero-3.jpg';
+import heroImg4 from '../assets/hero/hero-4.jpg';
+import locationBg from '../assets/ui/location-bg.png';
+import blobSvg from '../assets/ui/blob.svg';
+import bentoRefreshments from '../assets/food/refreshments.jpg';
+import bentoRiceMeal from '../assets/food/rice-meal.jpg';
+import venueImage from '../assets/food/venue.jpg';
 
 // Placeholder — swap with actual large anchor image later
-import heroLargeImage from '../assets/hero/hero-image-big.png';
-import logo from '../assets/triology-logo.png';
+import heroLargeImage from '../assets/hero/hero-large.png';
+import logo from '../assets/logo.png';
 
 const BENTO_REFRESHMENTS = bentoRefreshments;
 
@@ -31,21 +31,11 @@ const BENTO_MEALS = bentoRiceMeal;
 
 const BENTO_PARTY = venueImage;
 
-const ABOUT_IMG_1 =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuA7hm9ZLC9O2NMpOAwuUR-dpsygHqWIF0G-_lutIPggE-VgJaQ_LCjTlQ72rdS38CA5bmJaV0NvEPTH3zQSyRkel5t1PGC8Belh6dH7VEOToib2ZzNrgz75a-sV1q_AlVEK2f8C5KuU35JIGQFK5BaqJMgGiSdIPCNyECyPBkIKB062k7eoaLuEA_h5v6khQEgbvGwann0_tV8QR3As6cUeJgFZscrDzJCaoSoAxtDt8FslffEWooQRtRQ1iuruxoeYs59l--6lLKim';
-
-const ABOUT_IMG_2 =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuABZg_dCZjNXiComIAx_X0IW3sudfkUaL9e5x1IBEkLEUBofbcNj8bFP1H7_a1dE-jmGQFglzuBo7u4R8aE1AwjDtY81w-puhBRftd9lmyuXd9JwLy9VAjNA5QzCNDG8aP4ZMBeli6BjNpa_8Pg6KCRX6h7tst2zeBo-kSOw_WC9s6c-hyB86uR3B0bFIWGYrcuVmxysJsutFWMVz3taReUBxvhIajxHy-I391CNoSCx-4bTU5-4flj0DZO0fWJ9z0LMooqAplikz2P';
-
-// Images 1-3 always visible; img4 at ≥768px; img5 at ≥1280px
-const ABOUT_IMG_3 =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuA7hm9ZLC9O2NMpOAwuUR-dpsygHqWIF0G-_lutIPggE-VgJaQ_LCjTlQ72rdS38CA5bmJaV0NvEPTH3zQSyRkel5t1PGC8Belh6dH7VEOToib2ZzNrgz75a-sV1q_AlVEK2f8C5KuU35JIGQFK5BaqJMgGiSdIPCNyECyPBkIKB062k7eoaLuEA_h5v6khQEgbvGwann0_tV8QR3As6cUeJgFZscrDzJCaoSoAxtDt8FslffEWooQRtRQ1iuruxoeYs59l--6lLKim';
-
-const ABOUT_IMG_4 =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuABZg_dCZjNXiComIAx_X0IW3sudfkUaL9e5x1IBEkLEUBofbcNj8bFP1H7_a1dE-jmGQFglzuBo7u4R8aE1AwjDtY81w-puhBRftd9lmyuXd9JwLy9VAjNA5QzCNDG8aP4ZMBeli6BjNpa_8Pg6KCRX6h7tst2zeBo-kSOw_WC9s6c-hyB86uR3B0bFIWGYrcuVmxysJsutFWMVz3taReUBxvhIajxHy-I391CNoSCx-4bTU5-4flj0DZO0fWJ9z0LMooqAplikz2P';
-
-const ABOUT_IMG_5 =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuA7hm9ZLC9O2NMpOAwuUR-dpsygHqWIF0G-_lutIPggE-VgJaQ_LCjTlQ72rdS38CA5bmJaV0NvEPTH3zQSyRkel5t1PGC8Belh6dH7VEOToib2ZzNrgz75a-sV1q_AlVEK2f8C5KuU35JIGQFK5BaqJMgGiSdIPCNyECyPBkIKB062k7eoaLuEA_h5v6khQEgbvGwann0_tV8QR3As6cUeJgFZscrDzJCaoSoAxtDt8FslffEWooQRtRQ1iuruxoeYs59l--6lLKim';
+import aboutImg1 from '../assets/about/about-1.jpg';
+import aboutImg2 from '../assets/about/about-2.jpg';
+import aboutImg3 from '../assets/about/about-3.jpg';
+import aboutImg4 from '../assets/about/about-4.jpg';
+import aboutImg5 from '../assets/about/about-5.jpg';
 
 /* ═══════════════════════════════════════════════════════════════
    FloatingPartyElements — animated SVG leaves, sparkles & circles
@@ -123,7 +113,6 @@ function FloatingPartyElements() {
 }
 
 export default function Home() {
-  const business = useLiveBusiness();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   const collageRef = useRef(null);
@@ -268,6 +257,8 @@ export default function Home() {
                       justifyContent: 'center',
                       gap: '0.5rem',
                       padding: '1rem 2rem',
+                      flex: '1 1 0',
+                      minWidth: '200px',
                       background: 'var(--color-secondary)',
                       color: 'var(--color-on-secondary)',
                       borderRadius: 'var(--radius-xl)',
@@ -297,6 +288,8 @@ export default function Home() {
                       justifyContent: 'center',
                       gap: '0.5rem',
                       padding: '1rem 2rem',
+                      flex: '1 1 0',
+                      minWidth: '200px',
                       border: '2px solid var(--color-primary)',
                       color: 'var(--color-primary)',
                       borderRadius: 'var(--radius-xl)',
@@ -782,19 +775,19 @@ export default function Home() {
 
             <div className="about-collage-desktop">
               <div className="about-collage-anchor">
-                <img src={ABOUT_IMG_1} alt="Triology Refreshment — our story" loading="lazy" />
+                <img src={aboutImg1} alt="Triology Refreshment — our story" loading="lazy" />
               </div>
               <div className="about-collage-img2">
-                <img src={ABOUT_IMG_2} alt="Fresh ingredients at Triology" loading="lazy" />
+                <img src={aboutImg2} alt="Fresh ingredients at Triology" loading="lazy" />
               </div>
               <div className="about-collage-img3">
-                <img src={ABOUT_IMG_3} alt="Prepared dishes at Triology" loading="lazy" />
+                <img src={aboutImg3} alt="Prepared dishes at Triology" loading="lazy" />
               </div>
               <div className="about-collage-img4">
-                <img src={ABOUT_IMG_4} alt="Community dining at Triology" loading="lazy" />
+                <img src={aboutImg4} alt="Community dining at Triology" loading="lazy" />
               </div>
               <div className="about-collage-img5">
-                <img src={ABOUT_IMG_5} alt="Celebrations at Triology" loading="lazy" />
+                <img src={aboutImg5} alt="Celebrations at Triology" loading="lazy" />
               </div>
             </div>
 
@@ -1340,19 +1333,19 @@ export default function Home() {
         /* ── 2 — Top-right accent (always visible) ──────────── */
         .about-collage-img2 {
           top: 3%;
-          right: -3%;
-          width: 40%;
-          height: 32%;
+          right: -5%;
+          width: 46%;
+          height: 36%;
           z-index: 2;
           transform: rotate(4deg);
         }
 
         /* ── 3 — Right side, below img2 (always visible) ────── */
         .about-collage-img3 {
-          top: 32%;
-          right: -3%;
-          width: 40%;
-          height: 28%;
+          top: 30%;
+          right: -5%;
+          width: 46%;
+          height: 32%;
           z-index: 3;
           transform: rotate(-3deg);
         }
@@ -1361,8 +1354,8 @@ export default function Home() {
         .about-collage-img4 {
           bottom: 2%;
           right: 3%;
-          width: 33%;
-          height: 20%;
+          width: 42%;
+          height: 28%;
           z-index: 4;
           transform: rotate(7deg);
           display: none;
@@ -1374,9 +1367,9 @@ export default function Home() {
         /* ── 5 — Bottom-left, extends past edge (≥1280px) ──── */
         .about-collage-img5 {
           bottom: 2%;
-          left: -12%;
-          width: 22%;
-          height: 20%;
+          left: -14%;
+          width: 34%;
+          height: 28%;
           z-index: 5;
           transform: rotate(-5deg);
           display: none;

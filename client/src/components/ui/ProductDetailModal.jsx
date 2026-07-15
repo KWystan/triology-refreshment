@@ -1,6 +1,6 @@
 /**
  * ProductDetailModal — landscape product detail with image carousel,
- * badge, rating, description, tags, serving info, and favorites.
+ * badge, rating, description, tags, serving info.
  *
  * Props:
  *   item              — product item object
@@ -8,8 +8,6 @@
  *   categoryPriceNote — optional category-level price note (e.g. "₱89 Reg / ₱109 Big")
  *   onClose           — () => void
  *   onAddToCart       — (item) => void
- *   isFavorited       — boolean
- *   onToggleFavorite  — (item) => void
  */
 import { useState, useEffect, useCallback } from 'react';
 import Icon from './Icon';
@@ -60,8 +58,6 @@ export default function ProductDetailModal({
   categoryPriceNote,
   onClose,
   onAddToCart,
-  isFavorited = false,
-  onToggleFavorite,
 }) {
   const [imgIndex, setImgIndex] = useState(0);
   const [added, setAdded] = useState(false);
@@ -71,6 +67,7 @@ export default function ProductDetailModal({
     : item.image
       ? [item.image]
       : [];
+  const hasImages = images.length > 0;
 
   const displayPrice = item.displayPrice || formatPrice(item, categoryPriceNote);
 
@@ -78,12 +75,12 @@ export default function ProductDetailModal({
   const handleKeyDown = useCallback(
     (e) => {
       if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowLeft')
+      if (hasImages && e.key === 'ArrowLeft')
         setImgIndex((i) => (i > 0 ? i - 1 : images.length - 1));
-      if (e.key === 'ArrowRight')
+      if (hasImages && e.key === 'ArrowRight')
         setImgIndex((i) => (i < images.length - 1 ? i + 1 : 0));
     },
-    [onClose, images.length],
+    [onClose, images.length, hasImages],
   );
 
   useEffect(() => {
@@ -115,43 +112,52 @@ export default function ProductDetailModal({
             ═══════════════════════════════════════════════════════ */}
         <div className="pdm-image-col">
           <div className="pdm-carousel">
-            {images.map((src, i) => (
-              <img
-                key={i}
-                src={src}
-                alt={`${item.name} ${i + 1}`}
-                className="pdm-carousel-img"
-                loading="lazy"
-                style={{ display: i === imgIndex ? 'block' : 'none' }}
-              />
-            ))}
-            {images.length > 1 && (
+            {hasImages ? (
               <>
-                <button
-                  className="pdm-arrow pdm-arrow-left btn-interact"
-                  onClick={() => setImgIndex((i) => (i > 0 ? i - 1 : images.length - 1))}
-                  aria-label="Previous image"
-                >
-                  <Icon name="chevron_left" size={22} />
-                </button>
-                <button
-                  className="pdm-arrow pdm-arrow-right btn-interact"
-                  onClick={() => setImgIndex((i) => (i < images.length - 1 ? i + 1 : 0))}
-                  aria-label="Next image"
-                >
-                  <Icon name="chevron_right" size={22} />
-                </button>
-                <div className="pdm-dots">
-                  {images.map((_, i) => (
+                {images.map((src, i) => (
+                  <img
+                    key={i}
+                    src={src}
+                    alt={`${item.name} ${i + 1}`}
+                    className="pdm-carousel-img"
+                    loading="lazy"
+                    style={{ display: i === imgIndex ? 'block' : 'none' }}
+                  />
+                ))}
+                {images.length > 1 && (
+                  <>
                     <button
-                      key={i}
-                      className={`pdm-dot${i === imgIndex ? ' pdm-dot-active' : ''}`}
-                      onClick={() => setImgIndex(i)}
-                      aria-label={`Image ${i + 1} of ${images.length}`}
-                    />
-                  ))}
-                </div>
+                      className="pdm-arrow pdm-arrow-left btn-interact"
+                      onClick={() => setImgIndex((i) => (i > 0 ? i - 1 : images.length - 1))}
+                      aria-label="Previous image"
+                    >
+                      <Icon name="chevron_left" size={22} />
+                    </button>
+                    <button
+                      className="pdm-arrow pdm-arrow-right btn-interact"
+                      onClick={() => setImgIndex((i) => (i < images.length - 1 ? i + 1 : 0))}
+                      aria-label="Next image"
+                    >
+                      <Icon name="chevron_right" size={22} />
+                    </button>
+                    <div className="pdm-dots">
+                      {images.map((_, i) => (
+                        <button
+                          key={i}
+                          className={`pdm-dot${i === imgIndex ? ' pdm-dot-active' : ''}`}
+                          onClick={() => setImgIndex(i)}
+                          aria-label={`Image ${i + 1} of ${images.length}`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
               </>
+            ) : (
+              <div className="pdm-placeholder" aria-label={item.name}>
+                <span className="material-symbols-outlined pdm-placeholder-icon">restaurant_menu</span>
+                <span className="pdm-placeholder-text">No image available</span>
+              </div>
             )}
           </div>
         </div>
@@ -165,25 +171,6 @@ export default function ProductDetailModal({
             <button className="pdm-icon-btn" onClick={onClose} aria-label="Close">
               <Icon name="close" size={22} />
             </button>
-            {onToggleFavorite && (
-              <button
-                className="pdm-icon-btn"
-                onClick={() => onToggleFavorite(item)}
-                aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
-              >
-                <span
-                  className="material-symbols-outlined"
-                  style={{
-                    fontSize: 22,
-                    fontVariationSettings: `'FILL' ${isFavorited ? 1 : 0}, 'wght' 400`,
-                    color: isFavorited ? 'var(--color-error)' : 'var(--color-on-surface-variant)',
-                    transition: 'color 0.2s, transform 0.2s',
-                  }}
-                >
-                  favorite
-                </span>
-              </button>
-            )}
           </div>
 
           {/* ── Badge ────────────────────────────────────── */}
@@ -342,6 +329,27 @@ export default function ProductDetailModal({
         }
         .pdm-arrow-left  { left: 0.75rem; }
         .pdm-arrow-right { right: 0.75rem; }
+
+        .pdm-placeholder {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100%;
+          gap: 0.75rem;
+          color: var(--color-on-surface-variant);
+          opacity: 0.5;
+        }
+
+        .pdm-placeholder-icon {
+          font-size: 3rem !important;
+        }
+
+        .pdm-placeholder-text {
+          font-size: 0.8125rem;
+          font-weight: 500;
+        }
 
         .pdm-dots {
           position: absolute;

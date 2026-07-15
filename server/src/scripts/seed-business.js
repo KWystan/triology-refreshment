@@ -1,9 +1,10 @@
 /**
- * Business information — single source of truth for the Triology brand.
- * Used by Navbar, Footer, Contact pages, and metadata.
+ * Seed Business — minimal script to create site_content/business in Firestore.
+ * Run: node src/scripts/seed-business.js
  */
+import { firestore } from '../config/firebase.js';
 
-export const business = {
+const data = {
   name: 'Triology Refreshment',
   tagline: 'Your Daily Comfort Food Escape',
   taglineShort: 'Daily Comfort Food Escape',
@@ -14,7 +15,6 @@ export const business = {
   aboutExtended:
     "Whether it's a quick lunch break or a large family milestone, our focus remains the same — fresh ingredients, professional service, and that unmistakable taste of home. We're more than just a menu; we're your local partner in celebration.",
 
-  // Contact
   phone: '0947 709 7622',
   email: 'winday_021@yahoo.com',
   address: {
@@ -28,21 +28,16 @@ export const business = {
   hours: 'Mon - Sun: 8AM - 8PM',
   locationLabel: 'Trapiche, Oton, Iloilo',
 
-  // Social
   facebook: 'https://facebook.com/triologyrefreshment',
   facebookFollowers: '1.2K',
   facebookUrl: 'https://m.me/triologyrefreshment',
   messengerUrl: 'https://m.me/triologyrefreshment',
 
-  // Stats
   ordersServed: '5k+',
   freshDaily: '100%',
   localReviews: '500+',
-
-  // Year for copyright
   year: 2024,
 
-  // Venue / Event Space
   venue: {
     name: 'Triology Event Hall',
     capacity: 50,
@@ -82,7 +77,6 @@ export const business = {
       'Check availability and book via Messenger. We typically respond within 1 hour.',
   },
 
-  // Navigation
   navLinks: [
     { label: 'Home', path: '/' },
     { label: 'Menu', path: '/menu' },
@@ -90,3 +84,14 @@ export const business = {
     { label: 'Venue', path: '/venue' },
   ],
 };
+
+try {
+  await firestore
+    .collection('site_content')
+    .doc('business')
+    .set({ ...data, createdAt: new Date(), updatedAt: new Date() });
+  console.log('✅ Business data seeded to Firestore successfully!');
+} catch (err) {
+  console.error('❌ Seed failed:', err.message);
+  process.exit(1);
+}

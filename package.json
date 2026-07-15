@@ -2,7 +2,7 @@
   "name": "triology",
   "version": "0.1.0",
   "private": true,
-  "description": "Triology — full-stack application with React + Express + Supabase",
+  "description": "Triology — full-stack application with React + Express + Firebase",
   "scripts": {
     "dev": "concurrently -n server,client -c cyan,magenta \"npm run dev -w server\" \"npm run dev -w client\"",
     "dev:server": "npm run dev -w server",

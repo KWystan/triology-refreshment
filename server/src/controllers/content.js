@@ -12,6 +12,10 @@ import { firestore } from '../config/firebase.js';
 
 const COL = 'site_content';
 
+/* ═══════════════════════════════════════════════════════════════════
+   Business
+   ═══════════════════════════════════════════════════════════════════ */
+
 /**
  * GET /api/content/business
  * Returns business info, venue data, and navigation links.
@@ -28,6 +32,25 @@ export async function getBusiness(req, res) {
     res.status(500).json({ error: { message: 'Failed to fetch business info' } });
   }
 }
+
+/**
+ * PUT /api/content/business
+ * Admin-only. Updates business info, venue, nav, etc.
+ */
+export async function updateBusiness(req, res) {
+  try {
+    const updates = req.body?.data || req.body;
+    await firestore.collection(COL).doc('business').set(updates, { merge: true });
+    res.json({ data: { message: 'Business info updated.' } });
+  } catch (err) {
+    console.error('[content] updateBusiness:', err.message);
+    res.status(500).json({ error: { message: 'Failed to update business info' } });
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Bundles
+   ═══════════════════════════════════════════════════════════════════ */
 
 /**
  * GET /api/content/bundles

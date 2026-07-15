@@ -10,6 +10,8 @@ import {
   logout,
   refresh,
   me,
+  oauthGoogleInit,
+  oauthGoogleCallback,
 } from '../controllers/auth.js';
 
 const router = Router();
@@ -22,5 +24,9 @@ router.post('/login', login);         // Sign in
 router.post('/logout', logout);       // Sign out (clear cookies)
 router.post('/refresh', refresh);     // Rotate refresh token
 router.get('/me', me);                // Current user info
+
+// ─── Google OAuth ────────────────────────────────────────────
+router.get('/oauth/google', oauthGoogleInit);                 // Start OAuth flow
+router.get('/oauth/google/callback', oauthGoogleCallback);    // Handle callback
 
 export { router as authRouter };

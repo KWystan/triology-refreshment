@@ -1,36 +1,33 @@
 /**
- * Party Packs page — matches Stitch "Party Packs | Triology Refreshment" exactly.
+ * Party Packs page — product offers-centric handaan bundles showcase.
  *
  * Sections:
  *   1. Hero — dot pattern overlay, headline, CTA buttons, hero image with glow + price card
- *   2. Bento Gallery — 4-col bento grid (2 large + 2 small cards with overlays)
- *   3. Pricing & Features — feature list + Messenger booking card + quick quote form
- *   4. Trust Bar — word badges with grayscale → full color on hover
+ *   2. Party Platters — product grid of 12 actual platter items with prices and descriptions
+ *   3. Combo Meal Bundles — pre-assembled combo deals with itemized lists
+ *   4. Add-ons — halo-halo, fries, puto, hot soups as optional extras
+ *   5. Contact — Messenger chat button + quick quote form
+ *   6. Trust Bar — word badges with grayscale → full color on hover
  */
 import { useState, useEffect } from 'react';
-import { bundles as bundlesStatic, bundleFeatures as bundleFeaturesStatic } from '../data/bundles';
+import { bundles as bundlesStatic } from '../data/bundles';
 import { business as businessStatic } from '../data/business';
+import { menuCategories } from '../data/menuItems';
 import { fetchBundles, fetchBusiness } from '../lib/contentApi';
+import handaanImg from '../handaan.jpg';
 
-const BENTO_APPETIZER =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuBVCgBsRwbiPd7t0ukPnMwD8__vx7PpolhtOYn83YCoXuo52OlqLscvyfyCy9obLWvy98C9-WDMsnXQS3l22lYaki5-y_VN8DNO_lybELTIZALQtZk-QdD0dWJT1x6NCFKl6Xx9dyR5Kslcjq5kRgJ3Sc17mWmor-DYo3-ES0M2S7FpUTt4Ux5XEYRrw-F-wHkzHMyl_vX7WkiCHFIOuZIsIYyx_IC1JQ7fGvJCteP5jD0TMEFMs0XRHNObmayQOxUkbfkqUm87qQGO';
+const PLATTERS = menuCategories.find((c) => c.id === 'platters');
 
-const BENTO_OFFICE =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuBQhFKcauHFKFTZsN9J8S-7hXpajpdBWkCUqoyxlKEqA7Bd81bLlcFPaAbh4393hNFdCLTJtYCwx4PSVzQ7-rnZrh1LkZD38sWeSeuY3W1s8FTg440kWMdCWvnUPk_-kO1OlzXAhD0VE5wD1VWsrRLQI1Ut61d490pBegaEfyNgcdK55XMZ71tjfQYtY6oMQ6nF2C1RL3l4g9EI7KWYeqtjk2u1DFL9Je97bnDqZimKO5vbyrbYD8UeOUC1XMCrtQJ7L8TZR73LcqN2';
-
-const HERO_IMG =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuDOoSxq4CoSOZYqbdLMfakPV7rsuGJEC8bihguAAvP6LK_K_8g41Pz_EgTy5NjAcDEw9-X8RatSFKUJMoJ48_Qxl31Xjd6b0StNkGwlJOcghTqrEQjRnr3mBfbZNsmJNsZ5YmNo_64w09DBtE1_2esEzjqFrKm4jCKoMlJ6eIrQaHGXKFGpjzdMaUu6bcuI4MZArPUtn5CITl-0GDOqe5nQljVGozrHXtIRAvW7fqt02x32HmHGMuW0FeREGbGSqUdlAn0xNC9Bb9cj';
-
-const SCENE_ITEMS = [
-  { image: BENTO_APPETIZER, label: 'Appetizer Spread', subtitle: 'Kwek-kwek, fishballs & dipping sauces' },
-  { image: BENTO_OFFICE, label: 'Office Catering', subtitle: 'Packaged snacks & drinks for meetings' },
+const ADDONS = [
+  { name: 'Halo-Halo Overloads', description: '8 flavors available', priceRange: '₱89 Reg / ₱109 Big', icon: 'ice_cream' },
+  { name: 'Fries', description: 'Sour Cream, Cheese, BBQ', priceRange: '₱65 each', icon: 'lunch_dining' },
+  { name: 'Puto', description: 'Regular, Buko Pandan, Chicken Pastil', priceRange: '₱20–₱35', icon: 'cake' },
+  { name: 'Hot Soups', description: 'Miki Batchoy, Creamy Pancit Molo', priceRange: '₱70–₱75', icon: 'soup_kitchen' },
 ];
 
 export default function PartyPacks() {
   const [formStatus, setFormStatus] = useState('idle'); // 'idle' | 'submitting' | 'submitted'
-  const [featuredIndex, setFeaturedIndex] = useState(0);
   const [liveBundles, setLiveBundles] = useState(bundlesStatic);
-  const [liveFeatures, setLiveFeatures] = useState(bundleFeaturesStatic);
   const [liveBusiness, setLiveBusiness] = useState(businessStatic);
 
   // Fetch bundles + business from the API
@@ -39,7 +36,6 @@ export default function PartyPacks() {
       try {
         const bundlesRes = await fetchBundles();
         if (bundlesRes?.data?.bundles) setLiveBundles(bundlesRes.data.bundles);
-        if (bundlesRes?.data?.features) setLiveFeatures(bundlesRes.data.features);
       } catch (err) {
         console.warn('[PartyPacks] Bundles API unavailable, using static fallback:', err.message);
       }
@@ -51,14 +47,6 @@ export default function PartyPacks() {
       }
     })();
   }, []);
-
-  const featuredItems = [
-    { type: 'bundle', data: liveBundles[0] },
-    { type: 'scene', data: SCENE_ITEMS[0] },
-    { type: 'bundle', data: liveBundles[1] },
-    { type: 'scene', data: SCENE_ITEMS[1] },
-  ];
-  const active = featuredItems[featuredIndex];
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
@@ -102,7 +90,7 @@ export default function PartyPacks() {
               </p>
 
               <div className="party-hero-cta">
-                <a href="#gallery" className="party-btn-primary btn-interact">
+                <a href="#combos" className="party-btn-primary btn-interact">
                   Explore Bundles
                 </a>
                 <a href="#contact" className="party-btn-outline btn-interact">
@@ -117,7 +105,7 @@ export default function PartyPacks() {
                 {/* Glow */}
                 <div className="party-hero-glow" />
                 <img
-                  src={HERO_IMG}
+                  src={handaanImg}
                   alt="Triology Handaan Bundles"
                   className="party-hero-img"
                 />
@@ -135,255 +123,194 @@ export default function PartyPacks() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════
-          BENTO GALLERY
+          PARTY PLATTERS
           ═══════════════════════════════════════════════════════ */}
-      <section id="gallery" className="party-gallery">
+      <section className="party-platters">
         <div className="container">
-          {/* Section header */}
-          <div className="party-gallery-header">
-            <div>
-              <h2 className="party-gallery-title">
-                Signature Handaan Gallery
-              </h2>
-              <p className="party-gallery-subtitle">
-                Hand-picked, freshly prepared, and beautifully arranged. See why
-                Triology is Iloilo&rsquo;s favorite celebration partner.
-              </p>
-            </div>
-            {/* Arrow buttons */}
-            <div className="party-gallery-arrows">
-              <button
-                className="party-arrow-btn btn-interact"
-                onClick={() => setFeaturedIndex((prev) => (prev - 1 + featuredItems.length) % featuredItems.length)}
-                aria-label="Previous item"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>arrow_back</span>
-              </button>
-              <button
-                className="party-arrow-btn party-arrow-btn-primary btn-interact"
-                onClick={() => setFeaturedIndex((prev) => (prev + 1) % featuredItems.length)}
-                aria-label="Next item"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>arrow_forward</span>
-              </button>
-              {/* Dot indicators */}
-              <div className="party-dots" aria-hidden="true">
-                {featuredItems.map((_, i) => (
-                  <span
-                    key={i}
-                    className={`party-dot${i === featuredIndex ? ' party-dot--active' : ''}`}
-                    onClick={() => setFeaturedIndex(i)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => e.key === 'Enter' && setFeaturedIndex(i)}
-                  />
-                ))}
-              </div>
-            </div>
+          <div className="party-section-header">
+            <span className="party-section-tag">Party Bilao &amp; Platters</span>
+            <h2 className="party-section-title">Our Handaan Menu</h2>
+            <p className="party-section-desc">
+              Choose from our selection of freshly prepared bilao and platter items
+              &mdash; perfect for sharing at your next celebration.
+            </p>
           </div>
-
-          {/* Bento grid */}
-          <div className="party-bento-grid">
-            {/* Large card: Dynamic featured spotlight */}
-            <div className="party-bento-card party-bento-large" key={featuredIndex}>
-              {active.type === 'bundle' ? (
-                <>
+          <div className="party-platters-grid">
+            {PLATTERS?.items.map((item) => (
+              <div key={item.id} className="party-platter-card">
+                <div className="party-platter-img-wrap">
                   <img
-                    src={active.data.image}
-                    alt={active.data.name}
+                    src={handaanImg}
+                    alt={item.name}
                     loading="lazy"
-                    className="party-bento-img"
+                    className="party-platter-img"
                   />
-                  <div className="party-bento-gradient" />
-                  <div className="party-bento-content">
-                    {active.data.badge && (
-                      <span className="party-bento-badge">{active.data.badge}</span>
-                    )}
-                    <h3 className="party-bento-title">{active.data.name}</h3>
-                    <p className="party-bento-desc">
-                      {active.data.description} &mdash; Serves {active.data.serves}
-                    </p>
-                    {active.data.startingPrice && (
-                      <span className="party-bento-price">
-                        From ₱{active.data.startingPrice.toLocaleString()}
-                      </span>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <img
-                    src={active.data.image}
-                    alt={active.data.label}
-                    loading="lazy"
-                    className="party-bento-img"
-                  />
-                  <div className="party-bento-gradient" />
-                  <div className="party-bento-content">
-                    <span className="party-bento-tag">{active.data.label}</span>
-                    <p className="party-bento-desc">{active.data.subtitle}</p>
-                  </div>
-                </>
-              )}
-            </div>
-
-            {/* Small card: Appetizer bilao */}
-            <div className="party-bento-card party-bento-small">
-              <img
-                src={BENTO_APPETIZER}
-                alt="Appetizer bilao with kwek-kwek, fishballs, and dipping sauces"
-                loading="lazy"
-                className="party-bento-img"
-              />
-              <div className="party-bento-overlay" />
-            </div>
-
-            {/* Small card: Office catering */}
-            <div className="party-bento-card party-bento-small">
-              <img
-                src={BENTO_OFFICE}
-                alt="Office catering setup with Triology packaged snacks and drinks"
-                loading="lazy"
-                className="party-bento-img"
-              />
-              <div className="party-bento-overlay" />
-            </div>
-
-            {/* Wide card: Grand Family Reunion Bundle */}
-            <div className="party-bento-card party-bento-wide">
-              <img
-                src={liveBundles[1].image}
-                alt="Family reunion banquet table with multiple bilaos"
-                loading="lazy"
-                className="party-bento-img"
-              />
-              <div className="party-bento-gradient" />
-              <div className="party-bento-content">
-                <h3 className="party-bento-title" style={{ fontSize: '1.25rem' }}>
-                  {liveBundles[1].name}
-                </h3>
-                <p className="party-bento-desc">
-                  {liveBundles[1].description}
-                </p>
-                {liveBundles[1].startingPrice && (
-                  <span className="party-bento-price">
-                    From ₱{liveBundles[1].startingPrice.toLocaleString()}
+                  <span className="party-platter-serves">
+                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>groups</span>
+                    {item.serves}
                   </span>
-                )}
+                </div>
+                <div className="party-platter-info">
+                  <div className="party-platter-header">
+                    <h3 className="party-platter-name">{item.name}</h3>
+                    <span className="party-platter-price">₱{item.price.toLocaleString()}</span>
+                  </div>
+                  <p className="party-platter-desc">{item.description}</p>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════
-          PRICING & FEATURES + MESSENGER & FORM
+          COMBO MEAL BUNDLES
           ═══════════════════════════════════════════════════════ */}
-      <section id="contact" className="party-pricing">
+      <section className="party-combos" id="combos">
         <div className="container">
-          <div className="party-pricing-grid">
-            {/* Left: Features */}
-            <div>
-              <h2 className="party-section-title">
-                Built for your unique celebration
-              </h2>
-              <p className="party-section-desc">
-                We understand every party is different. From intimate family
-                gatherings to large-scale corporate events, we offer flexible
-                bundles tailored to your guest count and budget.
-              </p>
-              <div className="party-features-list">
-                {liveFeatures.map((feature) => (
-                  <div key={feature.icon} className="party-feature-item">
-                    <div className="party-feature-icon">
-                      <span
-                        className="material-symbols-outlined"
-                        style={{ fontSize: 20 }}
-                      >
-                        {feature.icon}
-                      </span>
-                    </div>
-                    <div>
-                      <h4 className="party-feature-title">
-                        {feature.title}
-                      </h4>
-                      <p className="party-feature-desc">
-                        {feature.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right: Messenger + Form */}
-            <div className="party-contact-card">
-              <div className="party-contact-header">
-                <h3>Ready to Book?</h3>
-                <p>Get a free quote within 30 minutes via Messenger</p>
-              </div>
-
-              <div className="party-contact-body">
-                {/* Messenger button */}
-                <a
-                  href={liveBusiness.messengerUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="party-messenger-btn btn-interact"
-                >
-                  <span className="party-mssgr-icon">
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.91 1.455 5.503 3.734 7.202.195.145.313.376.313.626l-.004 2.215c-.004.57.587.973 1.11.75l2.47-1.054a1.001 1.001 0 01.764-.02c.516.16 1.06.245 1.613.245 5.523 0 10-4.145 10-9.258S17.523 2 12 2zm.8 11.6l-1.9-2.02-3.7 2.02 4.07-4.32 1.9 2.02 3.7-2.02-4.07 4.32z" />
-                    </svg>
+          <div className="party-section-header">
+            <span className="party-section-tag">Bundle Deals</span>
+            <h2 className="party-section-title">Combo Meal Bundles</h2>
+            <p className="party-section-desc">
+              Perfect for group lunches, barkada outings, and family celebrations.
+            </p>
+          </div>
+          <div className="party-combo-grid">
+            {liveBundles.slice(2).map((bundle) => (
+              <div key={bundle.id} className="party-combo-card">
+                <div className="party-combo-header">
+                  <h3 className="party-combo-name">{bundle.name}</h3>
+                  <span className="party-combo-serves">
+                    <span className="material-symbols-outlined party-combo-people-icon">groups</span>
+                    Serves {bundle.serves}
                   </span>
-                  Chat on Messenger
-                </a>
-
-                {/* OR divider */}
-                <div className="party-or-divider">
-                  <div className="party-or-line" />
-                  <span className="party-or-text">OR</span>
-                  <div className="party-or-line" />
                 </div>
 
-                {/* Quick form */}
-                <form className="party-form" onSubmit={handleFormSubmit}>
-                  <div className="party-field">
-                    <label className="party-label">Your Name</label>
-                    <input
-                      type="text"
-                      name="name"
-                      placeholder="Juan Dela Cruz"
-                      className="party-input"
-                      required
-                    />
-                  </div>
-                  <div className="party-field">
-                    <label className="party-label">Event Date</label>
-                    <input
-                      type="date"
-                      name="eventDate"
-                      className="party-input"
-                      required
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className={`party-submit-btn btn-interact${formStatus === 'submitted' ? ' party-submit-btn--sent' : ''}`}
-                    disabled={formStatus === 'submitting'}
-                  >
-                    {formStatus === 'idle' && 'Request a Quote'}
-                    {formStatus === 'submitting' && 'Sending...'}
-                    {formStatus === 'submitted' && 'Quote Requested!'}
-                  </button>
-                </form>
+                <ul className="party-combo-items">
+                  {bundle.items?.map((item, i) => (
+                    <li key={i} className="party-combo-item">
+                      <span className="material-symbols-outlined party-combo-check-icon">check_circle</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="party-combo-footer">
+                  <span className="party-combo-price">
+                    ₱{bundle.startingPrice.toLocaleString()}
+                  </span>
+                </div>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════
+          ADD-ONS
+          ═══════════════════════════════════════════════════════ */}
+      <section className="party-addons">
+        <div className="container">
+          <div className="party-section-header">
+            <span className="party-section-tag">Extra Items</span>
+            <h2 className="party-section-title">Complete Your Party</h2>
+            <p className="party-section-desc">
+              Add the finishing touches &mdash; sweet halo-halo, crispy fries,
+              or classic puto to round out your celebration.
+            </p>
+          </div>
+          <div className="party-addons-grid">
+            {ADDONS.map((addon) => (
+              <div key={addon.name} className="party-addon-card">
+                <div className="party-addon-icon">
+                  <span className="material-symbols-outlined" style={{ fontSize: 28 }}>{addon.icon}</span>
+                </div>
+                <div className="party-addon-info">
+                  <h3 className="party-addon-name">{addon.name}</h3>
+                  <p className="party-addon-desc">{addon.description}</p>
+                  <span className="party-addon-price">{addon.priceRange}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════
+          CONTACT — MESSENGER & FORM
+          ═══════════════════════════════════════════════════════ */}
+      <section id="contact" className="party-contact">
+        <div className="container">
+          <div className="party-contact-layout">
+            <div className="party-contact-header">
+              <span className="party-section-tag">Book Now</span>
+              <h2 className="party-section-title">Ready to Order?</h2>
+              <p className="party-section-desc" style={{ fontSize: '1rem', maxWidth: 480 }}>
+                Get a free quote within 30 minutes via Messenger, or send us a message and
+                we&rsquo;ll get back to you.
+              </p>
+            </div>
+
+            <div className="party-contact-card">
+              {/* Messenger button */}
+              <a
+                href={liveBusiness.messengerUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="party-messenger-btn btn-interact"
+              >
+                <span className="party-mssgr-icon">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.91 1.455 5.503 3.734 7.202.195.145.313.376.313.626l-.004 2.215c-.004.57.587.973 1.11.75l2.47-1.054a1.001 1.001 0 01.764-.02c.516.16 1.06.245 1.613.245 5.523 0 10-4.145 10-9.258S17.523 2 12 2zm.8 11.6l-1.9-2.02-3.7 2.02 4.07-4.32 1.9 2.02 3.7-2.02-4.07 4.32z" />
+                  </svg>
+                </span>
+                Chat on Messenger
+              </a>
+
+              {/* OR divider */}
+              <div className="party-or-divider">
+                <div className="party-or-line" />
+                <span className="party-or-text">OR</span>
+                <div className="party-or-line" />
+              </div>
+
+              {/* Quick form */}
+              <form className="party-form" onSubmit={handleFormSubmit}>
+                <div className="party-field">
+                  <label className="party-label">Your Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Juan Dela Cruz"
+                    className="party-input"
+                    required
+                  />
+                </div>
+                <div className="party-field">
+                  <label className="party-label">Event Date</label>
+                  <input
+                    type="date"
+                    name="eventDate"
+                    className="party-input"
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className={`party-submit-btn btn-interact${formStatus === 'submitted' ? ' party-submit-btn--sent' : ''}`}
+                  disabled={formStatus === 'submitting'}
+                >
+                  {formStatus === 'idle' && 'Request a Quote'}
+                  {formStatus === 'submitting' && 'Sending...'}
+                  {formStatus === 'submitted' && 'Quote Requested!'}
+                </button>
+              </form>
             </div>
           </div>
         </div>
@@ -607,252 +534,31 @@ export default function PartyPacks() {
           margin-top: 0.25rem;
         }
 
-        /* ─── Bento Gallery ─────────────────────────────────── */
-        .party-gallery {
+        /* ─── Party Platters Section ──────────────────────────── */
+        .party-platters {
           background: var(--color-surface);
           padding: 3rem 0;
         }
         @media (min-width: 768px) {
-          .party-gallery {
+          .party-platters {
             padding: 5rem 0;
           }
         }
 
-        .party-gallery-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-end;
-          margin-bottom: 3rem;
-          gap: 1.5rem;
-          flex-wrap: wrap;
+        .party-section-header {
+          margin-bottom: 2.5rem;
         }
 
-        .party-gallery-title {
-          font-family: var(--font-headline);
-          font-size: clamp(1.5rem, 3vw, 2rem);
-          font-weight: 700;
-          color: var(--color-primary);
-          margin-bottom: 0.5rem;
-        }
-
-        .party-gallery-subtitle {
-          font-size: 1rem;
-          color: var(--color-on-surface-variant);
-          max-width: 480px;
-        }
-
-        .party-gallery-arrows {
-          display: none;
-          gap: 0.5rem;
-        }
-        @media (min-width: 640px) {
-          .party-gallery-arrows {
-            display: flex;
-          }
-        }
-
-        .party-arrow-btn {
-          padding: 0.75rem;
-          border-radius: var(--radius-full);
-          border: 1px solid var(--color-outline);
-          background: transparent;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--color-on-surface-variant);
-          transition: background 0.2s;
-        }
-
-        .party-arrow-btn-primary {
-          border: none;
-          background: var(--color-primary);
-          color: var(--color-on-primary);
-        }
-
-        /* Bento grid */
-        .party-bento-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 24px;
-        }
-        @media (min-width: 640px) {
-          .party-bento-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-        }
-        @media (min-width: 900px) {
-          .party-bento-grid {
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: 250px 250px;
-          }
-          .party-bento-large {
-            grid-column: span 2;
-            grid-row: span 2;
-          }
-          .party-bento-wide {
-            grid-column: span 2;
-          }
-        }
-
-        .party-bento-card {
-          position: relative;
-          overflow: hidden;
-          border-radius: var(--radius-2xl);
-          min-height: 180px;
-          cursor: pointer;
-        }
-        @media (min-width: 640px) {
-          .party-bento-card {
-            min-height: 200px;
-          }
-        }
-        @media (min-width: 900px) {
-          .party-bento-large {
-            min-height: auto;
-          }
-        }
-        .party-bento-img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transition: transform 0.7s ease;
-        }
-        .party-bento-card:hover .party-bento-img {
-          transform: scale(1.1);
-        }
-
-        .party-bento-gradient {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 50%);
-          z-index: 1;
-        }
-
-        .party-bento-overlay {
-          position: absolute;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.2);
-          transition: background 0.3s ease;
-        }
-        .party-bento-card:hover .party-bento-overlay {
-          background: rgba(0, 0, 0, 0.4);
-        }
-
-        .party-bento-content {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          padding: 1.25rem;
-          z-index: 2;
-        }
-        @media (min-width: 640px) {
-          .party-bento-content {
-            padding: 2rem;
-          }
-        }
-
-        .party-bento-badge {
-          color: var(--color-secondary);
-          font-weight: 700;
-          font-size: 0.8125rem;
-          margin-bottom: 0.5rem;
-          display: block;
-        }
-
-        .party-bento-title {
-          color: #ffffff;
-          font-weight: 700;
-          font-size: clamp(1rem, 3vw, 1.5rem);
-          font-family: var(--font-headline);
-          margin-bottom: 0.25rem;
-        }
-
-        .party-bento-desc {
-          color: rgba(255, 255, 255, 0.8);
-          font-size: 0.875rem;
-        }
-
-        .party-bento-price {
-          display: inline-block;
-          margin-top: 0.5rem;
-          padding: 0.25rem 0.75rem;
-          background: var(--color-secondary);
-          color: var(--color-on-secondary);
+        .party-section-tag {
           font-size: 0.8125rem;
           font-weight: 700;
-          border-radius: var(--radius-full);
-        }
-
-        .party-bento-tag {
-          color: var(--color-secondary);
-          font-weight: 700;
-          font-size: 0.8125rem;
-          margin-bottom: 0.5rem;
-          display: block;
           text-transform: uppercase;
-          letter-spacing: 0.08em;
-        }
-
-        /* Fade transition for spotlight card */
-        .party-bento-large {
-          animation: party-fade-in 0.35s ease-out;
-        }
-        @keyframes party-fade-in {
-          from { opacity: 0.6; }
-          to   { opacity: 1; }
-        }
-
-        /* Dot indicators */
-        .party-dots {
-          display: flex;
-          gap: 0.375rem;
-          margin-top: 0.5rem;
-          justify-content: center;
-        }
-        .party-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: var(--radius-full);
-          background: var(--color-outline-variant);
-          cursor: pointer;
-          transition: background 0.25s ease, transform 0.25s ease;
-        }
-        .party-dot:hover {
-          background: var(--color-outline);
-          transform: scale(1.2);
-        }
-        .party-dot--active {
-          background: var(--color-primary);
-          transform: scale(1.3);
-        }
-
-        /* ─── Pricing Section ───────────────────────────────── */
-        .party-pricing {
-          background: var(--color-surface-container-low);
-          padding: 3rem 0;
-        }
-        @media (min-width: 768px) {
-          .party-pricing {
-            padding: 5rem 0;
-          }
-        }
-
-        .party-pricing-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 2.5rem;
+          letter-spacing: 0.12em;
+          color: var(--color-secondary);
+          display: inline-flex;
           align-items: center;
-        }
-        @media (min-width: 768px) {
-          .party-pricing-grid {
-            gap: 4rem;
-          }
-        }
-        @media (min-width: 768px) {
-          .party-pricing-grid {
-            grid-template-columns: 1fr 1fr;
-          }
+          gap: 0.4rem;
+          margin-bottom: 0.5rem;
         }
 
         .party-section-title {
@@ -860,48 +566,217 @@ export default function PartyPacks() {
           font-size: clamp(1.5rem, 3vw, 2rem);
           font-weight: 700;
           color: var(--color-primary);
-          margin-bottom: 1.5rem;
+          margin-bottom: 0.75rem;
         }
 
         .party-section-desc {
           font-size: 1.125rem;
           line-height: 1.6;
           color: var(--color-on-surface-variant);
-          margin-bottom: 2rem;
+          margin-bottom: 0;
         }
 
-        .party-features-list {
+        .party-platters-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1.25rem;
+        }
+        @media (min-width: 640px) {
+          .party-platters-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        @media (min-width: 900px) {
+          .party-platters-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+        @media (min-width: 1200px) {
+          .party-platters-grid {
+            grid-template-columns: repeat(4, 1fr);
+          }
+        }
+
+        .party-platter-card {
+          background: var(--color-surface-container);
+          border-radius: var(--radius-xl);
+          overflow: hidden;
+          border: 1px solid var(--color-outline-variant);
+          transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .party-platter-card:hover {
+          transform: translateY(-4px);
+          box-shadow: var(--shadow-lg);
+        }
+
+        .party-platter-img-wrap {
+          position: relative;
+          aspect-ratio: 4 / 3;
+          overflow: hidden;
+          background: var(--color-surface-container-high);
+        }
+        .party-platter-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.6s ease;
+        }
+        .party-platter-card:hover .party-platter-img {
+          transform: scale(1.08);
+        }
+
+        .party-platter-serves {
+          position: absolute;
+          bottom: 0.5rem;
+          left: 0.5rem;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.25rem;
+          padding: 0.25rem 0.625rem;
+          background: rgba(0, 0, 0, 0.65);
+          backdrop-filter: blur(4px);
+          color: #fff;
+          font-size: 0.75rem;
+          font-weight: 600;
+          border-radius: var(--radius-full);
+        }
+
+        .party-platter-info {
+          padding: 1rem;
           display: flex;
           flex-direction: column;
-          gap: 1.5rem;
-          margin-bottom: 2rem;
+          gap: 0.5rem;
         }
 
-        .party-feature-item {
+        .party-platter-header {
           display: flex;
-          gap: 1rem;
           align-items: flex-start;
+          justify-content: space-between;
+          gap: 0.75rem;
         }
 
-        .party-feature-icon {
-          background: var(--color-primary);
-          color: var(--color-on-primary);
-          padding: 0.5rem;
-          border-radius: var(--radius-md);
-          display: flex;
-          flex-shrink: 0;
-        }
-
-        .party-feature-title {
-          font-weight: 700;
+        .party-platter-name {
           font-size: 0.9375rem;
+          font-weight: 700;
           color: var(--color-on-surface);
-          margin-bottom: 0.25rem;
+          line-height: 1.2;
+          margin: 0;
         }
 
-        .party-feature-desc {
-          font-size: 0.875rem;
+        .party-platter-price {
+          flex-shrink: 0;
+          font-size: 0.9375rem;
+          font-weight: 800;
+          color: var(--color-primary);
+        }
+
+        .party-platter-desc {
+          font-size: 0.8125rem;
+          line-height: 1.45;
           color: var(--color-on-surface-variant);
+          margin: 0;
+        }
+
+        /* ─── Add-ons Section ────────────────────────────────── */
+        .party-addons {
+          background: var(--color-surface-container-low);
+          padding: 3rem 0;
+        }
+        @media (min-width: 768px) {
+          .party-addons {
+            padding: 5rem 0;
+          }
+        }
+
+        .party-addons-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1rem;
+          margin-top: 1.5rem;
+        }
+        @media (min-width: 640px) {
+          .party-addons-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        @media (min-width: 900px) {
+          .party-addons-grid {
+            grid-template-columns: repeat(4, 1fr);
+          }
+        }
+
+        .party-addon-card {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          padding: 1.25rem;
+          background: var(--color-surface-container-lowest);
+          border-radius: var(--radius-xl);
+          border: 1px solid var(--color-outline-variant);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .party-addon-card:hover {
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-md);
+        }
+
+        .party-addon-icon {
+          width: 52px;
+          height: 52px;
+          flex-shrink: 0;
+          background: color-mix(in srgb, var(--color-secondary) 15%, transparent);
+          border-radius: var(--radius-full);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--color-secondary);
+        }
+
+        .party-addon-info {
+          display: flex;
+          flex-direction: column;
+          gap: 0.125rem;
+        }
+
+        .party-addon-name {
+          font-size: 0.9375rem;
+          font-weight: 700;
+          color: var(--color-on-surface);
+          margin: 0;
+        }
+
+        .party-addon-desc {
+          font-size: 0.8125rem;
+          color: var(--color-on-surface-variant);
+          margin: 0;
+        }
+
+        .party-addon-price {
+          font-size: 0.8125rem;
+          font-weight: 700;
+          color: var(--color-primary);
+          margin-top: 0.125rem;
+        }
+
+        /* ─── Contact Section ─────────────────────────────────── */
+        .party-contact {
+          background: var(--color-surface-container-lowest);
+          padding: 3rem 0;
+        }
+        @media (min-width: 768px) {
+          .party-contact {
+            padding: 5rem 0;
+          }
+        }
+
+        .party-contact-layout {
+          max-width: 520px;
+          margin: 0 auto;
+          text-align: center;
+        }
+        .party-contact-layout .party-section-desc {
+          margin-left: auto;
+          margin-right: auto;
         }
 
         /* Contact card */
@@ -916,28 +791,6 @@ export default function PartyPacks() {
           .party-contact-card {
             padding: 3rem;
           }
-        }
-
-        .party-contact-header {
-          text-align: center;
-          margin-bottom: 2rem;
-        }
-        .party-contact-header h3 {
-          font-family: var(--font-headline);
-          font-size: 1.25rem;
-          font-weight: 600;
-          color: var(--color-secondary);
-          margin-bottom: 0.5rem;
-        }
-        .party-contact-header p {
-          font-size: 0.9375rem;
-          color: var(--color-on-surface-variant);
-        }
-
-        .party-contact-body {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
         }
 
         .party-messenger-btn {
@@ -1104,6 +957,104 @@ export default function PartyPacks() {
         .party-trust-underline {
           text-decoration: underline;
           text-decoration-color: var(--color-secondary);
+        }
+
+        /* ─── Combo Meal Bundles ──────────────────────────── */
+        .party-combos {
+          padding: 5rem 0 4rem;
+          background: var(--color-surface);
+        }
+
+        .party-combo-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 1.5rem;
+          margin-top: 2.5rem;
+        }
+
+        .party-combo-card {
+          background: var(--color-surface-container);
+          border-radius: var(--radius-xl);
+          padding: 1.5rem;
+          display: flex;
+          flex-direction: column;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          border: 1px solid var(--color-outline-variant);
+        }
+        .party-combo-card:hover {
+          transform: translateY(-3px);
+          box-shadow: var(--shadow-lg);
+        }
+
+        .party-combo-header {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .party-combo-name {
+          font-family: var(--font-headline);
+          font-size: 1.125rem;
+          font-weight: 700;
+          color: var(--color-on-surface);
+          margin: 0;
+          line-height: 1.2;
+        }
+
+        .party-combo-serves {
+          display: flex;
+          align-items: center;
+          gap: 0.3rem;
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: var(--color-primary);
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+
+        .party-combo-people-icon {
+          font-size: 0.9375rem !important;
+        }
+
+        .party-combo-items {
+          list-style: none;
+          padding: 0;
+          margin: 0 0 1.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          flex: 1;
+        }
+
+        .party-combo-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.8125rem;
+          color: var(--color-on-surface-variant);
+          line-height: 1.3;
+        }
+
+        .party-combo-check-icon {
+          font-size: 1rem !important;
+          color: var(--color-primary);
+          flex-shrink: 0;
+        }
+
+        .party-combo-footer {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          padding-top: 1rem;
+          border-top: 1px solid var(--color-outline-variant);
+        }
+
+        .party-combo-price {
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: var(--color-primary);
         }
 
         @media (max-width: 767px) {

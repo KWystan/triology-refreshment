@@ -1,14 +1,14 @@
 /**
  * BestSellerBadge — circular "BEST / SELLER" badge with folded-corner effect.
  *
- * Uses the `best_seller.svg` asset imported from `client/src/assets/`.
+ * Uses the `best-seller.svg` asset imported from `client/src/assets/ui/`.
  * Positioned at the top-left of the product card image, slightly overhanging
  * the card edge.
  *
  * Props:
  *   size     — diameter in px (default 60).  Accepts 56–64 range.
  */
-import bestSellerSvg from '@/assets/best_seller.svg';
+import bestSellerSvg from '@/assets/ui/best-seller.svg';
 
 export default function BestSellerBadge({ size = 60 }) {
   return (

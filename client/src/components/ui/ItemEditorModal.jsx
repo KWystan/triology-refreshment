@@ -113,8 +113,8 @@ export default function ItemEditorModal({ item, categories, onClose, onSaved, on
         prepTime: form.prepTime || undefined,
         tags: form.tags ? form.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
         note: form.note || undefined,
-        image: form.image || undefined,
-        images: form.images.length > 0 ? form.images : (form.image ? [form.image] : undefined),
+        image: form.image || null,
+        images: form.images.length > 0 ? form.images : (form.image ? [form.image] : null),
         order: form.order,
       };
 

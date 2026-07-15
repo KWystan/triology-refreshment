@@ -52,6 +52,7 @@ async function queryItems(field, value, orderField = 'order') {
         .get();
       return formatDocs(snapshot);
     }
+    console.error('[menu] queryItems raw error:', err.message, '(code:', err.code, ')');
     throw err;
   }
 }
@@ -68,6 +69,7 @@ export async function getCategories(req, res) {
     const categories = formatDocs(snapshot);
     res.json({ data: categories });
   } catch (err) {
+    console.error('[menu] getCategories error:', err.message, '(code:', err.code, ')');
     res.status(500).json({ error: { message: 'Failed to fetch categories' } });
   }
 }
@@ -86,6 +88,7 @@ export async function getCategory(req, res) {
 
     res.json({ data: { ...category, items } });
   } catch (err) {
+    console.error('[menu] getCategory error:', err.message, '(code:', err.code, ')');
     res.status(500).json({ error: { message: 'Failed to fetch category' } });
   }
 }
@@ -178,6 +181,7 @@ export async function getItems(req, res) {
     }
     res.json({ data: items });
   } catch (err) {
+    console.error('[menu] getItems error:', err.message, '(code:', err.code, ')');
     res.status(500).json({ error: { message: 'Failed to fetch items' } });
   }
 }
@@ -192,6 +196,7 @@ export async function getItem(req, res) {
     }
     res.json({ data: formatDoc(doc) });
   } catch (err) {
+    console.error('[menu] getItem error:', err.message, '(code:', err.code, ')');
     res.status(500).json({ error: { message: 'Failed to fetch item' } });
   }
 }

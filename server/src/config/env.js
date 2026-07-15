@@ -28,6 +28,10 @@ export const env = {
   CLIENT_ORIGIN: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
   SESSION_SECRET: process.env.SESSION_SECRET || 'dev-secret-change-me',
 
+  // ─── Google OAuth ──────────────────────────────────────────
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '',
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || '',
+
   // ─── Cloudinary ─────────────────────────────────────────────
   CLOUDINARY_URL: process.env.CLOUDINARY_URL,
 
