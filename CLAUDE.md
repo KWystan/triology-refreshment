@@ -12,32 +12,47 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 triology/
 ├── client/              React + Vite (React 19, React Router 7)
 │   ├── src/
-│   │   ├── components/    layout/ (Navbar, Footer, MobileNav, FAB, …) + ui/ (Button, Icon, MenuProductGrid, AuthPanel, …)
-│   │   ├── pages/         Home, Menu, PartyPacks, EventsContact, NotFound
-│   │   ├── data/          Static data (menuItems.js — 7 categories 41 items, bundles.js, business.js)
+│   │   ├── components/    layout/ (Navbar, Footer, MobileNav, FAB, DeliveryBanner, …)
+│   │   │                  + ui/ (Button, Icon, MenuProductGrid, AuthPanel, CategoryEditorModal, ItemEditorModal, …)
+│   │   ├── pages/         Home, Menu, PartyPacks, Contact, Venue, NotFound
+│   │   ├── data/          Static fallback data (menuItems.js, bundles.js, business.js)
 │   │   ├── design-system/ tokens.js (JS design tokens) + index.js barrel
 │   │   ├── styles/        global.css (CSS custom properties, reset, utilities)
-│   │   ├── lib/           api.js (fetch wrapper), contentApi.js, menuApi.js
-│   │   ├── context/       ActiveSectionContext.jsx, AuthContext.jsx
+│   │   ├── lib/           api.js (fetch wrapper), menuApi.js, contentApi.js
+│   │   ├── context/       ActiveSectionContext.jsx, AuthContext.jsx, OrderListContext.jsx
+│   │   ├── hooks/         useLiveBusiness.js (fetches from API with static fallback)
+│   │   ├── utils/         index.js barrel
+│   │   ├── assets/        hero/, food/, about/, ui/ images, logo
 │   │   ├── App.jsx        Root component + Routes
 │   │   └── main.jsx       Entry point (BrowserRouter)
 │   └── vite.config.js     @ import alias, /api proxy → localhost:4000
 │
 ├── server/              Express.js (Express 5, ESM)
 │   ├── src/
-│   │   ├── config/        env.js (validated env), firebase.js (Admin SDK)
-│   │   ├── controllers/   health.js, auth.js (Firebase Auth, JWT sessions, refresh rotation), content.js, menu.js
-│   │   ├── middleware/    errorHandler.js, validate.js, auth.js (Firebase ID token verify)
-│   │   ├── routes/        index.js (mounts /api routes), auth.js
-│   │   └── services/ validators/ utils/ — PLACEHOLDER directories (only .gitkeep)
+│   │   ├── config/        env.js (validated env), firebase.js (Admin SDK), cloudinary.js
+│   │   ├── controllers/   health.js, auth.js, content.js, menu.js
+│   │   ├── middleware/    errorHandler.js, validate.js, auth.js (Firebase ID token verify), adminAuth.js
+│   │   ├── routes/        index.js (mounts /api routes), auth.js, menu.js, content.js
+│   │   ├── validators/    menu.js (category + item schema functions)
+│   │   └── scripts/       seed-all.js, seed-menu.js, seed-business.js
 │   └── package.json
 │
-├── docs/               website-structure-for-stitch.txt (page map used as Stitch context)
-├── stitch-*.html       Stitch-generated screen designs (Home, Menu, Party, Event) — design specs, not app code
-├── client/public/stitch-mobile-*.html  Mobile-specific stitch designs (same purpose)
+├── docs/               website-structure-for-stitch.txt
 ├── AUTH-SETUP.md       Deep auth system docs (architecture, OAuth flow, security model, troubleshooting)
-└── .env.example         Shared env template (root vars apply to BOTH client and server in dev)
+└── .env.example
 ```
+
+### Pages & Routes
+
+| Path | Component | Description |
+|------|-----------|-------------|
+| `/` | Home | Hero, services bento grid, about/vibe, social proof |
+| `/menu` | Menu | Full product grid with filter/sort, search, product detail modal, admin CRUD modals |
+| `/party-packs` | PartyPacks | Combo meal bundles, full menu listing, add-ons, contact form |
+| `/about` | Contact | Contact details, inquiry form, map (same component as `/contact`) |
+| `/contact` | Contact | Same as `/about` |
+| `/venue` | Venue | Venue rental showcase, pricing, amenities, gallery, booking form |
+| `*` | NotFound | 404 with quick links to popular pages |
 
 ## Request Flow
 
@@ -45,28 +60,84 @@ triology/
 Browser → Vite (:5173) → /api/* proxy → Express (:4000) → controllers → Firebase Firestore / Auth
 ```
 
-- In development, Vite proxies `/api/*` to Express (no CORS issues). The Express `app.js` also configures CORS with credentials for production.
+- In development, Vite proxies `/api/*` to Express (no CORS issues). Express also configures CORS with credentials for production.
 - API client (`client/src/lib/api.js`) wraps `fetch` and always calls `/api/*` paths. Returns parsed JSON, throws on non-2xx, returns `null` on 204.
-- Auth endpoints use httpOnly cookies for tokens (access_token + refresh_token). Non-auth endpoints use the `requireAuth` middleware checking `Authorization: Bearer <firebase-id-token>`.
+- Auth endpoints use httpOnly cookies for tokens (access_token + refresh_token). Menu/content read endpoints are public. Non-auth write endpoints use the `requireAdmin` middleware checking app-level JWT in cookies.
 
 ## Key Architecture Decisions
 
 ### Auth System
 
-Uses **app-level JWT sessions** managed by Express, backed by **Firebase Auth**. Auth controller at `server/src/controllers/auth.js` handles 5 endpoints (signup, login, logout, refresh, me):
-- Firebase Admin SDK (`getAuth()`) for user creation (`createUser`) and ID token verification (`verifyIdToken`)
-- Firebase Auth REST API (`identitytoolkit.googleapis.com`) for email/password sign-in
-- Short-lived JWTs (1h) + rotated refresh tokens (30 days) as httpOnly cookies
-- Refresh token theft detection: reuse of a superseded token revokes the entire token family
-- In-memory `Map` store with periodic cleanup every 15 min
+Uses **app-level JWT sessions** managed by Express, backed by **Firebase Auth**. See `AUTH-SETUP.md` for the full architecture documentation.
 
-**Frontend:** `AuthContext` manages panel state + user session, restores on mount via `GET /auth/me` with refresh fallback. `AuthPanel` provides login/signup/forgot-password UI. `Navbar` integrates `useAuth()` for conditional rendering.
+Key files:
+- `server/src/controllers/auth.js` — 5 endpoints (signup, login, logout, refresh, me) + Google OAuth. Refresh tokens are persisted to `server/sessions.json` (disk-backed `Map` with 15-min cleanup).
+- `server/src/middleware/auth.js` — `requireAuth`: verifies Firebase ID tokens from `Authorization: Bearer` header via `firebaseAuth.verifyIdToken()`. Not used by auth routes — reserved for future authenticated API endpoints.
+- `server/src/middleware/adminAuth.js` — `requireAdmin`: verifies app-level JWT from `access_token` cookie + checks email against `ADMIN_EMAIL` env var.
+- `client/src/context/AuthContext.jsx` — manages auth panel state, session restore on mount via `GET /auth/me` → `POST /auth/refresh` fallback.
+- `client/src/components/ui/AuthPanel.jsx` — login/signup/forgot-password modal overlay.
 
-**`requireAuth` middleware** (`server/src/middleware/auth.js`): uses `firebaseAuth.verifyIdToken()` to verify Firebase ID tokens from the `Authorization` header. Not used by auth routes (they use cookie-based sessions) — reserved for future authenticated API endpoints (orders, profiles).
+### Data Sources
+
+All persistent data lives in **Firebase Firestore**:
+
+| Collection | Document(s) | Seeded by |
+|-----------|-------------|-----------|
+| `menu_categories` | One doc per category | `seed-all.js` |
+| `menu_items` | One doc per item | `seed-all.js` |
+| `site_content` | `business`, `bundles`, `bundle_features`, `menu_filter_tabs` | `seed-all.js` |
+
+Seed script: `node src/scripts/seed-all.js` (from the server directory). It pushes ALL static data from `client/src/data/` into Firestore. Run once after setting up the Firebase service account.
+
+Static fallback data in `client/src/data/` is used when the API is unavailable (no Firestore connection, server not running, etc.). The Menu and PartyPacks pages both try the API first and fall back to static data.
+
+### Menu CRUD (Admin)
+
+Full CRUD endpoints (all admin-protected via `requireAdmin`):
+- `GET /api/menu/categories` + `GET /api/menu/categories/:id` (public)
+- `POST/PUT/DELETE /api/menu/categories` (admin)
+- `GET /api/menu/items` + `GET /api/menu/items/:id` (public)
+- `POST/PUT/DELETE /api/menu/items` (admin)
+- `POST /api/menu/upload` (admin — Cloudinary image upload via multer)
+
+Frontend admin modals: `CategoryEditorModal` and `ItemEditorModal` in `Menu.jsx`. Admin mode activates when logged in as the `ADMIN_EMAIL` user. The admin fetches from the API; if the API is unreachable, admin controls are disabled.
+
+### Order List System
+
+`OrderListContext` manages a "My List" of selected menu items:
+- Persisted to localStorage via the `orderList` key
+- Items tracked with id, name, price, quantity
+- `buildMessengerMessage()` formats the list as a text message
+- `openMessenger()` opens Facebook Messenger with the pre-formatted message
+- `OrderListDrawer` component provides a slide-out panel with the list
+- Add-to-cart in `MenuProductGrid` toggles "Added ✓" for 2 seconds
+
+### Content API
+
+- `GET /api/content/business` — business info, venue, nav links
+- `PUT /api/content/business` — update (admin only)
+- `GET /api/content/bundles` — bundles array, features, filter tabs
+
+The `useLiveBusiness` hook (`client/src/hooks/useLiveBusiness.js`) fetches business data from the API and falls back to static `business.js` data.
+
+### Scroll-Based Nav Highlighting
+
+`ActiveSectionContext` (used by the Contact page) shares which page section is currently in-view via `IntersectionObserver`. Navbar / MobileNav consume it to highlight links based on scroll position. Routes with no active section fall back to route-based `:active` styling.
+
+### Design System: Dual Token Source
+
+Visual tokens exist in **two places that must stay in sync**:
+1. **`client/src/design-system/tokens.js`** — JS exports used by component imports
+2. **`client/src/styles/global.css` `:root`** — CSS custom properties (runtime source of truth)
+
+Components use `var(--color-*)` / `var(--font-*)` / `var(--radius-*)` / `var(--shadow-*)` — never hardcoded values.
+
+**⚠️ Known discrepancy:** `tokens.js` defines `primary` as `#0f5238` while `global.css` `:root` uses `#056402`. The CSS variables are what components actually render. When syncing, decide which value is canonical and update both files.
 
 ### Request Validation Pattern
 
 `server/src/middleware/validate.js` is a factory that validates `body` / `query` / `params` against schema functions:
+
 ```js
 // Define a schema function (returns { valid, errors? })
 const createItemSchema = (data) => {
@@ -79,21 +150,7 @@ const createItemSchema = (data) => {
 router.post('/items', validate({ body: createItemSchema }), handler);
 ```
 
-Schema functions are plain JS — no schema library. Expected to live in `server/src/validators/` (scaffolded but empty).
-
-### Scroll-Based Nav Highlighting
-
-`ActiveSectionContext` (used by `EventsContact` page) shares which page section is currently in-view via `IntersectionObserver`. Navbar / MobileNav consume it to highlight links based on scroll position. Routes with no active section fall back to route-based `:active` styling.
-
-### Design System: Dual Token Source
-
-Visual tokens exist in **two places that must stay in sync**:
-1. **`client/src/design-system/tokens.js`** — JS exports used by component imports
-2. **`client/src/styles/global.css` `:root`** — CSS custom properties (runtime source of truth)
-
-Components use `var(--color-*)` / `var(--font-*)` / `var(--radius-*)` / `var(--shadow-*)` — never hardcoded values.
-
-**⚠️ Known discrepancy:** `tokens.js` defines `primary` as `#0f5238` while `global.css` `:root` uses `#056402`. The CSS variables are what components actually render. When syncing, decide which value is canonical and update both files.
+Schema functions are plain JS — no schema library. Current validators live in `server/src/validators/menu.js`.
 
 ## Styling Conventions
 
@@ -120,12 +177,14 @@ Every page component follows this pattern:
 ```
 Sections are separated by `{/* ═══════ SECTION NAME ═══════ */}` comment blocks.
 
-## Data Layer (Static)
+## Data Layer (Static Fallback)
 
-Business info, menu items, and bundles are all **static JS modules** (no DB reads for content yet):
-- `client/src/data/business.js` — brand info, contact, nav links, stats
-- `client/src/data/menuItems.js` — 7 categories, 41 items with 7 layout types (compact-square, rice-card, circular, compact-card, platter-grid, horizontal-list, horizontal-card)
+Business info, menu items, and bundles have static JS modules that serve as fallbacks:
+- `client/src/data/business.js` — brand info, contact, nav links, stats, venue data
+- `client/src/data/menuItems.js` — 7 categories, 41+ items with 7 layout types
 - `client/src/data/bundles.js` — party pack bundles + features + filter tabs
+
+All three have corresponding Firestore documents seeded by `seed-all.js`.
 
 ## Menu Data Architecture
 
@@ -149,28 +208,20 @@ Menu items have a `layoutType` field determining card rendering in `MenuProductG
 2. Add to `server/.env.example` AND root `.env.example`
 3. If needed client-side, add to `client/.env.example` with `VITE_` prefix and read via `import.meta.env.VITE_VAR_NAME`
 
-## Data Sources
-
-All persistent data lives in **Firebase Firestore**:
-- `menu_categories` / `menu_items` — menu CRUD data
-- `site_content` — business info, bundles, features, filter tabs
-
-Auth data lives in **Firebase Auth** (managed via Admin SDK `getAuth()`).
-
-No Supabase was used in the making of this project.
-
 ## Image Sourcing
 
 Two strategies coexist:
 1. **Remote CDN URLs** — Hero/decorative/page images use Google `aida-public` URLs exported from Stitch
 2. **Local imports** — Menu item images, logo, and assets from `client/src/assets/`
+3. **Cloudinary upload** — Admin image upload via `POST /api/menu/upload` (multer → Cloudinary), configured in `server/src/config/cloudinary.js`
 
 Most food images currently point to `foodsample.jpg` placeholder.
 
 ## Client-Side State
 
-- **No global state library** — React Context only (`ActiveSectionContext`, `AuthContext`)
-- **localStorage** for favorites persistence (in `MenuProductGrid`)
+- **Three React Contexts**: `AuthContext` (auth panel + session), `ActiveSectionContext` (scroll-based nav), `OrderListContext` (order list + Messenger)
+- **No global state library**
+- **localStorage** for order list persistence (`orderList` key)
 - **Product detail modal**: `ProductDetailModal` rendered by `MenuProductGrid` — image carousel, star rating, tags, serving info, body scroll lock, keyboard nav (Escape, arrow keys)
 - **Inline search**: `SearchBar` inside `MenuProductGrid` (visible on mobile)
 - **Form submissions are simulated**: `InquiryForm` uses `setTimeout` (800ms delay) — not yet wired to API
@@ -188,12 +239,13 @@ Components in the barrel that are **not imported** by any page (functionality is
 - `MenuFilterTabs.jsx` — filter tabs rendered inline in `MenuProductGrid`
 - `BentoCard.jsx` — PartyPacks has inline bento cards
 - `BounceCards.jsx` — only used directly by `Home.jsx`, not barrel-exported
-- `BottomMobileNav.jsx` — **not imported or rendered anywhere** (mobile nav uses `MobileNav` sidebar + `FAB` instead; this component has no corresponding routes for Orders/Profile)
-- `client/src/hooks/` — empty barrel file, no hooks defined yet
+- `BottomMobileNav.jsx` — **not imported or rendered anywhere** (mobile nav uses `MobileNav` sidebar + `FAB`; this component has no corresponding routes for Orders/Profile)
+- `client/src/hooks/index.js` — empty barrel file
+- `ContactBar.jsx` — layout component exported but not imported by any page
 
 ## Assets
 
-Images in `client/src/assets/`: `hero/` (4 hero images), `halo_halo/` (8 per-item images). Root-level assets (`foodsample.jpg`, `triology-logo.png`, SVGs) used as fallbacks.
+Images in `client/src/assets/`: `hero/` (4 hero images), `halo_halo/` (8 per-item images), `food/` (refreshments, rice-meal, venue), `about/` (5 about images), `ui/` (location-bg, blob.svg). Root-level assets (`foodsample.jpg`, `triology-logo.png`, `handaan.jpg`, SVGs) used as fallbacks.
 
 ## Fonts
 
@@ -208,19 +260,24 @@ Images in `client/src/assets/`: `hero/` (4 hero images), `halo_halo/` (8 per-ite
 - `jsonwebtoken` — JWT signing for app-level sessions
 - `cookie-parser` — cookie reading for auth
 - `helmet`, `cors`, `morgan` — Express middleware
+- `cloudinary` + `multer` — image upload infrastructure
+- Client: `react` 19, `react-dom` 19, `react-router-dom` 7
 
 ## Common Commands
 
 ```bash
-npm install              # Install everything (root)
-npm run dev              # Start both servers concurrently
-npm run dev:client       # Vite only (port 5173)
-npm run dev:server       # Express with --watch (port 4000)
-npm run build            # Build both for production
-npm run start            # Start production server
-npm run lint             # ESLint 9 flat config (--max-warnings 0)
-npm run clean            # Remove build artifacts
+npm install               # Install everything (root)
+npm run dev               # Start both servers concurrently
+npm run dev:client        # Vite only (port 5173)
+npm run dev:server        # Express with --watch (port 4000, Node 22+)
+npm run build             # Build both for production
+npm run start             # Start production server
+npm run lint              # ESLint 9 flat config (--max-warnings 0)
+npm run clean             # Remove build artifacts
+npm run seed              # (from server/) node src/scripts/seed-all.js
 ```
+
+The server uses Node 22+ `node --watch` for auto-restart on file changes during development.
 
 ## Common Patterns
 
@@ -233,7 +290,12 @@ npm run clean            # Remove build artifacts
 **Adding a new frontend page:**
 1. Create page file in `client/src/pages/` with numbered JSDoc section comments
 2. Add `<Route>` in `client/src/App.jsx`
-3. Add to existing nav links in `business.js` data if needed
+3. Add nav link in `business.js` data if needed (or in Firestore `site_content/business`)
+
+**Seeding Firestore data:**
+1. Edit the static data in `server/src/scripts/seed-all.js` (or run the targeted scripts)
+2. Run `node src/scripts/seed-all.js` from the server directory
+3. Static fallback data in `client/src/data/` must be updated separately
 
 ## Environment
 
@@ -243,4 +305,5 @@ npm run clean            # Remove build artifacts
 - **ESLint 9 flat config** (`eslint.config.js` per package), zero warnings allowed
 - **Prettier** with semi, single quotes, trailing commas, 100 print width
 - **Firebase Web API Key** (`FIREBASE_WEB_API_KEY`) — get from Firebase Console → Project Settings → General. Used for Firebase Auth REST API calls (sign-in endpoint)
-- No test framework configured yet (Vitest intended)
+- **Firebase service account** — download from Firebase Console → Project Settings → Service Accounts → Generate New Private Key. Save as `server/service-account.json`. Never commit this file.
+- **No test framework configured yet** (Vitest intended)
