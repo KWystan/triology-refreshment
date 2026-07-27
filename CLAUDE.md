@@ -309,3 +309,59 @@ The server uses Node 22+ `node --watch` for auto-restart on file changes during 
 - **Firebase Web API Key** (`FIREBASE_WEB_API_KEY`) — get from Firebase Console → Project Settings → General. Used for Firebase Auth REST API calls (sign-in endpoint)
 - **Firebase service account** — download from Firebase Console → Project Settings → Service Accounts → Generate New Private Key. Save as `server/service-account.json`. Never commit this file.
 - **No test framework configured yet** (Vitest intended)
+
+## Vercel Deployment
+
+Single-project deployment serving the React frontend as static files and the Express API as a serverless function under one domain.
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `vercel.json` | Build config, route rewrites, Node 22 |
+| `api/index.mjs` | Serverless entry — imports the Express app |
+| `server/src/config/firebase.js` | Reads `FIREBASE_SERVICE_ACCOUNT` env var (base64 JSON) on Vercel |
+
+### How it works
+
+```
+Request → Vercel Edge
+  ├── /api/*    → serverless function (Express app at api/index.mjs)
+  ├── /assets/* → static files from client/dist/
+  └── /*        → index.html (SPA client-side routing)
+```
+
+The build command (`npm run build -w client`) only builds the Vite frontend. The Express server runs as-is (no compilation step) via the serverless function wrapper at `api/index.mjs`.
+
+### Setup in Vercel Dashboard
+
+1. Push the repo to GitHub and import in Vercel
+2. Set these environment variables in Vercel → Project Settings → Environment Variables:
+
+   | Variable | Required | Notes |
+   |----------|----------|-------|
+   | `FIREBASE_WEB_API_KEY` | Yes | Firebase Console → Project Settings → General → Web API Key |
+   | `FIREBASE_SERVICE_ACCOUNT` | Yes | Base64 of `server/service-account.json` |
+   | `SESSION_SECRET` | Yes | Random string, min 32 chars |
+   | `CLIENT_ORIGIN` | Yes | Your Vercel domain, e.g. `https://triology.vercel.app` |
+   | `CLOUDINARY_URL` | If using uploads | `cloudinary://API_KEY:API_SECRET@CLOUD_NAME` |
+   | `ADMIN_EMAIL` | If using admin | Email of the admin user |
+   | `GOOGLE_CLIENT_ID` | If using OAuth | Google OAuth client ID |
+   | `GOOGLE_CLIENT_SECRET` | If using OAuth | Google OAuth client secret |
+
+3. **Generate the Firebase service account env var:**
+   ```bash
+   # Windows PowerShell
+   [Convert]::ToBase64String([IO.File]::ReadAllBytes("server\service-account.json"))
+   # Linux / macOS
+   base64 -w0 server/service-account.json | pbcopy
+   ```
+   Paste the output as the `FIREBASE_SERVICE_ACCOUNT` env var in Vercel.
+
+4. Deploy! Vercel detects the config, installs workspace deps, builds the client, and deploys the serverless function.
+
+### Known serverless limitations
+
+- **Refresh tokens** stored in `server/sessions.json` don't persist across cold starts (ephemeral filesystem). Users may need to re-login after periods of inactivity. Planned fix: migrate to a database session store.
+- **First request after inactivity** may be slow (~1s cold start). Subsequent requests are fast while the function stays warm.
+- **File uploads** (Cloudinary via multer) work but are limited to 5 MB and the function timeout of 30 seconds.

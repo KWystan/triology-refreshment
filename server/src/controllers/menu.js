@@ -293,13 +293,19 @@ export async function deleteItem(req, res) {
 
 /* ─── Upload image to Cloudinary ─────────────────────────── */
 
-import cloudinary from '../config/cloudinary.js';
-
 /** POST /api/menu/upload — upload image to Cloudinary, return URL */
 export async function uploadImage(req, res) {
   try {
     if (!req.file) {
       return res.status(400).json({ error: { message: 'No file uploaded' } });
+    }
+
+    // Lazy-import so the app boots even without CLOUDINARY_URL
+    let cloudinary;
+    try {
+      cloudinary = (await import('../config/cloudinary.js')).default;
+    } catch {
+      return res.status(500).json({ error: { message: 'Cloudinary is not configured. Set CLOUDINARY_URL.' } });
     }
 
     const result = await new Promise((resolve, reject) => {
