@@ -16,7 +16,7 @@ triology/
 │   │   │                  + ui/ (Button, Icon, MenuProductGrid, AuthPanel, CategoryEditorModal, ItemEditorModal, …)
 │   │   ├── pages/         Home, Menu, PartyPacks, Contact, Venue, NotFound
 │   │   ├── data/          Static fallback data (menuItems.js, bundles.js, business.js)
-│   │   ├── design-system/ tokens.js (JS design tokens) + index.js barrel
+│   │   ├── design-system/ tokens.js (JS design tokens) + barrel export
 │   │   ├── styles/        global.css (CSS custom properties, reset, utilities)
 │   │   ├── lib/           api.js (fetch wrapper), menuApi.js, contentApi.js
 │   │   ├── context/       ActiveSectionContext.jsx, AuthContext.jsx, OrderListContext.jsx
@@ -71,11 +71,12 @@ Browser → Vite (:5173) → /api/* proxy → Express (:4000) → controllers �
 Uses **app-level JWT sessions** managed by Express, backed by **Firebase Auth**. See `AUTH-SETUP.md` for the full architecture documentation.
 
 Key files:
-- `server/src/controllers/auth.js` — 5 endpoints (signup, login, logout, refresh, me) + Google OAuth. Refresh tokens are persisted to `server/sessions.json` (disk-backed `Map` with 15-min cleanup).
+- `server/src/controllers/auth.js` — 7 endpoints (signup, login, logout, refresh, me, oauthGoogleInit, oauthGoogleCallback). Refresh tokens are persisted to `server/sessions.json` (disk-backed `Map` with 15-min cleanup).
 - `server/src/middleware/auth.js` — `requireAuth`: verifies Firebase ID tokens from `Authorization: Bearer` header via `firebaseAuth.verifyIdToken()`. Not used by auth routes — reserved for future authenticated API endpoints.
 - `server/src/middleware/adminAuth.js` — `requireAdmin`: verifies app-level JWT from `access_token` cookie + checks email against `ADMIN_EMAIL` env var.
 - `client/src/context/AuthContext.jsx` — manages auth panel state, session restore on mount via `GET /auth/me` → `POST /auth/refresh` fallback.
 - `client/src/components/ui/AuthPanel.jsx` — login/signup/forgot-password modal overlay.
+- **Google OAuth**: `GET /api/auth/oauth/google` returns a consent URL; the callback at `GET /api/auth/oauth/google/callback` exchanges the code, creates/retrieves a Firebase user, and issues session cookies. Requires `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` env vars.
 
 ### Data Sources
 
@@ -98,7 +99,7 @@ Full CRUD endpoints (all admin-protected via `requireAdmin`):
 - `POST/PUT/DELETE /api/menu/categories` (admin)
 - `GET /api/menu/items` + `GET /api/menu/items/:id` (public)
 - `POST/PUT/DELETE /api/menu/items` (admin)
-- `POST /api/menu/upload` (admin — Cloudinary image upload via multer)
+- `POST /api/menu/upload` (admin — Cloudinary image upload via multer, 5 MB limit)
 
 Frontend admin modals: `CategoryEditorModal` and `ItemEditorModal` in `Menu.jsx`. Admin mode activates when logged in as the `ADMIN_EMAIL` user. The admin fetches from the API; if the API is unreachable, admin controls are disabled.
 
@@ -161,6 +162,7 @@ Schema functions are plain JS — no schema library. Current validators live in 
 - **`section-padding` class**: vertical padding (4rem mobile, 6rem desktop)
 - **`sr-only` class**: visually hidden utility for screen readers
 - Mobile-first breakpoints: 640px (sm), 768px (md), 1024px (lg), 1280px (xl)
+- **`material-symbols-outlined`** class for Google Material Symbols icons (variable font)
 
 ## Page Component Conventions
 

@@ -26,10 +26,10 @@ const CARD_VARIANTS = {
 };
 
 const PLACEHOLDER_CONFIG = {
-  'mix-match-share-5': { icon: 'lunch_dining', ratio: '4 / 5' },
-  'barkada-combo-share-8': { icon: 'diversity_3', ratio: '1 / 1' },
-  'family-combo-10': { icon: 'cake', ratio: '3 / 4' },
-  'family-combo-12': { icon: 'icecream', ratio: '4 / 5' },
+  'mix-match-share-5': { icon: 'lunch_dining' },
+  'barkada-combo-share-8': { icon: 'diversity_3' },
+  'family-combo-10': { icon: 'cake' },
+  'family-combo-12': { icon: 'icecream' },
 };
 
 function getCardVariant(bundleId) {
@@ -37,7 +37,7 @@ function getCardVariant(bundleId) {
 }
 
 function getPlaceholder(bundleId) {
-  return PLACEHOLDER_CONFIG[bundleId] || { icon: 'restaurant_menu', ratio: '4 / 5' };
+  return PLACEHOLDER_CONFIG[bundleId] || { icon: 'restaurant_menu' };
 }
 
 export default function PartyPacks() {
@@ -197,7 +197,6 @@ export default function PartyPacks() {
                     {isImageCaption && (
                       <div
                         className="party-combo-placeholder"
-                        style={{ aspectRatio: placeholder.ratio }}
                       >
                         <div className="party-combo-placeholder-bg" />
                         <span className="party-combo-placeholder-icon material-symbols-outlined">
@@ -603,13 +602,13 @@ export default function PartyPacks() {
 
         /* ─── Combo Meal Card Variants (masonry) ─────────────── */
 
-        /* Image-dominant: natural aspect ratio, no crop */
+        /* Image-dominant: uniform aspect ratio, cropped to fit */
         .party-combo-img-wrap {
           position: relative;
           margin: -1.5rem -1.5rem 0;
           overflow: hidden;
           background: linear-gradient(135deg, color-mix(in srgb, var(--color-secondary) 25%, var(--color-surface-container-high)) 0%, var(--color-surface-container-high) 100%);
-          min-height: 140px;
+          aspect-ratio: 4 / 3;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -617,7 +616,8 @@ export default function PartyPacks() {
         .party-combo-img {
           display: block;
           width: 100%;
-          height: auto;
+          height: 100%;
+          object-fit: cover;
           transition: transform 0.5s ease;
         }
         .party-combo-card:hover .party-combo-img {
@@ -664,7 +664,7 @@ export default function PartyPacks() {
           margin-bottom: 0;
         }
 
-        /* Image-caption: stylized placeholder (varies per card) */
+        /* Image-caption: stylized placeholder (uniform size) */
         .party-combo-placeholder {
           position: relative;
           margin: -1.5rem -1.5rem 0;
@@ -672,6 +672,7 @@ export default function PartyPacks() {
           display: flex;
           align-items: center;
           justify-content: center;
+          aspect-ratio: 4 / 3;
         }
         .party-combo-placeholder-bg {
           position: absolute;
